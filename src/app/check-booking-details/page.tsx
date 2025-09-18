@@ -23,6 +23,7 @@ import {
   LogOut,
   ExternalLink,
 } from "lucide-react";
+import { buildLocationTitle } from "@/utils/helpers";
 
 interface PropertyLocation {
   state?: string;
@@ -370,7 +371,7 @@ export default function CheckBookingDetailsPage() {
                   <div className="p-6">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                       <div>
-                        <h1 className="text-2xl font-bold text-[#09391C]">{data?.property?.title || "Property"}</h1>
+                        <h1 className="text-2xl font-bold text-[#09391C]">{buildLocationTitle(data?.property?.location) || "Property"}</h1>
                         <p className="text-sm text-gray-600">Booking Code: <span className="font-mono tracking-wider">{data?.bookingCode || data?.code || code}</span></p>
                         {address && <p className="text-xs text-gray-500 mt-1">{address}</p>}
                       </div>
@@ -443,8 +444,13 @@ export default function CheckBookingDetailsPage() {
                     )}
 
                     <div className="mt-6 flex flex-wrap items-center gap-2">
-                      {data?.meta?.paymentLink && (
-                        <a href={data.meta.paymentLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-2 bg-[#0B423D] text-white rounded-lg text-sm hover:bg-[#09391C]">
+                      {(data?.status !== "confirmed" && data?.status !== "completed" && data?.meta?.paymentLink) && (
+                        <a
+                          href={data.meta.paymentLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-3 py-2 bg-[#0B423D] text-white rounded-lg text-sm hover:bg-[#09391C]"
+                        >
                           Pay now <ExternalLink size={16} />
                         </a>
                       )}

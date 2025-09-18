@@ -51,7 +51,7 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
     const agentData = user.agentData || (user as any).agentState;
 
     // If user has active subscription and completed verification
-    if (user?.activeSubscription && agentData?.kycStatus == "none") {
+    if (user?.activeSubscription && agentData?.kycStatus == "approved") {
       return "verified";
     }
 

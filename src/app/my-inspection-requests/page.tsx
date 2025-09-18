@@ -33,16 +33,28 @@ import {
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
+import { buildLocationTitle } from "@/utils/helpers";
+
+interface Location {
+  state?: string;
+  localGovernment?: string;
+  area?: string;
+  streetAddress?: string;
+}
 
 interface Property {
   id?: string;
   _id?: string;
-  title?: string;
+  location?: Location;
   price?: number;
+  additionalFeatures?: Record<string, unknown>;
+  shortletDetails?: Record<string, unknown>;
   image?: string;
   status?: string;
   briefType?: string;
   isAvailable?: boolean;
+  propertyType?: string;
+  features?: string[];
 }
  
 interface InspectionData {
@@ -70,8 +82,12 @@ interface InspectionData {
 }
 
 interface BookingData {
-  id: string;
-  property: Property | null;
+  _id: string;
+  propertyId: Property | null;
+  ownerResponse: {
+    response?: string;
+    note?: string;
+  },
   bookingDetails?: {
     checkInDateTime?: string;
     checkOutDateTime?: string;
@@ -115,6 +131,14 @@ const STATUS_CONFIG = {
   },
   inspection_approved: {
     label: "Inspection Approved",
+    color: "bg-[#8DDB90]",
+    textColor: "text-green-800",
+    bgColor: "bg-green-100",
+    borderColor: "border-green-200",
+    icon: CheckCircleIcon,
+  },
+  confirmed: {
+    label: "Payment Approved",
     color: "bg-[#8DDB90]",
     textColor: "text-green-800",
     bgColor: "bg-green-100",
@@ -366,10 +390,9 @@ export default function MyInspectionRequestsPage() {
     const searchLower = searchTerm.trim().toLowerCase();
     return inspections.filter((inspection) => {
       if (searchLower) {
-        const title = inspection.property?.title?.toLowerCase() || "";
         const type = String(inspection.inspectionType || "").toLowerCase();
         const status = String(inspection.status || inspection.inspectionStatus || "").toLowerCase();
-        if (!title.includes(searchLower) && !type.includes(searchLower) && !status.includes(searchLower)) return false;
+        if (!type.includes(searchLower) && !status.includes(searchLower)) return false;
       }
 
       if (filters.status && inspection.status !== filters.status) return false;
@@ -384,10 +407,9 @@ export default function MyInspectionRequestsPage() {
     const searchLower = searchTerm.trim().toLowerCase();
     return bookings.filter((b) => {
       if (searchLower) {
-        const title = b.property?.title?.toLowerCase() || "";
         const status = String(b.status || "").toLowerCase();
         const mode = String(b.bookingMode || "").toLowerCase();
-        if (!title.includes(searchLower) && !status.includes(searchLower) && !mode.includes(searchLower)) return false;
+        if (!status.includes(searchLower) && !mode.includes(searchLower)) return false;
       }
       if (filters.status && b.status !== filters.status) return false;
       return true;
@@ -420,7 +442,7 @@ export default function MyInspectionRequestsPage() {
 
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-[#09391C] font-display mb-3">My Inspection Requests</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold text-[#09391C] font-display mb-3">My Inspection & Booking Requests</h1>
                 <p className="text-[#5A5D63] text-lg">Monitor and manage all your property inspection and booking requests in one place</p>
               </div>
 
@@ -643,11 +665,13 @@ export default function MyInspectionRequestsPage() {
                   const TypeIcon = typeConfig.icon;
                   const ModeIcon = modeConfig.icon;
 
+                  const altTitle = buildLocationTitle(inspection.property?.location)
+
                   return (
                     <motion.div key={inspection.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-visible hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
                       {viewMode === "grid" && inspection.property?.image && (
                         <div className="h-48 relative overflow-hidden">
-                          <img src={inspection.property.image} alt={inspection.property.title || "Property"} className="w-full h-full object-cover" />
+                          <img src={inspection.property.image} alt={altTitle || "Property"} className="w-full h-full object-cover" />
                           <div className="absolute top-4 left-4 flex gap-2">
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color} text-white`}>{statusConfig.label}</span>
                             {inspection.isLOI && <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">LOI</span>}
@@ -657,14 +681,14 @@ export default function MyInspectionRequestsPage() {
 
                       {viewMode === "list" && inspection.property?.image && (
                         <div className="w-32 h-32 relative overflow-hidden">
-                          <img src={inspection.property.image} alt={inspection.property.title || "Property"} className="w-full h-full object-cover" />
+                          <img src={inspection.property.image} alt={altTitle || "Property"} className="w-full h-full object-cover" />
                         </div>
                       )}
 
                       <div className="p-6 flex-1">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">{inspection.property?.title || "Property details unavailable"}</h3>
+                            <h3 className="text-xl font-semibold text-[#09391C] mb-1 truncate">{altTitle || "Property details unavailable"}</h3>
                             <div className="flex items-center gap-2 text-sm text-[#5A5D63]">
                               <MapPinIcon size={14} />
                               <span>Inspection Request</span>
@@ -805,23 +829,23 @@ export default function MyInspectionRequestsPage() {
                 {filteredBookings.map((b, index) => {
                   const statusConfig = getStatusConfig(String(b.status || "pending"));
                   const StatusIcon = statusConfig.icon;
-                  const title = b.property?.title || "Property details unavailable";
+                  const title = buildLocationTitle(b.propertyId?.location) || "Property details unavailable";
                   const amount = Number(b.paymentDetails?.amountToBePaid || 0);
                   const currency = b.paymentDetails?.currency || "₦";
                   const checkIn = b.bookingDetails?.checkInDateTime ? new Date(b.bookingDetails.checkInDateTime) : null;
                   const checkOut = b.bookingDetails?.checkOutDateTime ? new Date(b.bookingDetails.checkOutDateTime) : null;
 
                   return (
-                    <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-visible hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
-                      {viewMode === "list" && b.property?.image && (
+                    <motion.div key={b._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className={`bg-white border border-gray-100 rounded-xl overflow-visible hover:border-gray-300 transition-all duration-200 ${viewMode === "list" ? "flex" : ""}`}>
+                      {viewMode === "list" && b.propertyId?.image && (
                         <div className="w-32 h-32 relative overflow-hidden">
-                          <img src={b.property.image} alt={title} className="w-full h-full object-cover" />
+                          <img src={b.propertyId.image} alt={title} className="w-full h-full object-cover" />
                         </div>
                       )}
 
-                      {viewMode === "grid" && b.property?.image && (
+                      {viewMode === "grid" && b.propertyId?.image && (
                         <div className="h-48 relative overflow-hidden">
-                          <img src={b.property.image} alt={title} className="w-full h-full object-cover" />
+                          <img src={b.propertyId.image} alt={title} className="w-full h-full object-cover" />
                           <div className="absolute top-4 left-4 flex gap-2">
                             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig.color} text-white`}>{statusConfig.label}</span>
                           </div>
@@ -879,8 +903,8 @@ export default function MyInspectionRequestsPage() {
                         )}
 
                         <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200 relative">
-                          {b.property && (
-                            <button onClick={() => router.push(`/property/buy/${b.property!.id || b.property!._id}`)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                          {b.propertyId && (
+                            <button onClick={() => router.push(`/property/buy/${b.propertyId!.id || b.propertyId!._id}`)} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#09391C] border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
                               <HomeIcon size={16} />
                               View Property
                             </button>
@@ -889,13 +913,13 @@ export default function MyInspectionRequestsPage() {
                           <div className="ml-auto">
                             <div className="relative inline-block text-left">
                               <button
-                                onClick={() => setOpenMenuId(openMenuId === b.id ? null : b.id)}
+                                onClick={() => setOpenMenuId(openMenuId === b._id ? null : b._id)}
                                 className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-3 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
                               >
                                 Actions
                               </button>
                               <AnimatePresence>
-                                {openMenuId === b.id && (
+                                {openMenuId === b._id && (
                                   <motion.div
                                     initial={{ opacity: 0, y: -8 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -1000,7 +1024,7 @@ export default function MyInspectionRequestsPage() {
                 <div className="flex justify-between"><span className="text-gray-600">Guests</span><span className="font-medium">{viewingBooking.bookingDetails?.guestNumber || 1}</span></div>
                 <div className="flex justify-between"><span className="text-gray-600">Check-in</span><span className="font-medium">{viewingBooking.bookingDetails?.checkInDateTime ? new Date(viewingBooking.bookingDetails.checkInDateTime).toLocaleString() : "-"}</span></div>
                 <div className="flex justify-between"><span className="text-gray-600">Check-out</span><span className="font-medium">{viewingBooking.bookingDetails?.checkOutDateTime ? new Date(viewingBooking.bookingDetails.checkOutDateTime).toLocaleString() : "-"}</span></div>
-                {viewingBooking.bookedBy && (
+                {/* {viewingBooking.bookedBy && (
                   <div className="pt-2 border-t">
                     <div className="text-gray-600 mb-1">Booked By</div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
@@ -1009,7 +1033,7 @@ export default function MyInspectionRequestsPage() {
                       <div className="col-span-2"><span className="text-gray-600">Email:</span> <a className="font-medium text-blue-600" href={`mailto:${viewingBooking.bookedBy.email || ""}`}>{viewingBooking.bookedBy.email || "-"}</a></div>
                     </div>
                   </div>
-                )}
+                )} */}
                 {viewingBooking.bookingDetails?.note && (
                   <div className="pt-2 border-t">
                     <div className="text-gray-600 mb-1">Guest Note</div>
@@ -1072,7 +1096,7 @@ export default function MyInspectionRequestsPage() {
                 <button disabled={isSubmittingReview} onClick={() => setReviewBooking(null)} className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">Cancel</button>
                 <button
                   disabled={isSubmittingReview}
-                  onClick={() => respondToBookingRequest(reviewBooking.id, reviewResponse, reviewNote)}
+                  onClick={() => respondToBookingRequest(reviewBooking._id, reviewResponse, reviewNote)}
                   className={`px-5 py-2 rounded-lg text-white ${reviewResponse === "available" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"} disabled:opacity-60`}
                 >
                   {isSubmittingReview ? "Submitting..." : "Submit"}
