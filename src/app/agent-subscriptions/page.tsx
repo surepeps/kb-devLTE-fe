@@ -191,10 +191,18 @@ export default function AgentSubscriptionsPage() {
 
     setIsProcessingRenewal(true);
     try {
-      const plan =
-        (plans as any).find((p: any) => p?.raw?.code === selectedSubscription.subscriptionType) ||
-        (plans as any).find((p: any) => p?.name === (selectedSubscription as any)?.plan) ||
+      // Determine plan identification from subscription (support new and old shapes)
+      const subPlanName = (selectedSubscription.plan && typeof selectedSubscription.plan === 'object')
+        ? selectedSubscription.plan.name
+        : selectedSubscription.plan || selectedSubscription.subscriptionType || selectedSubscription.meta?.appliedPlanName;
+      const subPlanCode = (selectedSubscription.plan && typeof selectedSubscription.plan === 'object')
+        ? selectedSubscription.plan.code
+        : selectedSubscription.meta?.planCode || selectedSubscription.subscriptionType;
+
+      const plan = (plans as any).find((p: any) => p?.raw?.code === subPlanCode) ||
+        (plans as any).find((p: any) => p?.name === subPlanName) ||
         plans[0];
+
       const amount = plan?.prices?.[renewalDuration] || (Object.values(plan?.prices || {})[0] as number) || 0;
 
       const payload = {
