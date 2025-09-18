@@ -36,9 +36,6 @@ import {
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 import AgreementModal from "@/components/post-property-components/AgreementModal";
 import Breadcrumb from "@/components/extrals/Breadcrumb";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { decrementFeature, selectShowCommissionFee } from "@/store/subscriptionFeaturesSlice";
-import { FEATURE_KEYS } from "@/hooks/useFeatureGate";
 
 // Preference interfaces
 interface Buyer {
