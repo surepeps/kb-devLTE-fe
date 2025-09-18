@@ -303,7 +303,7 @@ export default function DealSitePage() {
     const token = Cookies.get("token");
     const t = setTimeout(async () => {
       try {
-        const resp = await POST_REQUEST<any>(`${URLS.BASE}/dealSite/slugAvailability`, { publicSlug: sub }, token);
+        const resp = await POST_REQUEST<any>(`${URLS.BASE}/account/dealSite/slugAvailability`, { publicSlug: sub }, token);
         const available = (resp?.data?.available ?? resp?.available ?? resp?.data?.isAvailable ?? resp?.isAvailable) === true;
         if (!cancelled) {
           setSlugStatus(available ? "available" : "taken");
@@ -1118,9 +1118,16 @@ export default function DealSitePage() {
                               value={values.publicSlug}
                               onChange={(e) => {
                                 const v = e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase();
-                                handleChange({ ...e, target: { ...e.target, value: v } });
+                                const event = { target: { name: "publicSlug", value: v } }; // minimal event for Formik
+                                handleChange(event);
                                 setForm({ ...form, publicSlug: v });
                               }}
+
+                              // onChange={(e) => {
+                              //   const v = e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase();
+                              //   handleChange({ ...e, target: { ...e.target, value: v } });
+                              //   setForm({ ...form, publicSlug: v });
+                              // }}
                               disabled={slugLocked}
                               className={`${inputBase} disabled:bg-gray-100 ${errors.publicSlug && touched.publicSlug ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
                               placeholder="yourname"
@@ -1145,7 +1152,7 @@ export default function DealSitePage() {
                           )}
                         </div>
                       </div>
-
+ 
                       <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
                         <h2 className="text-lg font-semibold text-[#09391C]">Branding & SEO</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
