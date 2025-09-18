@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { X } from "lucide-react";
+import { X, Bed, Bath, SquareDashed, Car } from "lucide-react";
 import markerSVG from "@/svgs/marker.svg";
 import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "../../new-marketplace/ImageSwiper";
@@ -137,25 +137,24 @@ const StandardPropertyCard: React.FC<StandardPropertyCardProps> = ({
             })}
           </div>
 
-          {/* Bedrooms and Bathrooms */}
-          <div className="flex gap-[9px]">
-            {cardData.map((item, idx) => {
-              if (item.header === "Bedrooms") {
-                return (
-                  <h2 key={idx} className="text-xs font-normal text-[#000000]">
-                    {item.value} Bedrooms
-                  </h2>
-                );
-              }
-
-              if (item.header === "Bathrooms") {
-                return (
-                  <h2 key={idx} className="text-xs font-normal text-[#000000]">
-                    {item.value} Bathrooms
-                  </h2>
-                );
-              }
-            })}
+          {/* Quick stats with icons */}
+          <div className="flex items-center gap-4 text-[#000000]">
+            {(() => {
+              const get = (h: string) => cardData.find((i) => i.header === h)?.value as any;
+              const bedrooms = get("Bedrooms") || (property as any)?.additionalFeatures?.noOfBedroom || (property as any)?.noOfBedroom || 0;
+              const bathrooms = get("Bathrooms") || (property as any)?.additionalFeatures?.noOfBathroom || (property as any)?.noOfBathroom || 0;
+              const carParks = cardData.find((i) => i.header === "CarParks" || i.header === "Car Parks")?.value as any || (property as any)?.additionalFeatures?.noOfCarPark || (property as any)?.noOfCarPark || 0;
+              const landSize = (property as any)?.landSize?.size || (property as any)?.landSize || (property as any)?.additionalFeatures?.landSize;
+              const landUnit = (property as any)?.landSize?.measurementType || (property as any)?.landSizeType || "sqm";
+              return (
+                <>
+                  <div className="flex items-center gap-1 text-xs"><Bed size={16} /><span>{bedrooms}</span></div>
+                  <div className="flex items-center gap-1 text-xs"><Bath size={16} /><span>{bathrooms}</span></div>
+                  <div className="flex items-center gap-1 text-xs"><SquareDashed size={16} /><span>{landSize ? `${landSize} ${landUnit}` : 'N/A'}</span></div>
+                  <div className="flex items-center gap-1 text-xs"><Car size={16} /><span>{carParks}</span></div>
+                </>
+              );
+            })()}
           </div>
 
           {/* Location and View Details */}
