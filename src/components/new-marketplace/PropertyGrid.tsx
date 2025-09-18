@@ -88,26 +88,10 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
 
   // Note: Selected properties functionality removed as per requirements
 
-  // Check if we're in demo mode (properties have demo IDs)
-  const isDemoMode =
-    properties.length > 0 && properties.some((p) => p._id?.includes("demo"));
 
   return (
     <div className="w-full">
       <div className="space-y-6 mx-auto max-w-6xl">
-        {/* Demo Mode Warning */}
-        {isDemoMode && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-400 rounded-full flex-shrink-0"></div>
-              <p className="text-yellow-800 text-sm">
-                <strong>Demo Mode:</strong> Showing sample data due to server
-                connectivity issues. The marketplace functionality is working
-                normally.
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-2 xl:gap-4 justify-items-center px-2 lg:px-2">

@@ -28,6 +28,19 @@ const AboutUs = () => {
         'filter brightness-[30%] transition-all duration-500 overflow-hidden'
       }`}>
       <div className='container min-h-[1000px] flex flex-col items-center pb-[40px] overflow-hidden'>
+        {/* Hero with group image */}
+        <div className='w-full mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-center lg:px-[40px] px-[20px]'>
+          <div className='order-2 lg:order-1 text-left'>
+            <h1 className='font-display font-bold text-[28px] sm:text-[34px] lg:text-5xl leading-tight text-[#09391C]'>Building Trust, Connecting People, Delivering Value</h1>
+            <p className='mt-3 text-[#5A5D63] text-base sm:text-lg'>We simplify real estate in Nigeria through transparency, innovation and excellent service. Our mission is to help you buy, sell, rent and invest with confidence.</p>
+          </div>
+          <div className='order-1 lg:order-2'>
+            <img src='https://cdn.builder.io/api/v1/image/assets%2F6d740e04a533428db3c439f7b515da4a%2F7ca2553702214ca8aebcb7de3b3fc643?format=webp&width=800' alt='Khabiteq Realty Team' className='w-full rounded-2xl shadow-md object-cover' />
+          </div>
+        </div>
+
+        {/* Divider */}
+        <hr className='border-[1px] w-full border-[#D9D9D9] mt-8'/>
         <h2
           className={`min-h-[66px] font-semibold lg:text-4xl lg:leading-[66px] text-[30px] leading-[33px] text-[#000000] ${'slide-from-right'} font-display`}>
           About <span className='text-[#8DDB90] font-display'>Khabiteq</span>

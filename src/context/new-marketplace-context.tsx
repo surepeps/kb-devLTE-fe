@@ -553,7 +553,7 @@ export const NewMarketplaceProvider: React.FC<{
               return baseData;
             };
 
-            const demoData = getDemoData(tab);
+            const demoData: any[] = [];
             setTabProperties(tab, demoData);
             setTabPagination(tab, 1, demoData.length);
             setTabPage(tab, 1);
@@ -697,7 +697,7 @@ export const NewMarketplaceProvider: React.FC<{
             return baseData;
           };
 
-          const demoData = getDemoData(tab);
+          const demoData: any[] = [];
           setTabProperties(tab, demoData);
           setTabPagination(tab, 1, demoData.length);
           setTabPage(tab, 1);
@@ -706,18 +706,6 @@ export const NewMarketplaceProvider: React.FC<{
             couldNotFindAProperty: false,
           });
           setTabStatus(tab, "success");
-
-          // Show a toast notification about demo mode
-          setTimeout(() => {
-            if (
-              typeof window !== "undefined" &&
-              typeof window.alert === "function"
-            ) {
-              console.log(
-                "Demo Mode: Using sample data due to server connectivity issues",
-              );
-            }
-          }, 100);
 
           return;
         }
