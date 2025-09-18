@@ -1070,6 +1070,7 @@ export default function DealSitePage() {
               {setupStep === 1 && (
                 <div className="space-y-6">
                   {renderPublicDesign}
+                  {renderFooterDetails}
                   {renderTheme}
                 </div>
               )}
@@ -1148,7 +1149,12 @@ export default function DealSitePage() {
               <div className="mt-6 space-y-6">
                 {activeTab === "overview" && renderOverview}
                 {activeTab === "branding" && renderBrandingSeo}
-                {activeTab === "design" && renderPublicDesign}
+                {activeTab === "design" && (
+                  <div className="space-y-6">
+                    {renderPublicDesign}
+                    {renderFooterDetails}
+                  </div>
+                )}
                 {activeTab === "theme" && renderTheme}
                 {activeTab === "marketplace" && renderMarketplaceDefaults}
                 {activeTab === "inspection" && renderInspectionSettings}
