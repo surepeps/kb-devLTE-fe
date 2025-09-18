@@ -42,7 +42,7 @@ export default function RootLayout({
 }>) {
   if (SHOW_COMING_SOON) {
     return (
-      <Provider store={store}>
+      <ReduxWrapper>
         <UserProvider>
           <SubscriptionInitializer />
           <PageContextProvider>
@@ -64,13 +64,14 @@ export default function RootLayout({
             </CreateBriefProvider>
           </PageContextProvider>
         </UserProvider>
-      </Provider>
+      </ReduxWrapper>
     );
   }
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'google-client-id-not-configured'}>
       <ReduxWrapper>
         <UserProvider>
+          <SubscriptionInitializer />
           <NotificationProvider>
             <ModalProvider>
               <PageContextProvider>
