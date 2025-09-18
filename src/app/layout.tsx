@@ -32,8 +32,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { Provider } from 'react-redux';
-import { store } from '@/store';
+import ReduxWrapper from '@/components/providers/ReduxWrapper';
 import SubscriptionInitializer from '@/components/providers/SubscriptionInitializer';
 
 export default function RootLayout({
