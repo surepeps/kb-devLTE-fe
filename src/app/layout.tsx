@@ -32,6 +32,10 @@ export const metadata: Metadata = {
   },
 };
 
+import { Provider } from 'react-redux';
+import { store } from '@/store';
+import SubscriptionInitializer from '@/components/providers/SubscriptionInitializer';
+
 export default function RootLayout({
   children,
 }: Readonly<{
