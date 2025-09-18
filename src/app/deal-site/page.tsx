@@ -152,6 +152,8 @@ export default function DealSitePage() {
   const [saving, setSaving] = useState(false);
   const [slugLocked, setSlugLocked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [slugStatus, setSlugStatus] = useState<"idle" | "invalid" | "checking" | "available" | "taken">("idle");
+  const [slugMessage, setSlugMessage] = useState<string>("");
 
   const [form, setForm] = useState<DealSiteSettings>({
     publicSlug: "",
@@ -253,6 +255,7 @@ export default function DealSitePage() {
               featureSelection: s.featureSelection || prev.featureSelection,
               marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
               publicPage: s.publicPage || prev.publicPage,
+              footer: s.footer || prev.footer,
             }));
             if (typeof s.paused === "boolean") setIsPaused(s.paused);
             if (s.publicSlug) setSlugLocked(true);
@@ -264,6 +267,44 @@ export default function DealSitePage() {
     };
     init();
   }, []);
+
+  useEffect(() => {
+    if (!form.publicSlug || slugLocked) {
+      setSlugStatus("idle");
+      setSlugMessage("");
+      return;
+    }
+    const sub = form.publicSlug;
+    const valid = /^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/.test(sub);
+    if (!valid) {
+      setSlugStatus("invalid");
+      setSlugMessage("Use 2-63 chars: letters, numbers, hyphens. Cannot start/end with hyphen.");
+      return;
+    }
+    let cancelled = false;
+    setSlugStatus("checking");
+    setSlugMessage("Checking availability...");
+    const token = Cookies.get("token");
+    const t = setTimeout(async () => {
+      try {
+        const resp = await POST_REQUEST<any>(`${URLS.BASE}/dealSite/slugAvailability`, { publicSlug: sub }, token);
+        const available = (resp?.data?.available ?? resp?.available ?? resp?.data?.isAvailable ?? resp?.isAvailable) === true;
+        if (!cancelled) {
+          setSlugStatus(available ? "available" : "taken");
+          setSlugMessage(available ? "Subdomain is available" : "Subdomain is taken");
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setSlugStatus("taken");
+          setSlugMessage("Unable to verify. Try again.");
+        }
+      }
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [form.publicSlug, slugLocked]);
 
   useEffect(() => {
     if (activeView !== "manage") return;
