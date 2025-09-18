@@ -69,9 +69,8 @@ export default function RootLayout({
   }
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'google-client-id-not-configured'}>
-      <Provider store={store}>
+      <ReduxWrapper>
         <UserProvider>
-          <SubscriptionInitializer />
           <NotificationProvider>
             <ModalProvider>
               <PageContextProvider>
@@ -102,7 +101,7 @@ export default function RootLayout({
           </ModalProvider>
         </NotificationProvider>
         </UserProvider>
-      </Provider>
+      </ReduxWrapper>
     </GoogleOAuthProvider>
   );
 }
