@@ -38,6 +38,8 @@ import {
 import OverlayPreloader from "@/components/general-components/OverlayPreloader";
 import ModalWrapper from "@/components/general-components/modal-wrapper";
 import ConfirmationModal from "@/components/modals/confirmation-modal";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -121,6 +123,20 @@ type PropertyItem = {
 
 const STORAGE_KEY = "deal_site_settings";
 const SLUG_LOCK_KEY = "deal_site_slug_locked";
+
+const Step0Schema = Yup.object({
+  publicSlug: Yup.string()
+    .required("Public Link is required")
+    .matches(/^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/, "Invalid subdomain format"),
+  title: Yup.string().required("Title is required"),
+  keywordsText: Yup.string().required("Keywords are required"),
+  description: Yup.string().required("Description is required"),
+});
+
+const Step1Schema = Yup.object({
+  shortDescription: Yup.string().required("Footer Details is required"),
+  copyrightText: Yup.string().required("Copyright Text is required"),
+});
 
 const Tabs: React.FC<{
   tabs: { id: string; label: string; icon?: React.ReactNode }[];
@@ -1062,17 +1078,198 @@ export default function DealSitePage() {
               <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6"><Stepper steps={steps as any} /></div>
 
               {setupStep === 0 && (
-                <div className="space-y-6">
-                  {renderPublicLink}
-                  {renderBrandingSeo}
-                </div>
+                <Formik
+                  initialValues={{
+                    publicSlug: form.publicSlug,
+                    title: form.title,
+                    keywordsText: form.keywords.join(", "),
+                    description: form.description,
+                  }}
+                  validationSchema={Step0Schema}
+                  onSubmit={(values) => {
+                    const cleanedSlug = values.publicSlug.replace(/[^a-z0-9-]/g, '').toLowerCase();
+                    setForm((prev) => ({
+                      ...prev,
+                      publicSlug: cleanedSlug,
+                      title: values.title,
+                      keywords: values.keywordsText.split(',').map((k) => k.trim()).filter(Boolean),
+                      description: values.description,
+                    }));
+                    setSetupStep(1);
+                  }}
+                >
+                  {({ values, errors, touched, handleChange, isValid, isSubmitting }) => (
+                    <Form className="space-y-6">
+                      <div className="bg-white rounded-lg border border-gray-200 p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h2 className="text-lg font-semibold text-[#09391C] flex items-center gap-2"><LinkIcon size={18} /> Public Link</h2>
+                          {slugLocked && (
+                            <div className="inline-flex items-center gap-1 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded">
+                              <ShieldCheck size={14} /> Locked
+                            </div>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 gap-3">
+                          <label className="text-sm text-gray-700">Enter your subdomain (can be set once)</label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              name="publicSlug"
+                              value={values.publicSlug}
+                              onChange={(e) => {
+                                const v = e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase();
+                                handleChange({ ...e, target: { ...e.target, value: v } });
+                                setForm({ ...form, publicSlug: v });
+                              }}
+                              disabled={slugLocked}
+                              className={`${inputBase} disabled:bg-gray-100 ${errors.publicSlug && touched.publicSlug ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                              placeholder="yourname"
+                              required
+                            />
+                            <span className="text-sm text-gray-500 whitespace-nowrap">.khabiteq.com</span>
+                          </div>
+                          {!slugLocked && form.publicSlug && (
+                            <div className={`text-xs ${slugStatus === 'available' ? 'text-emerald-700' : slugStatus === 'taken' || slugStatus === 'invalid' ? 'text-red-600' : 'text-gray-600'}`}>
+                              {slugMessage}
+                            </div>
+                          )}
+                          {previewUrl && (
+                            <div className="flex items-center gap-2 text-sm text-emerald-700">
+                              <a href={previewUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1">
+                                Preview: {previewUrl} <ExternalLink size={14} />
+                              </a>
+                              <button type="button" onClick={copyLink} className="inline-flex items-center gap-1 text-emerald-700">
+                                <Copy size={14} /> Copy
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+                        <h2 className="text-lg font-semibold text-[#09391C]">Branding & SEO</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Title</label>
+                            <input
+                              type="text"
+                              name="title"
+                              value={values.title}
+                              onChange={(e) => { handleChange(e); setForm({ ...form, title: e.target.value }); }}
+                              className={`${inputBase} ${errors.title && touched.title ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                              placeholder="Page title"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Keywords (comma separated)</label>
+                            <input
+                              type="text"
+                              name="keywordsText"
+                              value={values.keywordsText}
+                              onChange={(e) => { handleChange(e); setForm({ ...form, keywords: e.target.value.split(',').map((k) => k.trim()).filter(Boolean) }); }}
+                              className={`${inputBase} ${errors.keywordsText && touched.keywordsText ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                              placeholder="agent, real estate, listings"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-700 mb-1">Description</label>
+                          <textarea
+                            name="description"
+                            value={values.description}
+                            onChange={(e) => { handleChange(e); setForm({ ...form, description: e.target.value }); }}
+                            className={`${inputBase} min-h-[100px] ${errors.description && touched.description ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            placeholder="Tell visitors about you"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-700 mb-2">Logo</label>
+                          {form.logoUrl ? (
+                            <div className="flex items-center gap-3">
+                              <img src={form.logoUrl} alt="Logo" className="h-12 w-12 rounded border object-contain bg-white" />
+                              <button type="button" onClick={() => setForm({ ...form, logoUrl: "" })} className="px-3 py-2 text-sm border rounded-lg inline-flex items-center gap-2">
+                                <Trash2 size={16} /> Remove
+                              </button>
+                            </div>
+                          ) : (
+                            <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadLogo(e.target.files[0])} />
+                              <ImageIcon size={16} /> <span className="text-gray-600">Drag & drop or click to upload</span>
+                            </label>
+                          )}
+                        </div>
+
+                        <div className="pt-2 flex justify-end">
+                          <button
+                            type="submit"
+                            disabled={!isValid || isSubmitting || (!slugLocked && slugStatus !== 'available')}
+                            className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg disabled:opacity-60"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
               )}
               {setupStep === 1 && (
-                <div className="space-y-6">
-                  {renderPublicDesign}
-                  {renderFooterDetails}
-                  {renderTheme}
-                </div>
+                <Formik
+                  initialValues={{
+                    shortDescription: form.footer?.shortDescription || '',
+                    copyrightText: form.footer?.copyrightText || '',
+                  }}
+                  validationSchema={Step1Schema}
+                  onSubmit={(values) => {
+                    setForm((prev) => ({ ...prev, footer: { shortDescription: values.shortDescription, copyrightText: values.copyrightText } }));
+                    setSetupStep(2);
+                  }}
+                >
+                  {({ values, errors, touched, handleChange, isValid, isSubmitting }) => (
+                    <Form className="space-y-6">
+                      {renderPublicDesign}
+
+                      <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+                        <h2 className="text-lg font-semibold text-[#09391C]">Footer Details</h2>
+                        <div className="grid grid-cols-1 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Short Description</label>
+                            <textarea
+                              name="shortDescription"
+                              value={values.shortDescription}
+                              onChange={(e) => { handleChange(e); setForm({ ...form, footer: { ...(form.footer || { shortDescription: '', copyrightText: '' }), shortDescription: e.target.value } }); }}
+                              className={`${inputBase} min-h-[80px] ${errors.shortDescription && touched.shortDescription ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                              placeholder="Brief description shown in the footer"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Copyright Text</label>
+                            <input
+                              type="text"
+                              name="copyrightText"
+                              value={values.copyrightText}
+                              onChange={(e) => { handleChange(e); setForm({ ...form, footer: { ...(form.footer || { shortDescription: '', copyrightText: '' }), copyrightText: e.target.value } }); }}
+                              className={`${inputBase} ${errors.copyrightText && touched.copyrightText ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                              placeholder="© 2025 Your Name. All rights reserved."
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-2 flex justify-end">
+                          <button
+                            type="submit"
+                            disabled={!isValid || isSubmitting}
+                            className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg disabled:opacity-60"
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </div>
+
+                      {renderTheme}
+                    </Form>
+                  )}
+                </Formik>
               )}
               {setupStep === 2 && (
                 <div className="space-y-6">
@@ -1106,13 +1303,15 @@ export default function DealSitePage() {
                 </button>
 
                 {setupStep < 3 ? (
-                  <button
-                    type="button"
-                    onClick={() => setSetupStep((s) => Math.min(3, s + 1))}
-                    className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg"
-                  >
-                    Next
-                  </button>
+                  (setupStep === 0 || setupStep === 1) ? null : (
+                    <button
+                      type="button"
+                      onClick={() => setSetupStep((s) => Math.min(3, s + 1))}
+                      className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg"
+                    >
+                      Next
+                    </button>
+                  )
                 ) : (
                   <button
                     onClick={() => onSubmit()}
