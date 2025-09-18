@@ -109,17 +109,24 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
             })}
           </div>
 
-          {/* Property Details */}
-          <div className="flex gap-[9px]">
-            {cardData.map((item, idx) => {
-              if (item.header === "Bedrooms") {
-                return (
-                  <h2 key={idx} className="text-xs font-normal text-[#000000]">
-                    {item.value} Bedrooms
-                  </h2>
-                );
-              }
-            })}
+          {/* Quick stats with icons */}
+          <div className="flex items-center gap-4 text-[#000000]">
+            {(() => {
+              const get = (h: string) => cardData.find((i) => i.header === h)?.value as any;
+              const bedrooms = get("Bedrooms") || (property as any)?.additionalFeatures?.noOfBedroom || (property as any)?.noOfBedroom || 0;
+              const bathrooms = get("Bathrooms") || (property as any)?.additionalFeatures?.noOfBathroom || (property as any)?.noOfBathroom || 0;
+              const carParks = cardData.find((i) => i.header === "CarParks" || i.header === "Car Parks")?.value as any || (property as any)?.additionalFeatures?.noOfCarPark || (property as any)?.noOfCarPark || 0;
+              const landSize = (property as any)?.landSize?.size || (property as any)?.landSize || (property as any)?.additionalFeatures?.landSize;
+              const landUnit = (property as any)?.landSize?.measurementType || (property as any)?.landSizeType || "sqm";
+              return (
+                <>
+                  <div className="flex items-center gap-1 text-xs"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7h18"/><path d="M6 7v10"/><path d="M18 7v10"/><path d="M6 17h12"/></svg><span>{bedrooms}</span></div>
+                  <div className="flex items-center gap-1 text-xs"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10h18"/><path d="M7 10v-2a5 5 0 0 1 10 0v2"/><path d="M5 16h14"/></svg><span>{bathrooms}</span></div>
+                  <div className="flex items-center gap-1 text-xs"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg><span>{landSize ? `${landSize} ${landUnit}` : 'N/A'}</span></div>
+                  <div className="flex items-center gap-1 text-xs"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 16v-2a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v2"/><circle cx="7.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg><span>{carParks}</span></div>
+                </>
+              );
+            })()}
           </div>
 
           {/* Investment Type */}
