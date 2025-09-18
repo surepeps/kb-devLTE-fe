@@ -105,6 +105,11 @@ export const URLS = {
   getAgentStats: "/agent/stats",
 
   /**
+   * Features Catalog
+   */
+  featuresGetAll: "/features/getAll",
+
+  /**
    * Third Party Verification Endpoints
    */
   thirdPartyVerificationBaseUrl: "/third-party",

@@ -527,6 +527,7 @@ const PostPropertyByPreference = () => {
     fetchAndPopulatePreference();
   }, [fetchAndPopulatePreference]);
 
+
   const steps = [
     {
       label: "Property Type",

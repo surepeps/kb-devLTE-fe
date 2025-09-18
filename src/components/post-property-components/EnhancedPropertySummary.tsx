@@ -37,7 +37,18 @@ const EnhancedPropertySummary: React.FC = () => {
   );
 
   const handleProceedToCommission = () => {
-    setShowPropertySummary(false);
+    // If plan has NO_COMMISSION_FEES, skip modal and submit directly via a global event
+    try {
+      const evtName = 'khabiteq:submit-property';
+      const hasNoCommission = typeof window !== 'undefined' && (window as any).__khabiteq_no_commission__ === true;
+      setShowPropertySummary(false);
+      if (hasNoCommission) {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event(evtName));
+        }
+        return;
+      }
+    } catch {}
     setShowCommissionModal(true);
   };
 

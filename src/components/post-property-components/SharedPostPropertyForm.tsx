@@ -34,6 +34,9 @@ import {
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 import AgreementModal from "@/components/post-property-components/AgreementModal";
 import Breadcrumb from "@/components/extrals/Breadcrumb";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { decrementFeature, selectShowCommissionFee } from "@/store/subscriptionFeaturesSlice";
+import { FEATURE_KEYS } from "@/hooks/useFeatureGate";
 
 interface SharedPostPropertyFormProps {
   propertyType: "sell" | "rent" | "jv" | "shortlet";
@@ -236,6 +239,8 @@ const SharedPostPropertyForm: React.FC<SharedPostPropertyFormProps> = ({
   pageDescription,
 }) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const showCommissionFee = useAppSelector(selectShowCommissionFee);
   const { user } = useUserContext();
   const {
     currentStep,
@@ -262,6 +267,26 @@ const SharedPostPropertyForm: React.FC<SharedPostPropertyFormProps> = ({
   useEffect(() => {
     updatePropertyData("initializePropertyType", propertyType);
   }, [propertyType, updatePropertyData]);
+
+  // Bridge Redux flag to summary component via window variable
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      (window as any).__khabiteq_no_commission__ = !showCommissionFee;
+    }
+  }, [showCommissionFee]);
+
+  // Allow EnhancedPropertySummary to trigger submit directly when no commission
+  useEffect(() => {
+    const handler = () => handleSubmit();
+    if (typeof window !== "undefined") {
+      window.addEventListener("khabiteq:submit-property", handler);
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("khabiteq:submit-property", handler);
+      }
+    };
+  }, []);
 
   // Scroll to top on page load
   useEffect(() => {
@@ -542,6 +567,8 @@ const SharedPostPropertyForm: React.FC<SharedPostPropertyFormProps> = ({
 
       if (response.success) {
         toast.success("Property created successfully!");
+        // Decrease LISTINGS usage on success
+        dispatch(decrementFeature({ key: FEATURE_KEYS.LISTINGS, amount: 1 }));
         resetForm();
         setShowSuccessModal(true);
       } else {
