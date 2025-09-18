@@ -366,66 +366,74 @@ export default function AgentSubscriptionsPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {subscriptions.map((subscription: any) => (
-                  <div key={subscription._id} className="bg-white rounded-lg border border-gray-200 p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {subscription.plan}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(subscription.status)}
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(subscription.status)}`}>
-                          {subscription.status}
-                        </span>
+                {subscriptions.map((subscription: any) => {
+                  // Normalize fields to support both old and new API shapes
+                  const planObj = subscription.plan && typeof subscription.plan === 'object' ? subscription.plan : (subscription.plan || null);
+                  const planName = planObj?.name || subscription.plan || subscription.subscriptionType || subscription.planName || (subscription.meta && subscription.meta.appliedPlanName) || '-';
+                  const planCode = planObj?.code || subscription.plan?.code || subscription.subscriptionType || subscription.meta?.planCode || subscription.meta?.planCode;
+                  const startDateRaw = subscription.startedAt || subscription.startDate || subscription.startedAt || null;
+                  const endDateRaw = subscription.expiresAt || subscription.endDate || subscription.endsAt || null;
+                  const amount = subscription.transaction?.amount || subscription.amount || 0;
+                  const txnRef = subscription.transaction?._id || subscription.transaction?.reference || subscription.transaction?.id || '-';
+                  const txnStatus = subscription.transaction?.status || subscription.status || '-';
+
+                  return (
+                    <div key={subscription._id || subscription.id} className="bg-white rounded-lg border border-gray-200 p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900">{planName}</h3>
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(subscription.status)}
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(subscription.status)}`}>
+                            {subscription.status}
+                          </span>
+                        </div>
                       </div>
+
+                      <div className="space-y-3 mb-6">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">Start Date:</span>
+                          <span className="font-medium">{startDateRaw ? format(new Date(startDateRaw), 'MMM d, yyyy') : '-'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">End Date:</span>
+                          <span className="font-medium">{endDateRaw ? format(new Date(endDateRaw), 'MMM d, yyyy') : '-'}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-500">Amount:</span>
+                          <span className="font-medium">₦{Number(amount || 0).toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      <div className="mb-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Transaction</h4>
+                        <div className="text-xs text-gray-600">Ref: {txnRef} • {txnStatus}</div>
+                      </div>
+
+                      {subscription.status === 'active' && (
+                        <button
+                          onClick={() => {
+                            setSelectedSubscription(subscription);
+                            setShowRenewalModal(true);
+                          }}
+                          className="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <RefreshCw size={16} />
+                          Renew Subscription
+                        </button>
+                      )}
+
+                      {subscription.status === 'expired' && (
+                        <button
+                          onClick={() => setActiveTab('plans')}
+                          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <Plus size={16} />
+                          Subscribe Again
+                        </button>
+                      )}
                     </div>
-
-                    <div className="space-y-3 mb-6">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Start Date:</span>
-                        <span className="font-medium">{subscription.startDate ? format(new Date(subscription.startDate), 'MMM d, yyyy') : '-'}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">End Date:</span>
-                        <span className="font-medium">{subscription.endDate ? format(new Date(subscription.endDate), 'MMM d, yyyy') : '-'}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Amount:</span>
-                        <span className="font-medium">₦{(subscription.transaction?.amount || subscription.amount || 0).toLocaleString()}</span>
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Transaction</h4>
-                      <div className="text-xs text-gray-600">
-                        Ref: {subscription.transaction?._id || subscription.transaction?.reference || '-'} • {subscription.transaction?.status || '-'}
-                      </div>
-                    </div>
-
-                    {subscription.status === 'active' && (
-                      <button
-                        onClick={() => {
-                          setSelectedSubscription(subscription);
-                          setShowRenewalModal(true);
-                        }}
-                        className="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                      >
-                        <RefreshCw size={16} />
-                        Renew Subscription
-                      </button>
-                    )}
-
-                    {subscription.status === 'expired' && (
-                      <button
-                        onClick={() => setActiveTab('plans')}
-                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                      >
-                        <Plus size={16} />
-                        Subscribe Again
-                      </button>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
