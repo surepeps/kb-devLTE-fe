@@ -11,6 +11,10 @@ export interface AgentSubscription {
   amount: number;
   features: string[];
   transactionReference?: string;
+  plan?: {
+    name?: string;
+    code?: string;
+  };
   paymentDetails?: {
     reference: string;
     gateway: string;
@@ -27,6 +31,10 @@ export interface AgentSubscription {
   };
   createdAt: string;
   updatedAt: string;
+  meta?: {
+    planCode?: string;
+    appliedPlanName?: string;
+  };
 }
 
 export interface SubscriptionPlan {
