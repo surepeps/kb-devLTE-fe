@@ -589,11 +589,15 @@ const ActionButtons = ({
   onInspection,
   onNegotiation,
   isSelected,
+  onBookNow,
+  onRequestToBook,
 }: {
   details: PropertyDetails;
   onInspection: () => void;
   onNegotiation: () => void;
   isSelected: boolean;
+  onBookNow?: () => void;
+  onRequestToBook?: () => void;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -621,6 +625,8 @@ const ActionButtons = ({
     }
   };
 
+  const isShortlet = details.briefType === "Shortlet" || (details as any).propertyType === "Shortlet";
+
   return (
     <div className="space-y-4">
       {/* Price */}
@@ -641,26 +647,45 @@ const ActionButtons = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          onClick={onInspection}
-          className={`flex-1 font-semibold py-3 px-4 whitespace-nowrap text-sm rounded-xl transition-colors duration-200 flex items-center justify-center ${
-            isSelected
-              ? "bg-red-600 hover:bg-red-700 text-white"
-              : "bg-green-600 hover:bg-green-700 text-white"
-          }`}
-        >
-          <Eye className="w-5 h-5 mr-2" />
-          {isSelected ? "Remove" : "Add to Inspection"}
-        </button>
-        <button
-          onClick={onNegotiation}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 whitespace-nowrap text-sm text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center"
-        >
-          <ExternalLink className="w-5 h-5 mr-2" />
-          Price Negotiation
-        </button>
-      </div>
+      {isShortlet ? (
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            type="button"
+            onClick={onBookNow}
+            className="flex-1 min-h-[44px] py-3 px-4 bg-[#0B423D] text-white text-sm font-bold rounded-xl hover:bg-[#09391C] transition-colors flex items-center justify-center"
+          >
+            Book Now
+          </button>
+          <button
+            type="button"
+            onClick={onRequestToBook}
+            className="flex-1 min-h-[44px] py-3 px-4 bg-[#1976D2] text-white text-sm font-bold rounded-xl hover:bg-[#1565C0] transition-colors flex items-center justify-center"
+          >
+            Request to Book
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={onInspection}
+            className={`flex-1 font-semibold py-3 px-4 whitespace-nowrap text-sm rounded-xl transition-colors duration-200 flex items-center justify-center ${
+              isSelected
+                ? "bg-red-600 hover:bg-red-700 text-white"
+                : "bg-green-600 hover:bg-green-700 text-white"
+            }`}
+          >
+            <Eye className="w-5 h-5 mr-2" />
+            {isSelected ? "Remove" : "Add to Inspection"}
+          </button>
+          <button
+            onClick={onNegotiation}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 whitespace-nowrap text-sm text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center"
+          >
+            <ExternalLink className="w-5 h-5 mr-2" />
+            Price Negotiation
+          </button>
+        </div>
+      )}
 
       {/* Secondary Actions */}
       <div className="flex gap-3">
@@ -1042,35 +1067,11 @@ const ProductDetailsPage = () => {
                 onInspection={handleInspection}
                 onNegotiation={handleNegotiation}
                 isSelected={isSelectedForInspection(details._id)}
+                onBookNow={() => setBookingModal({ isOpen: true, mode: "instant" })}
+                onRequestToBook={() => setBookingModal({ isOpen: true, mode: "request" })}
               />
             </motion.div>
 
-            {/* Shortlet Booking Actions */}
-            {(details.briefType === "Shortlet" || (details as any).propertyType === "Shortlet") && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.25 }}
-                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm"
-              >
-                <div className="flex flex-col gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setBookingModal({ isOpen: true, mode: "instant" })}
-                    className="min-h-[40px] py-[8px] px-[16px] bg-[#0B423D] text-white text-sm font-bold rounded hover:bg-[#09391C] transition-colors"
-                  >
-                    Book Now
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBookingModal({ isOpen: true, mode: "request" })}
-                    className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-white text-sm font-bold rounded hover:bg-[#1565C0] transition-colors"
-                  >
-                    Request to Book
-                  </button>
-                </div>
-              </motion.div>
-            )}
 
             {/* Property Information */}
             <motion.div
