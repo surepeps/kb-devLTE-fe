@@ -726,6 +726,33 @@ export default function DealSitePage() {
     </div>
   );
 
+  const renderFooterDetails = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+      <h2 className="text-lg font-semibold text-[#09391C]">Footer Details</h2>
+      <div className="grid grid-cols-1 gap-4">
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Short Description</label>
+          <textarea
+            value={form.footer?.shortDescription || ''}
+            onChange={(e) => setForm({ ...form, footer: { ...(form.footer || { shortDescription: '', copyrightText: '' }), shortDescription: e.target.value } })}
+            className={`${inputBase} min-h-[80px]`}
+            placeholder="Brief description shown in the footer"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Copyright Text</label>
+          <input
+            type="text"
+            value={form.footer?.copyrightText || ''}
+            onChange={(e) => setForm({ ...form, footer: { ...(form.footer || { shortDescription: '', copyrightText: '' }), copyrightText: e.target.value } })}
+            className={inputBase}
+            placeholder="© 2025 Your Name. All rights reserved."
+          />
+        </div>
+      </div>
+    </div>
+  );
+
   const renderMarketplaceDefaults = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Marketplace Defaults</h2>
