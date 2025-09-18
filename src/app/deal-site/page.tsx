@@ -621,19 +621,24 @@ export default function DealSitePage() {
         )}
       </div>
       <div className="grid grid-cols-1 gap-3">
-        <label className="text-sm text-gray-700">Choose your public link (can be set once)</label>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <span className="text-sm text-gray-500">/pv-account/</span>
+        <label className="text-sm text-gray-700">Enter your subdomain (can be set once)</label>
+        <div className="flex items-center gap-2">
           <input
             type="text"
             value={form.publicSlug}
-            onChange={(e) => setForm({ ...form, publicSlug: e.target.value.replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase() })}
+            onChange={(e) => setForm({ ...form, publicSlug: e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase() })}
             disabled={slugLocked}
-            className={`${inputBase} disabled:bg-gray-100 flex-1`}
-            placeholder="your-name"
+            className={`${inputBase} disabled:bg-gray-100`}
+            placeholder="yourname"
             required
           />
+          <span className="text-sm text-gray-500 whitespace-nowrap">.khabiteq.com</span>
         </div>
+        {!slugLocked && form.publicSlug && (
+          <div className={`text-xs ${slugStatus === 'available' ? 'text-emerald-700' : slugStatus === 'taken' || slugStatus === 'invalid' ? 'text-red-600' : 'text-gray-600'}`}>
+            {slugMessage}
+          </div>
+        )}
         {previewUrl && (
           <div className="flex items-center gap-2 text-sm text-emerald-700">
             <a href={previewUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1">
