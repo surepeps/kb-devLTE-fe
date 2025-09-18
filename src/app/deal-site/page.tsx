@@ -172,8 +172,7 @@ export default function DealSitePage() {
 
   const previewUrl = useMemo(() => {
     if (!form.publicSlug) return "";
-    if (typeof window === "undefined") return "";
-    return `${window.location.origin}/pv-account/${form.publicSlug}`;
+    return `https://${form.publicSlug}.khabiteq.com`;
   }, [form.publicSlug]);
 
   // Analytics state
