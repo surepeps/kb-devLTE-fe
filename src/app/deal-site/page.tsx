@@ -84,6 +84,11 @@ interface InspectionDesignSettings {
   negotiationEnabled?: boolean;
 }
 
+interface FooterDetails {
+  shortDescription: string;
+  copyrightText: string;
+}
+
 interface DealSiteSettings {
   publicSlug: string;
   title: string;
@@ -98,6 +103,7 @@ interface DealSiteSettings {
   featureSelection: FeatureSelection;
   marketplaceDefaults: MarketplaceDefaults;
   publicPage: PublicPageDesign;
+  footer?: FooterDetails;
 }
 
 type PropertyItem = {
