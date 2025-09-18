@@ -1,5 +1,5 @@
 "use client";
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { decrementFeature, selectCanUseFeature, selectFeatureEntry } from '@/store/subscriptionFeaturesSlice';
 
 export const FEATURE_KEYS = {
