@@ -373,6 +373,17 @@ export default function DealSitePage() {
       toast.error("Please set your public link");
       return;
     }
+    if (!slugLocked) {
+      const valid = /^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/.test(form.publicSlug);
+      if (!valid) {
+        toast.error("Invalid subdomain format");
+        return;
+      }
+      if (slugStatus !== "available") {
+        toast.error("Subdomain not available");
+        return;
+      }
+    }
     setSaving(true);
     try {
       const token = Cookies.get("token");
@@ -383,6 +394,7 @@ export default function DealSitePage() {
           ...form.contactVisibility,
           whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
         },
+        footer: form.footer || { shortDescription: "", copyrightText: "" },
       };
 
       if (!slugLocked) {
