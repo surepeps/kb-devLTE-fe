@@ -154,20 +154,20 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   // Disable full calendar days that fall within booked intervals (checkout day becomes available)
   const disabledDateIntervals = useMemo(() => {
     return bookedIntervals
-      .map(({ start, end }) => {
+      .map(({ start, end }: { start: string | Date; end: string | Date }) => {
         const s = new Date(start); s.setHours(0, 0, 0, 0);
         const e = new Date(end);
         const eAdj = new Date(e); eAdj.setDate(eAdj.getDate() - 1); eAdj.setHours(23, 59, 59, 999);
         return { start: s, end: eAdj };
       })
-      .filter((r) => r.start <= r.end);
+      .filter((r: any) => r.start <= r.end);
   }, [bookedIntervals]);
 
   const hasOverlapWithBooked = (start?: Date | null, end?: Date | null) => {
     if (!start || !end) return false;
     const s = start;
     const e = end;
-    return bookedIntervals.some(({ start: bs, end: be }) => s < be && e > bs);
+    return bookedIntervals.some(({ start: bs, end: be }: { start: Date; end: Date }) => s < be && e > bs);
   };
 
   // Validation schemas per step
@@ -569,7 +569,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                     <div className="md:col-span-2 bg-red-50 rounded-lg p-3 border border-red-200 text-red-800">
                       <p className="text-sm font-semibold mb-1">Some dates are unavailable</p>
                       <ul className="text-xs list-disc pl-5 space-y-0.5 max-h-24 overflow-auto">
-                        {bookedIntervals.map((b, i) => (
+                        {bookedIntervals.map((b: { start: string | Date; end: string | Date }, i: any) => (
                           <li key={i}>
                             {new Date(b.start).toLocaleString()} - {new Date(b.end).toLocaleString()}
                           </li>
