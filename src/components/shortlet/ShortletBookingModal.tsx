@@ -267,7 +267,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
         );
 
         if (mode === "request") {
-          setSuccessOpen(true);
+          onClose();
           return;
         }
 
@@ -281,15 +281,15 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
           null;
 
         if (authUrl && typeof authUrl === "string") {
-          setRedirecting(true);
-          // Small delay to render the modal before leaving the page
+          onClose();
           setTimeout(() => {
             window.location.href = authUrl as string;
-          }, 100);
+          }, 50);
           return;
         }
 
         const q = new URLSearchParams({ amount: String(total || 0), purpose: "shortlet-booking" });
+        onClose();
         router.push(`/payment-details?${q.toString()}`);
       } catch {}
     },
