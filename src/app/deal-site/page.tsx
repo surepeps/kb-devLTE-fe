@@ -284,6 +284,52 @@ export default function DealSitePage() {
     init();
   }, []);
 
+  // Load existing deal site from profile response if available
+  useEffect(() => {
+    const ds = (user as any)?.dealSite?.[0];
+    if (!ds) return;
+
+    setForm((prev) => ({
+      ...prev,
+      publicSlug: ds.publicSlug || prev.publicSlug,
+      title: ds.title || prev.title,
+      keywords: Array.isArray(ds.keywords) ? ds.keywords : prev.keywords,
+      description: ds.description || prev.description,
+      logoUrl: ds.logoUrl || prev.logoUrl,
+      theme: {
+        primaryColor: ds.theme?.primaryColor || prev.theme.primaryColor,
+        secondaryColor: ds.theme?.secondaryColor || prev.theme.secondaryColor,
+      },
+      inspectionSettings: {
+        allowPublicBooking: ds.inspectionSettings?.allowPublicBooking ?? prev.inspectionSettings.allowPublicBooking,
+        defaultInspectionFee: ds.inspectionSettings?.defaultInspectionFee ?? prev.inspectionSettings.defaultInspectionFee,
+        inspectionStatus: ds.inspectionSettings?.inspectionStatus ?? prev.inspectionSettings.inspectionStatus,
+        negotiationEnabled: ds.inspectionSettings?.negotiationEnabled ?? prev.inspectionSettings.negotiationEnabled,
+      },
+      listingsLimit: typeof ds.listingsLimit === "number" ? ds.listingsLimit : prev.listingsLimit,
+      socialLinks: ds.socialLinks || prev.socialLinks,
+      contactVisibility: ds.contactVisibility || prev.contactVisibility,
+      featureSelection: ds.featureSelection || prev.featureSelection,
+      marketplaceDefaults: ds.marketplaceDefaults || prev.marketplaceDefaults,
+      publicPage: {
+        heroTitle: ds.publicPage?.heroTitle || prev.publicPage.heroTitle,
+        heroSubtitle: ds.publicPage?.heroSubtitle || prev.publicPage.heroSubtitle,
+        ctaText: ds.publicPage?.ctaText || prev.publicPage.ctaText,
+        ctaLink: ds.publicPage?.ctaLink || prev.publicPage.ctaLink,
+        heroImageUrl: ds.publicPage?.heroImage || prev.publicPage.heroImageUrl,
+      },
+      footer: {
+        shortDescription: ds.footerSection?.shortDesc || prev.footer?.shortDescription || "",
+        copyrightText: ds.footerSection?.copyRight || prev.footer?.copyrightText || "",
+      },
+    }));
+
+    if (ds.publicSlug && !slugLocked) {
+      setSlugLocked(true);
+      try { localStorage.setItem(SLUG_LOCK_KEY, "true"); } catch {}
+    }
+  }, [user, slugLocked]);
+
   useEffect(() => {
     if (!form.publicSlug || slugLocked) {
       setSlugStatus("idle");
