@@ -865,12 +865,12 @@ const ProductDetailsPage = () => {
 
       toggleInspectionSelection(details, sourceTab, "property-details");
 
-      // Check if now selected for inspection
-      if (isSelectedForInspection(details._id)) {
-        toast.success("Property added to inspection");
-      } else {
-        toast.success("Property removed from inspection");
-      }
+      // // Check if now selected for inspection
+      // if (isSelectedForInspection(details._id)) {
+      //   toast.success("Property added to inspection");
+      // } else {
+      //   toast.success("Property removed from inspection");
+      // }
     }
   };
 
