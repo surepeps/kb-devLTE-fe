@@ -221,21 +221,44 @@ export default function AgentDashboard() {
         </div>
 
         {/* Account Badges */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="mb-4 space-y-2">
           {(() => {
             const sub = (user as any)?.activeSubscription;
             const isVerified = !!(user as any)?.isAccountVerified;
-            const daysLeft = sub?.endDate ? Math.max(0, Math.ceil((new Date(sub.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
+            const startISO = sub?.startedAt || sub?.startDate || null;
+            const endISO = sub?.expiresAt || sub?.endDate || null;
+            const daysLeft = endISO ? Math.max(0, Math.ceil((new Date(endISO).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
+            const planName = sub?.meta?.appliedPlanName || sub?.meta?.planType || sub?.plan || '—';
+            const planCode = sub?.meta?.planCode || '';
+            const statusLabel = sub?.status ? sub.status.charAt(0).toUpperCase() + sub.status.slice(1) : '—';
+            const autoRenew = sub?.autoRenew === true;
+
             return (
               <>
-                {sub?.plan && sub?.status === 'active' && (
-                  <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-medium">
-                    Plan: {sub.plan} • {daysLeft} days left
-                  </span>
+                {sub && (
+                  <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-900">
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-2 text-sm">
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-xs font-semibold">{planName}</span>
+                        {planCode && <span className="px-2 py-0.5 rounded-full bg-white text-emerald-800 border border-emerald-200 text-xs">{planCode}</span>}
+                        <span className="px-2 py-0.5 rounded-full bg-white text-emerald-800 border border-emerald-200 text-xs">{statusLabel}</span>
+                        {typeof daysLeft === 'number' && endISO && (
+                          <span className="text-xs">{daysLeft} day{daysLeft === 1 ? '' : 's'} left</span>
+                        )}
+                      </div>
+                      <div className="mt-1 text-xs text-emerald-800">
+                        {startISO && <span>Started: {new Date(startISO).toLocaleDateString()} • </span>}
+                        {endISO && <span>Expires: {new Date(endISO).toLocaleDateString()}</span>}
+                        {typeof autoRenew === 'boolean' && <span> • Auto-renew: {autoRenew ? 'On' : 'Off'}</span>}
+                      </div>
+                    </div>
+                    <Link href="/agent-subscriptions" className="px-3 py-1.5 bg-emerald-600 text-white rounded hover:bg-emerald-700 text-xs font-medium">Manage</Link>
+                  </div>
                 )}
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${isVerified ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'}`}>
+                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${isVerified ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${isVerified ? 'bg-blue-600' : 'bg-gray-400'}`}></span>
                   {isVerified ? 'Verified account' : 'Unverified account'}
-                </span>
+                </div>
               </>
             );
           })()}
@@ -243,12 +266,12 @@ export default function AgentDashboard() {
 
         {/* Notices */}
         {(() => {
-          const isKycCompleted = !!((user as any)?.verificationStatus?.kycCompleted || (user as any)?.agentVerificationData?.kycCompleted);
+          const isKycApproved = ((user as any)?.agentData?.kycStatus === 'approved') || ((user as any)?.verificationStatus?.kycCompleted) || ((user as any)?.agentVerificationData?.kycCompleted);
           const hasActiveSub = !!((user as any)?.activeSubscription && (user as any)?.activeSubscription.status === 'active');
           const freeDays = 7;
           return (
             <div className="space-y-3 mb-4">
-              {!isKycCompleted && (
+              {!isKycApproved && (
                 <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg">
                   <div>Enjoy free {freeDays} days premium by completing your agent KYC verification.</div>
                   <Link href="/agent-kyc" className="px-3 py-1.5 bg-emerald-600 text-white rounded hover:bg-emerald-700 text-sm">Complete KYC</Link>
