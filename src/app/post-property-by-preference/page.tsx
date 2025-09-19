@@ -36,6 +36,9 @@ import {
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
 import AgreementModal from "@/components/post-property-components/AgreementModal";
 import Breadcrumb from "@/components/extrals/Breadcrumb";
+import { useAppSelector } from "@/store/hooks";
+import { selectFeatureEntry } from "@/store/subscriptionFeaturesSlice";
+import { FEATURE_KEYS } from "@/hooks/useFeatureGate";
 
 // Preference interfaces
 interface Buyer {
@@ -868,6 +871,15 @@ const PostPropertyByPreference = () => {
     );
   }
 
+  const listingsEntry = useAppSelector(selectFeatureEntry(FEATURE_KEYS.LISTINGS));
+  const quotaText = listingsEntry
+    ? (listingsEntry.type === 'unlimited' || listingsEntry.remaining === -1)
+      ? 'Unlimited'
+      : (listingsEntry.type === 'count')
+        ? `${Math.max(0, Number(listingsEntry.remaining || 0))} remaining`
+        : (Number(listingsEntry.value) === 1 ? 'Enabled' : 'Disabled')
+    : '—';
+
   if (!user) {
     return <Loading />;
   }
@@ -889,9 +901,14 @@ const PostPropertyByPreference = () => {
 
           {/* Header */}
           <div className="text-center mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-2 md:mb-4">
               Submit Property for Buyer Preference
             </h1>
+            <div className="mb-3">
+              <span className="inline-flex items-center rounded-full bg-[#EEF1F1] text-[#09391C] text-xs md:text-sm px-3 py-1 font-medium">
+                Listings quota: {quotaText}
+              </span>
+            </div>
             <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
               {preference && (
                 <span className="block mb-2">
