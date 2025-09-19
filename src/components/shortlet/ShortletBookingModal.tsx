@@ -139,6 +139,37 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     return nd;
   };
 
+  // Booked periods from the property to disable on the calendar
+  const bookedIntervals = useMemo(() => {
+    const arr = Array.isArray(property?.bookedPeriods) ? property.bookedPeriods : [];
+    return arr
+      .map((p: any) => {
+        const s = new Date(p?.checkInDateTime);
+        const e = new Date(p?.checkOutDateTime);
+        return { start: s, end: e };
+      })
+      .filter((x: any) => x.start instanceof Date && !isNaN(x.start.getTime()) && x.end instanceof Date && !isNaN(x.end.getTime()) && x.start < x.end);
+  }, [property?.bookedPeriods]);
+
+  // Disable full calendar days that fall within booked intervals (checkout day becomes available)
+  const disabledDateIntervals = useMemo(() => {
+    return bookedIntervals
+      .map(({ start, end }) => {
+        const s = new Date(start); s.setHours(0, 0, 0, 0);
+        const e = new Date(end);
+        const eAdj = new Date(e); eAdj.setDate(eAdj.getDate() - 1); eAdj.setHours(23, 59, 59, 999);
+        return { start: s, end: eAdj };
+      })
+      .filter((r) => r.start <= r.end);
+  }, [bookedIntervals]);
+
+  const hasOverlapWithBooked = (start?: Date | null, end?: Date | null) => {
+    if (!start || !end) return false;
+    const s = start;
+    const e = end;
+    return bookedIntervals.some(({ start: bs, end: be }) => s < be && e > bs);
+  };
+
   // Validation schemas per step
   const step1Schema = Yup.object({
     checkIn: Yup.date()
@@ -279,6 +310,10 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   const proceedNext = async () => {
     try {
       await step1Schema.validate(formik.values, { abortEarly: false });
+      if (hasOverlapWithBooked(formik.values.checkIn, formik.values.checkOut)) {
+        toast.error("Selected dates overlap with unavailable periods. Choose different dates.");
+        return;
+      }
       setStep(2);
     } catch (err: any) {
       const errors: Record<string, string> = {};
@@ -444,6 +479,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                       }
                     }}
                     minDate={new Date()}
+                    excludeDateIntervals={disabledDateIntervals}
                     showTimeSelect
                     timeIntervals={30}
                     dateFormat="Pp"
@@ -469,6 +505,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                       formik.setFieldValue("checkOut", clampedOut);
                     }}
                     minDate={formik.values.checkIn || new Date()}
+                    excludeDateIntervals={disabledDateIntervals}
                     showTimeSelect
                     timeIntervals={30}
                     dateFormat="Pp"
@@ -527,6 +564,19 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                       className="w-full border border-gray-300 rounded-lg px-3 py-2"
                     />
                   </div>
+
+                  {bookedIntervals.length > 0 && (
+                    <div className="md:col-span-2 bg-red-50 rounded-lg p-3 border border-red-200 text-red-800">
+                      <p className="text-sm font-semibold mb-1">Some dates are unavailable</p>
+                      <ul className="text-xs list-disc pl-5 space-y-0.5 max-h-24 overflow-auto">
+                        {bookedIntervals.map((b, i) => (
+                          <li key={i}>
+                            {new Date(b.start).toLocaleString()} - {new Date(b.end).toLocaleString()}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   <div className="md:col-span-2 bg-gray-50 rounded-lg p-3 border border-gray-200">
                     <div className="flex items-center justify-between">
