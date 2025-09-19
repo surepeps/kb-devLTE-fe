@@ -1,0 +1,177 @@
+API base URL
+https://khabiteq-realty.onrender.com/api
+
+1) Inspection request submission
+Method: POST
+Endpoint: /inspections/request-inspection
+
+Request payload (JSON)
+{
+  "requestedBy": {
+    "fullName": "Adaeze Nwosu",
+    "email": "adaeze.nwosu@example.org",
+    "phoneNumber": "+2348012345678"
+  },
+  "inspectionDetails": {
+    "inspectionDate": "Feb 12, 2025",
+    "inspectionTime": "11:00 AM",
+    "inspectionMode": "in_person"
+  },
+  "inspectionAmount": 10000,
+  "properties": [
+    {
+      "propertyId": "673a5f2f8c1d4b001234abcd",
+      "inspectionType": "price",
+      "negotiationPrice": 25000000
+    },
+    {
+      "propertyId": "673a5f2f8c1d4b00ef45abcd",
+      "inspectionType": "LOI",
+      "letterOfIntention": "https://assets.khabiteq.com/loi/673a5f2f8c1d4b00ef45abcd.pdf"
+    }
+  ]
+}
+
+Successful response sample (JSON)
+{
+  "success": true,
+  "message": "Inspection request created",
+  "data": {
+    "transaction": {
+      "authorization_url": "https://paystack.com/pay/psk_8M8Tn3B3c1",
+      "reference": "INS-20250212-1A2B3C",
+      "amount": 10000,
+      "currency": "NGN"
+    },
+    "inspections": [
+      {
+        "id": "6750a1c9f27a41001234aa11",
+        "propertyId": "673a5f2f8c1d4b001234abcd",
+        "inspectionType": "price",
+        "inspectionDate": "2025-02-12T00:00:00.000Z",
+        "inspectionTime": "11:00 AM",
+        "inspectionMode": "in_person",
+        "status": "pending_payment",
+        "stage": "inspection"
+      },
+      {
+        "id": "6750a1c9f27a41001234aa12",
+        "propertyId": "673a5f2f8c1d4b00ef45abcd",
+        "inspectionType": "LOI",
+        "inspectionDate": "2025-02-12T00:00:00.000Z",
+        "inspectionTime": "11:00 AM",
+        "inspectionMode": "in_person",
+        "status": "pending_payment",
+        "stage": "inspection"
+      }
+    ]
+  }
+}
+
+Note: If the backend accepts bank transfer uploads instead of online payment, include
+{
+  "transaction": { "fullName": "Adaeze Nwosu", "transactionReceipt": "https://assets.khabiteq.com/receipts/txn_12345.png" }
+}
+in the request body, and backend may omit transaction.authorization_url in its response.
+
+2) Shortlet booking request (Request to book)
+Method: POST
+Endpoint: /inspections/book-request
+
+Request payload (JSON)
+{
+  "bookedBy": {
+    "fullName": "Chinedu Okeke",
+    "email": "chinedu.okeke@example.org",
+    "phoneNumber": "+2348098765432",
+    "whatsAppNumber": "+2348098765432"
+  },
+  "propertyId": "674b7a2e9e5d4100abcd1290",
+  "bookingDetails": {
+    "checkInDateTime": "2025-03-05T15:00:00.000Z",
+    "checkOutDateTime": "2025-03-08T11:00:00.000Z",
+    "guestNumber": 2,
+    "note": "Prefer quiet room near elevator"
+  },
+  "paymentDetails": {
+    "amountToBePaid": 225000
+  },
+  "bookingMode": "request"
+}
+
+Successful response sample (JSON)
+{
+  "success": true,
+  "message": "Booking request submitted",
+  "data": {
+    "_id": "6750b2e1a37c4100aa11bb22",
+    "propertyId": {
+      "_id": "674b7a2e9e5d4100abcd1290",
+      "title": "Furnished 2-Bed Apartment, Lekki",
+      "location": { "state": "Lagos", "localGovernment": "Eti-Osa", "area": "Lekki" },
+      "image": "https://assets.khabiteq.com/images/props/674b7a2e9e5d4100abcd1290.jpg"
+    },
+    "bookedBy": {
+      "fullName": "Chinedu Okeke",
+      "email": "chinedu.okeke@example.org",
+      "phoneNumber": "+2348098765432"
+    },
+    "bookingDetails": {
+      "checkInDateTime": "2025-03-05T15:00:00.000Z",
+      "checkOutDateTime": "2025-03-08T11:00:00.000Z",
+      "guestNumber": 2,
+      "note": "Prefer quiet room near elevator"
+    },
+    "paymentDetails": { "amountToBePaid": 225000, "currency": "₦" },
+    "bookingMode": "request",
+    "status": "requested",
+    "createdAt": "2025-02-12T10:15:00.000Z"
+  }
+}
+
+3) Shortlet instant booking (Pay now)
+Method: POST
+Endpoint: /inspections/book-request
+
+Request payload (JSON)
+{
+  "bookedBy": {
+    "fullName": "Chinedu Okeke",
+    "email": "chinedu.okeke@example.org",
+    "phoneNumber": "+2348098765432"
+  },
+  "propertyId": "674b7a2e9e5d4100abcd1290",
+  "bookingDetails": {
+    "checkInDateTime": "2025-03-05T15:00:00.000Z",
+    "checkOutDateTime": "2025-03-08T11:00:00.000Z",
+    "guestNumber": 2
+  },
+  "paymentDetails": { "amountToBePaid": 225000 },
+  "bookingMode": "instant"
+}
+
+Successful response sample (JSON)
+{
+  "success": true,
+  "message": "Payment initialized",
+  "data": {
+    "transaction": {
+      "authorization_url": "https://paystack.com/pay/psk_9K3LmPqWz1",
+      "reference": "BOOK-20250305-9F8E7D",
+      "amount": 225000,
+      "currency": "NGN"
+    },
+    "booking": {
+      "_id": "6750b62aa37c4100aa11bb33",
+      "propertyId": "674b7a2e9e5d4100abcd1290",
+      "bookingMode": "instant",
+      "status": "pending_payment"
+    }
+  }
+}
+
+Notes
+- bookingMode must be either "request" or "instant".
+- bookingDetails.checkInDateTime/checkOutDateTime must be ISO 8601 strings (UTC).
+- Inspection submissions support optional negotiationPrice (price type) or letterOfIntention (LOI type) per property.
+- Frontend expects success boolean and may redirect to data.transaction.authorization_url when present.
