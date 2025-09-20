@@ -329,6 +329,7 @@ export default function DealSitePage() {
         shortDescription: ds.footerSection?.shortDesc || prev.footer?.shortDescription || "",
         copyrightText: ds.footerSection?.copyRight || prev.footer?.copyrightText || "",
       },
+      bankDetails: (ds as any).bankDetails || prev.bankDetails,
     }));
 
     if (ds.publicSlug && !slugLocked) {
