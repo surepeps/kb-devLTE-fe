@@ -601,6 +601,22 @@ export default function DealSitePage() {
     </span>
   );
 
+  const [bankList, setBankList] = useState<{ name: string; code: string }[]>([]);
+  const [banksLoading, setBanksLoading] = useState(false);
+  useEffect(() => {
+    const fetchBanks = async () => {
+      try {
+        setBanksLoading(true);
+        const token = Cookies.get("token");
+        const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/bankList`, token);
+        if (res?.success && Array.isArray(res.data)) setBankList(res.data as any);
+      } finally {
+        setBanksLoading(false);
+      }
+    };
+    fetchBanks();
+  }, []);
+
   const inputBase = "w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400";
   const checkboxBase = "h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500";
   const selectBase = inputBase;
