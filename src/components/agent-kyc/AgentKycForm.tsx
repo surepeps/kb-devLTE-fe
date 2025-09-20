@@ -106,17 +106,6 @@ const AgentKycForm: React.FC = () => {
     return merged;
   }, [selectedState, lgaOptions]);
 
-  const downloadPayloadJson = (values: AgentKycSubmissionPayload) => {
-    const file = new Blob([JSON.stringify(values, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(file);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "agent-kyc-payload.json";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  };
 
   const handleSubmit = async (values: AgentKycSubmissionPayload) => {
     setIsSubmitting(true);
@@ -150,7 +139,6 @@ const AgentKycForm: React.FC = () => {
           individualAgent: user?.individualAgent,
           companyAgent: user?.companyAgent,
         });
-        downloadPayloadJson(values);
       } else {
         toast.error(response.message || "KYC submission failed");
       }
