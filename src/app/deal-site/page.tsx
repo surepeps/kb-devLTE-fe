@@ -279,6 +279,7 @@ export default function DealSitePage() {
             marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
             publicPage: s.publicPage || prev.publicPage,
             footer: s.footer || prev.footer,
+            bankDetails: (s as any).bankDetails || prev.bankDetails,
           }));
           if (typeof s.paused === "boolean") setIsPaused(s.paused);
           if (s.publicSlug) setSlugLocked(true);
