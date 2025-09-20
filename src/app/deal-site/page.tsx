@@ -234,48 +234,43 @@ export default function DealSitePage() {
       try {
         setLoading(true);
         try {
-          const cached = localStorage.getItem(STORAGE_KEY);
-          if (cached) setForm(JSON.parse(cached));
-          const locked = localStorage.getItem(SLUG_LOCK_KEY);
-          if (locked === "true") setSlugLocked(true);
-        } catch {}
-
-        const slug = (localStorage.getItem(STORAGE_KEY) && (JSON.parse(localStorage.getItem(STORAGE_KEY) as string)?.publicSlug as string)) || "";
-        if (slug) {
-          const token = Cookies.get("token");
-          showPreloader("Loading Deal Site...");
-          const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/${slug}`, token);
-          hidePreloader();
-          if (res?.success && res.data) {
-            const s = res.data as Partial<DealSiteSettings & { paused?: boolean }>;
-            setForm((prev) => ({
-              ...prev,
-              publicSlug: s.publicSlug || prev.publicSlug,
-              title: s.title || prev.title,
-              keywords: s.keywords || prev.keywords,
-              description: s.description || prev.description,
-              logoUrl: s.logoUrl || prev.logoUrl,
-              theme: {
-                primaryColor: s.theme?.primaryColor || prev.theme.primaryColor,
-                secondaryColor: s.theme?.secondaryColor || prev.theme.secondaryColor,
-              },
-              inspectionSettings: {
-                allowPublicBooking: s.inspectionSettings?.allowPublicBooking ?? prev.inspectionSettings.allowPublicBooking,
-                defaultInspectionFee: s.inspectionSettings?.defaultInspectionFee ?? prev.inspectionSettings.defaultInspectionFee,
-                inspectionStatus: s.inspectionSettings?.inspectionStatus ?? prev.inspectionSettings.inspectionStatus,
-                negotiationEnabled: s.inspectionSettings?.negotiationEnabled ?? prev.inspectionSettings.negotiationEnabled,
-              },
-              listingsLimit: typeof s.listingsLimit === "number" ? s.listingsLimit : prev.listingsLimit,
-              socialLinks: s.socialLinks || prev.socialLinks,
-              contactVisibility: s.contactVisibility || prev.contactVisibility,
-              featureSelection: s.featureSelection || prev.featureSelection,
-              marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
-              publicPage: s.publicPage || prev.publicPage,
-              footer: s.footer || prev.footer,
-            }));
-            if (typeof s.paused === "boolean") setIsPaused(s.paused);
-            if (s.publicSlug) setSlugLocked(true);
+          if (typeof window !== "undefined") {
+            window.localStorage.clear();
           }
+        } catch {}
+        const token = Cookies.get("token");
+        showPreloader("Loading Deal Site...");
+        const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/details`, token);
+        hidePreloader();
+        if (res?.success && res.data) {
+          const s = res.data as Partial<DealSiteSettings & { paused?: boolean }>;
+          setForm((prev) => ({
+            ...prev,
+            publicSlug: s.publicSlug || prev.publicSlug,
+            title: s.title || prev.title,
+            keywords: s.keywords || prev.keywords,
+            description: s.description || prev.description,
+            logoUrl: s.logoUrl || prev.logoUrl,
+            theme: {
+              primaryColor: s.theme?.primaryColor || prev.theme.primaryColor,
+              secondaryColor: s.theme?.secondaryColor || prev.theme.secondaryColor,
+            },
+            inspectionSettings: {
+              allowPublicBooking: s.inspectionSettings?.allowPublicBooking ?? prev.inspectionSettings.allowPublicBooking,
+              defaultInspectionFee: s.inspectionSettings?.defaultInspectionFee ?? prev.inspectionSettings.defaultInspectionFee,
+              inspectionStatus: s.inspectionSettings?.inspectionStatus ?? prev.inspectionSettings.inspectionStatus,
+              negotiationEnabled: s.inspectionSettings?.negotiationEnabled ?? prev.inspectionSettings.negotiationEnabled,
+            },
+            listingsLimit: typeof s.listingsLimit === "number" ? s.listingsLimit : prev.listingsLimit,
+            socialLinks: s.socialLinks || prev.socialLinks,
+            contactVisibility: s.contactVisibility || prev.contactVisibility,
+            featureSelection: s.featureSelection || prev.featureSelection,
+            marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
+            publicPage: s.publicPage || prev.publicPage,
+            footer: s.footer || prev.footer,
+          }));
+          if (typeof s.paused === "boolean") setIsPaused(s.paused);
+          if (s.publicSlug) setSlugLocked(true);
         }
       } finally {
         setLoading(false);
@@ -326,7 +321,6 @@ export default function DealSitePage() {
 
     if (ds.publicSlug && !slugLocked) {
       setSlugLocked(true);
-      try { localStorage.setItem(SLUG_LOCK_KEY, "true"); } catch {}
     }
   }, [user, slugLocked]);
 
@@ -482,9 +476,7 @@ export default function DealSitePage() {
         hidePreloader();
         if ((res as any)?.success) {
           toast.success("Deal Site created");
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
           setSlugLocked(true);
-          localStorage.setItem(SLUG_LOCK_KEY, "true");
           setActiveView("manage");
           return;
         }
@@ -495,20 +487,13 @@ export default function DealSitePage() {
         hidePreloader();
         if (res?.success) {
           toast.success("Settings saved");
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
           setActiveView("manage");
           return;
         }
         throw new Error(res?.message || "Save failed");
       }
     } catch (err) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
-      if (!slugLocked && form.publicSlug) {
-        setSlugLocked(true);
-        localStorage.setItem(SLUG_LOCK_KEY, "true");
-      }
-      setActiveView("manage");
-      toast.success("Saved locally");
+      toast.error("Failed to save settings");
     } finally {
       setSaving(false);
       hidePreloader();
@@ -560,8 +545,6 @@ export default function DealSitePage() {
     hidePreloader();
     if (res?.success) {
       toast.success("Deal Site deleted");
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(SLUG_LOCK_KEY);
       setSlugLocked(false);
       setForm((prev) => ({ ...prev, publicSlug: "" }));
       setActiveView("setup");
