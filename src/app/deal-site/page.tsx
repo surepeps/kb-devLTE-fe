@@ -1378,6 +1378,7 @@ export default function DealSitePage() {
                 <div className="space-y-6">
                   {renderMarketplaceDefaults}
                   {renderContactVisibility}
+                  {renderBankDetails}
                 </div>
               )}
               {setupStep === 3 && (
