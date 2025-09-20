@@ -91,6 +91,15 @@ interface FooterDetails {
   copyrightText: string;
 }
 
+interface BankDetails {
+  business_name: string;
+  account_number: string;
+  settlement_bank: string; // bank code
+  primary_contact_email?: string;
+  primary_contact_name?: string;
+  primary_contact_phone?: string;
+}
+
 interface DealSiteSettings {
   publicSlug: string;
   title: string;
@@ -106,6 +115,7 @@ interface DealSiteSettings {
   marketplaceDefaults: MarketplaceDefaults;
   publicPage: PublicPageDesign;
   footer?: FooterDetails;
+  bankDetails?: BankDetails;
 }
 
 type PropertyItem = {
