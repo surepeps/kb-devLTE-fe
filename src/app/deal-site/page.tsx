@@ -91,6 +91,15 @@ interface FooterDetails {
   copyrightText: string;
 }
 
+interface BankDetails {
+  business_name: string;
+  account_number: string;
+  settlement_bank: string; // bank code
+  primary_contact_email?: string;
+  primary_contact_name?: string;
+  primary_contact_phone?: string;
+}
+
 interface DealSiteSettings {
   publicSlug: string;
   title: string;
@@ -106,6 +115,7 @@ interface DealSiteSettings {
   marketplaceDefaults: MarketplaceDefaults;
   publicPage: PublicPageDesign;
   footer?: FooterDetails;
+  bankDetails?: BankDetails;
 }
 
 type PropertyItem = {
@@ -186,6 +196,7 @@ export default function DealSitePage() {
     marketplaceDefaults: { defaultTab: "buy", defaultSort: "newest", showVerifiedOnly: false, enablePriceNegotiationButton: true },
     publicPage: { heroTitle: "Hi, I'm your trusted agent", heroSubtitle: "Browse my verified listings and book inspections easily.", ctaText: "Browse Listings", ctaLink: "/market-place", heroImageUrl: "" },
     footer: { shortDescription: "", copyrightText: "" },
+    bankDetails: { business_name: "", account_number: "", settlement_bank: "", primary_contact_email: "", primary_contact_name: "", primary_contact_phone: "" },
   });
 
   const previewUrl = useMemo(() => {
@@ -234,48 +245,44 @@ export default function DealSitePage() {
       try {
         setLoading(true);
         try {
-          const cached = localStorage.getItem(STORAGE_KEY);
-          if (cached) setForm(JSON.parse(cached));
-          const locked = localStorage.getItem(SLUG_LOCK_KEY);
-          if (locked === "true") setSlugLocked(true);
-        } catch {}
-
-        const slug = (localStorage.getItem(STORAGE_KEY) && (JSON.parse(localStorage.getItem(STORAGE_KEY) as string)?.publicSlug as string)) || "";
-        if (slug) {
-          const token = Cookies.get("token");
-          showPreloader("Loading Deal Site...");
-          const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/${slug}`, token);
-          hidePreloader();
-          if (res?.success && res.data) {
-            const s = res.data as Partial<DealSiteSettings & { paused?: boolean }>;
-            setForm((prev) => ({
-              ...prev,
-              publicSlug: s.publicSlug || prev.publicSlug,
-              title: s.title || prev.title,
-              keywords: s.keywords || prev.keywords,
-              description: s.description || prev.description,
-              logoUrl: s.logoUrl || prev.logoUrl,
-              theme: {
-                primaryColor: s.theme?.primaryColor || prev.theme.primaryColor,
-                secondaryColor: s.theme?.secondaryColor || prev.theme.secondaryColor,
-              },
-              inspectionSettings: {
-                allowPublicBooking: s.inspectionSettings?.allowPublicBooking ?? prev.inspectionSettings.allowPublicBooking,
-                defaultInspectionFee: s.inspectionSettings?.defaultInspectionFee ?? prev.inspectionSettings.defaultInspectionFee,
-                inspectionStatus: s.inspectionSettings?.inspectionStatus ?? prev.inspectionSettings.inspectionStatus,
-                negotiationEnabled: s.inspectionSettings?.negotiationEnabled ?? prev.inspectionSettings.negotiationEnabled,
-              },
-              listingsLimit: typeof s.listingsLimit === "number" ? s.listingsLimit : prev.listingsLimit,
-              socialLinks: s.socialLinks || prev.socialLinks,
-              contactVisibility: s.contactVisibility || prev.contactVisibility,
-              featureSelection: s.featureSelection || prev.featureSelection,
-              marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
-              publicPage: s.publicPage || prev.publicPage,
-              footer: s.footer || prev.footer,
-            }));
-            if (typeof s.paused === "boolean") setIsPaused(s.paused);
-            if (s.publicSlug) setSlugLocked(true);
+          if (typeof window !== "undefined") {
+            window.localStorage.clear();
           }
+        } catch {}
+        const token = Cookies.get("token");
+        showPreloader("Loading Deal Site...");
+        const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/details`, token);
+        hidePreloader();
+        if (res?.success && res.data) {
+          const s = res.data as Partial<DealSiteSettings & { paused?: boolean }>;
+          setForm((prev) => ({
+            ...prev,
+            publicSlug: s.publicSlug || prev.publicSlug,
+            title: s.title || prev.title,
+            keywords: s.keywords || prev.keywords,
+            description: s.description || prev.description,
+            logoUrl: s.logoUrl || prev.logoUrl,
+            theme: {
+              primaryColor: s.theme?.primaryColor || prev.theme.primaryColor,
+              secondaryColor: s.theme?.secondaryColor || prev.theme.secondaryColor,
+            },
+            inspectionSettings: {
+              allowPublicBooking: s.inspectionSettings?.allowPublicBooking ?? prev.inspectionSettings.allowPublicBooking,
+              defaultInspectionFee: s.inspectionSettings?.defaultInspectionFee ?? prev.inspectionSettings.defaultInspectionFee,
+              inspectionStatus: s.inspectionSettings?.inspectionStatus ?? prev.inspectionSettings.inspectionStatus,
+              negotiationEnabled: s.inspectionSettings?.negotiationEnabled ?? prev.inspectionSettings.negotiationEnabled,
+            },
+            listingsLimit: typeof s.listingsLimit === "number" ? s.listingsLimit : prev.listingsLimit,
+            socialLinks: s.socialLinks || prev.socialLinks,
+            contactVisibility: s.contactVisibility || prev.contactVisibility,
+            featureSelection: s.featureSelection || prev.featureSelection,
+            marketplaceDefaults: s.marketplaceDefaults || prev.marketplaceDefaults,
+            publicPage: s.publicPage || prev.publicPage,
+            footer: s.footer || prev.footer,
+            bankDetails: (s as any).bankDetails || prev.bankDetails,
+          }));
+          if (typeof s.paused === "boolean") setIsPaused(s.paused);
+          if (s.publicSlug) setSlugLocked(true);
         }
       } finally {
         setLoading(false);
@@ -322,11 +329,11 @@ export default function DealSitePage() {
         shortDescription: ds.footerSection?.shortDesc || prev.footer?.shortDescription || "",
         copyrightText: ds.footerSection?.copyRight || prev.footer?.copyrightText || "",
       },
+      bankDetails: (ds as any).bankDetails || prev.bankDetails,
     }));
 
     if (ds.publicSlug && !slugLocked) {
       setSlugLocked(true);
-      try { localStorage.setItem(SLUG_LOCK_KEY, "true"); } catch {}
     }
   }, [user, slugLocked]);
 
@@ -474,7 +481,14 @@ export default function DealSitePage() {
           whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
         },
         footer: form.footer || { shortDescription: "", copyrightText: "" },
+        bankDetails: form.bankDetails,
       };
+
+      if (!payload?.bankDetails?.business_name || !payload?.bankDetails?.account_number || !payload?.bankDetails?.settlement_bank) {
+        toast.error("Please complete Bank Details: business name, account number and bank");
+        setSaving(false);
+        return;
+      }
 
       if (!slugLocked) {
         showPreloader("Setting up your deal site. Please wait...");
@@ -482,9 +496,7 @@ export default function DealSitePage() {
         hidePreloader();
         if ((res as any)?.success) {
           toast.success("Deal Site created");
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
           setSlugLocked(true);
-          localStorage.setItem(SLUG_LOCK_KEY, "true");
           setActiveView("manage");
           return;
         }
@@ -495,20 +507,13 @@ export default function DealSitePage() {
         hidePreloader();
         if (res?.success) {
           toast.success("Settings saved");
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
           setActiveView("manage");
           return;
         }
         throw new Error(res?.message || "Save failed");
       }
     } catch (err) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(form));
-      if (!slugLocked && form.publicSlug) {
-        setSlugLocked(true);
-        localStorage.setItem(SLUG_LOCK_KEY, "true");
-      }
-      setActiveView("manage");
-      toast.success("Saved locally");
+      toast.error("Failed to save settings");
     } finally {
       setSaving(false);
       hidePreloader();
@@ -560,8 +565,6 @@ export default function DealSitePage() {
     hidePreloader();
     if (res?.success) {
       toast.success("Deal Site deleted");
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(SLUG_LOCK_KEY);
       setSlugLocked(false);
       setForm((prev) => ({ ...prev, publicSlug: "" }));
       setActiveView("setup");
@@ -604,6 +607,22 @@ export default function DealSitePage() {
       {!slugLocked ? "Draft" : isPaused ? "Paused" : "Live"}
     </span>
   );
+
+  const [bankList, setBankList] = useState<{ name: string; code: string }[]>([]);
+  const [banksLoading, setBanksLoading] = useState(false);
+  useEffect(() => {
+    const fetchBanks = async () => {
+      try {
+        setBanksLoading(true);
+        const token = Cookies.get("token");
+        const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/bankList`, token);
+        if (res?.success && Array.isArray(res.data)) setBankList(res.data as any);
+      } finally {
+        setBanksLoading(false);
+      }
+    };
+    fetchBanks();
+  }, []);
 
   const inputBase = "w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400";
   const checkboxBase = "h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500";
@@ -879,6 +898,44 @@ export default function DealSitePage() {
           </div>
         ))}
       </div>
+    </div>
+  );
+
+  const renderBankDetails = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <h2 className="text-lg font-semibold text-[#09391C] mb-4">Bank Details</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Business Name</label>
+          <input type="text" value={form.bankDetails?.business_name || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), business_name: e.target.value } })} className={inputBase} placeholder="Registered business name" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Account Number</label>
+          <input type="text" value={form.bankDetails?.account_number || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), account_number: e.target.value.replace(/\D/g, '') } })} className={inputBase} placeholder="10-digit account number" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Settlement Bank</label>
+          <select value={form.bankDetails?.settlement_bank || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), settlement_bank: e.target.value } })} className={selectBase}>
+            <option value="" disabled>{banksLoading ? "Loading banks..." : "Select bank"}</option>
+            {bankList.map((b) => (
+              <option key={b.code} value={b.code}>{b.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Primary Contact Email (optional)</label>
+          <input type="email" value={form.bankDetails?.primary_contact_email || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), primary_contact_email: e.target.value } })} className={inputBase} placeholder="email@example.com" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Primary Contact Name (optional)</label>
+          <input type="text" value={form.bankDetails?.primary_contact_name || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), primary_contact_name: e.target.value } })} className={inputBase} placeholder="Full name" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Primary Contact Phone (optional)</label>
+          <input type="tel" value={form.bankDetails?.primary_contact_phone || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), primary_contact_phone: e.target.value } })} className={inputBase} placeholder="e.g. +2348012345678" />
+        </div>
+      </div>
+      <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
     </div>
   );
 
@@ -1328,6 +1385,7 @@ export default function DealSitePage() {
                 <div className="space-y-6">
                   {renderMarketplaceDefaults}
                   {renderContactVisibility}
+                  {renderBankDetails}
                 </div>
               )}
               {setupStep === 3 && (

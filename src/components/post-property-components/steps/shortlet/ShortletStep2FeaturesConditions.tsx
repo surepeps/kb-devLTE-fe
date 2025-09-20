@@ -281,40 +281,44 @@ const ShortletStep2FeaturesConditions: React.FC = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
-                Weekly Discounted Price
+                Weekly Discount (%)
               </label>
               <div className="relative">
                 <input
-                  type="text"
-                  value={formatPriceForDisplay(propertyData.pricing?.weeklyDiscount || 0)}
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={propertyData.pricing?.weeklyDiscount ?? 0}
                   onChange={(e) => {
-                    const numericValue = cleanNumericInput(e.target.value);
+                    const v = Math.max(0, Math.min(100, parseInt(e.target.value || '0')));
                     updatePropertyData("pricing", {
                       ...propertyData.pricing,
-                      weeklyDiscount: parseInt(numericValue) || 0,
+                      weeklyDiscount: v,
                     });
                   }}
-                  placeholder="Enter weekly discounted price"
+                  placeholder="Enter weekly discount percentage"
                   className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
                 />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-[#707281] mb-2">
-                Monthly Discounted Price
+                Monthly Discount (%)
               </label>
               <div className="relative">
                 <input
-                  type="text"
-                  value={formatPriceForDisplay(propertyData.pricing?.monthlyDiscount || 0)}
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={propertyData.pricing?.monthlyDiscount ?? 0}
                   onChange={(e) => {
-                    const numericValue = cleanNumericInput(e.target.value);
+                    const v = Math.max(0, Math.min(100, parseInt(e.target.value || '0')));
                     updatePropertyData("pricing", {
                       ...propertyData.pricing,
-                      monthlyDiscount: parseInt(numericValue) || 0,
+                      monthlyDiscount: v,
                     });
                   }}
-                  placeholder="Enter monthly discounted price"
+                  placeholder="Enter monthly discount percentage"
                   className="w-full p-3 border border-[#C7CAD0] rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-[#8DDB90]"
                 />
               </div>
