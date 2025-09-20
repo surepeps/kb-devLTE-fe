@@ -894,6 +894,44 @@ export default function DealSitePage() {
     </div>
   );
 
+  const renderBankDetails = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <h2 className="text-lg font-semibold text-[#09391C] mb-4">Bank Details</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Business Name</label>
+          <input type="text" value={form.bankDetails?.business_name || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), business_name: e.target.value } })} className={inputBase} placeholder="Registered business name" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Account Number</label>
+          <input type="text" value={form.bankDetails?.account_number || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), account_number: e.target.value.replace(/\D/g, '') } })} className={inputBase} placeholder="10-digit account number" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Settlement Bank</label>
+          <select value={form.bankDetails?.settlement_bank || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), settlement_bank: e.target.value } })} className={selectBase}>
+            <option value="" disabled>{banksLoading ? "Loading banks..." : "Select bank"}</option>
+            {bankList.map((b) => (
+              <option key={b.code} value={b.code}>{b.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Primary Contact Email (optional)</label>
+          <input type="email" value={form.bankDetails?.primary_contact_email || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), primary_contact_email: e.target.value } })} className={inputBase} placeholder="email@example.com" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Primary Contact Name (optional)</label>
+          <input type="text" value={form.bankDetails?.primary_contact_name || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), primary_contact_name: e.target.value } })} className={inputBase} placeholder="Full name" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Primary Contact Phone (optional)</label>
+          <input type="tel" value={form.bankDetails?.primary_contact_phone || ""} onChange={(e) => setForm({ ...form, bankDetails: { ...(form.bankDetails || {}), primary_contact_phone: e.target.value } })} className={inputBase} placeholder="e.g. +2348012345678" />
+        </div>
+      </div>
+      <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
+    </div>
+  );
+
   const toggleSelect = (id: string) => {
     const set = new Set(selectedIds);
     if (set.has(id)) set.delete(id); else set.add(id);
