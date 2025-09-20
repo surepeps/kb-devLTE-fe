@@ -196,6 +196,7 @@ export default function DealSitePage() {
     marketplaceDefaults: { defaultTab: "buy", defaultSort: "newest", showVerifiedOnly: false, enablePriceNegotiationButton: true },
     publicPage: { heroTitle: "Hi, I'm your trusted agent", heroSubtitle: "Browse my verified listings and book inspections easily.", ctaText: "Browse Listings", ctaLink: "/market-place", heroImageUrl: "" },
     footer: { shortDescription: "", copyrightText: "" },
+    bankDetails: { business_name: "", account_number: "", settlement_bank: "", primary_contact_email: "", primary_contact_name: "", primary_contact_phone: "" },
   });
 
   const previewUrl = useMemo(() => {
