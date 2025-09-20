@@ -481,7 +481,14 @@ export default function DealSitePage() {
           whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
         },
         footer: form.footer || { shortDescription: "", copyrightText: "" },
+        bankDetails: form.bankDetails,
       };
+
+      if (!payload?.bankDetails?.business_name || !payload?.bankDetails?.account_number || !payload?.bankDetails?.settlement_bank) {
+        toast.error("Please complete Bank Details: business name, account number and bank");
+        setSaving(false);
+        return;
+      }
 
       if (!slugLocked) {
         showPreloader("Setting up your deal site. Please wait...");
