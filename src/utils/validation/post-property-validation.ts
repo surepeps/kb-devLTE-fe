@@ -181,10 +181,12 @@ const shortletPropertySchema = Yup.object({
       .min(1, messages.min("Nightly rate", 1))
       .required(messages.required("Nightly rate")),
     weeklyDiscount: Yup.number()
-      .min(0, "Weekly discounted price cannot be negative")
+      .min(0, "Weekly discount must be at least 0%")
+      .max(100, "Weekly discount cannot exceed 100%")
       .nullable(),
     monthlyDiscount: Yup.number()
-      .min(0, "Monthly discounted price cannot be negative")
+      .min(0, "Monthly discount must be at least 0%")
+      .max(100, "Monthly discount cannot exceed 100%")
       .nullable(),
   }),
   houseRules: Yup.object({
@@ -389,8 +391,8 @@ export const step2ValidationSchema = (propertyType: string) => {
         }).required(),
         pricing: Yup.object({
           nightly: Yup.number().min(1).required("Nightly rate is required"),
-          weeklyDiscount: Yup.number().min(0).nullable(),
-          monthlyDiscount: Yup.number().min(0).nullable(),
+          weeklyDiscount: Yup.number().min(0).max(100).nullable(),
+          monthlyDiscount: Yup.number().min(0).max(100).nullable(),
         }).required(),
         houseRules: Yup.object({
           checkIn: Yup.string().required("Check-in time is required"),

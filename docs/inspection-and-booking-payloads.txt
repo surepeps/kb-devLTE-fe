@@ -74,9 +74,9 @@ Note: If the backend accepts bank transfer uploads instead of online payment, in
 }
 in the request body, and backend may omit transaction.authorization_url in its response.
 
-2) Shortlet booking request (Request to book)
+1) Shortlet booking request (Request to book)
 Method: POST
-Endpoint: /inspections/book-request
+Endpoint: /bookings/makeRequest
 
 Request payload (JSON)
 {
@@ -129,9 +129,9 @@ Successful response sample (JSON)
   }
 }
 
-3) Shortlet instant booking (Pay now)
+2) Shortlet instant booking (Pay now)
 Method: POST
-Endpoint: /inspections/book-request
+Endpoint: /bookings/makeRequest
 
 Request payload (JSON)
 {

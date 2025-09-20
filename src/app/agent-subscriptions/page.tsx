@@ -508,13 +508,15 @@ export default function AgentSubscriptionsPage() {
                           <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
                           <div className="flex items-center gap-3">
                             <span className="font-medium">₦{Number(price).toLocaleString()}</span>
-                            <button
-                              onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
-                              disabled={disabled}
-                              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
-                            >
-                              {label}
-                            </button>
+                            {!isFreePlan && (
+                              <button
+                                onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
+                                disabled={disabled}
+                                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
+                              >
+                                {label}
+                              </button>
+                            )}
                           </div>
                         </div>
                       );
