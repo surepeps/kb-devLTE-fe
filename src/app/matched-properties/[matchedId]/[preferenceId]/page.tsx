@@ -126,7 +126,8 @@ const MatchedPropertiesPage = () => {
   const router = useRouter();
   const params = useParams();
   const { matchedId, preferenceId } = params;
-  
+  const { toggleInspectionSelection } = useGlobalPropertyActions();
+
   const [data, setData] = useState<MatchedPropertiesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
