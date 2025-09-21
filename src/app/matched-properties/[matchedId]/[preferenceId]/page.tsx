@@ -445,9 +445,17 @@ const MatchedPropertiesPage = () => {
                           images={images}
                           isPremium={property.isPremium}
                           onPropertyClick={() => {
-                            // Navigate to property details page
                             const marketType = property.briefType === "Outright Sales" ? "buy" : "rent";
                             router.push(`/property/${marketType}/${property.id}`);
+                          }}
+                          onInspectionToggle={() => {
+                            // Tag selection with matched-properties source and meta
+                            toggleInspectionSelection(
+                              transformedProperty,
+                              "buy",
+                              "matched-properties",
+                              { matchedId: String(matchedId), preferenceId: String(preferenceId) }
+                            );
                           }}
                           className="w-full h-full"
                         />
