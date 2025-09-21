@@ -10,7 +10,6 @@ import markerSVG from "@/svgs/marker.svg";
 import randomImage from "@/assets/noImageAvailable.png";
 import ImageSwiper from "@/components/new-marketplace/ImageSwiper";
 import Button from "@/components/general-components/button";
-import { X } from "lucide-react";
 import { PropertyImage } from "@/types";
 
 interface GlobalJVPropertyCardProps {
