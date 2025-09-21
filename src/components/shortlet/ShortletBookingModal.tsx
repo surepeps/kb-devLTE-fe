@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Calendar, Clock, Users } from "lucide-react";
+import useAmount from "@/hooks/useAmount";
 
 interface ShortletBookingModalProps {
   isOpen: boolean;
@@ -87,31 +88,6 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   const durationUnit = shortletDuration === "Daily" ? "day" : shortletDuration === "Weekly" ? "week" : shortletDuration === "Monthly" ? "month" : shortletDuration;
   const weeklyDiscountPercent = Number(property?.shortletDetails?.pricing?.weeklyDiscount ?? property?.pricing?.weeklyDiscount ?? 0);
   const monthlyDiscountPercent = Number(property?.shortletDetails?.pricing?.monthlyDiscount ?? property?.pricing?.monthlyDiscount ?? 0);
-  const computeAccommodationCost = (n: number) => {
-    if (!n || n <= 0) return 0;
-    let remaining = n;
-    let cost = 0;
-    if (monthlyDiscountPercent > 0) {
-      const months = Math.floor(remaining / 30);
-      if (months > 0) {
-        const monthlyBlockNights = months * 30;
-        const discountedNightRate = nightly * (1 - Math.min(100, Math.max(0, monthlyDiscountPercent)) / 100);
-        cost += monthlyBlockNights * discountedNightRate;
-        remaining -= monthlyBlockNights;
-      }
-    }
-    if (weeklyDiscountPercent > 0) {
-      const weeks = Math.floor(remaining / 7);
-      if (weeks > 0) {
-        const weeklyBlockNights = weeks * 7;
-        const discountedNightRate = nightly * (1 - Math.min(100, Math.max(0, weeklyDiscountPercent)) / 100);
-        cost += weeklyBlockNights * discountedNightRate;
-        remaining -= weeklyBlockNights;
-      }
-    }
-    cost += remaining * nightly;
-    return Math.max(0, Math.round(cost));
-  };
 
   const allowedCheckInStr: string = property?.shortletDetails?.houseRules?.checkIn ?? property?.houseRules?.checkIn ?? "15:00";
   const allowedCheckOutStr: string = property?.shortletDetails?.houseRules?.checkOut ?? property?.houseRules?.checkOut ?? "11:00";
@@ -238,9 +214,16 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: async (values) => {
-      const nights = values.checkIn && values.checkOut ? Math.ceil((values.checkOut.getTime() - values.checkIn.getTime()) / (1000 * 60 * 60 * 24)) : 0;
-      const accommodation = computeAccommodationCost(nights);
-      const total = nights > 0 ? accommodation + cleaningFee + securityDeposit : 0;
+      const { total: computedTotal } = useAmount(
+        nightly,
+        cleaningFee,
+        values.checkIn?.toISOString(),
+        values.checkOut?.toISOString(),
+        weeklyDiscountPercent,
+        monthlyDiscountPercent,
+        securityDeposit
+      );
+      const total = computedTotal;
 
       const apiPayload: any = {
         bookedBy: {
@@ -310,10 +293,20 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     return Math.max(0, diff);
   }, [formik.values.checkIn, formik.values.checkOut]);
 
-  const total = useMemo(() => {
-    const acc = computeAccommodationCost(nights);
-    return nights > 0 ? acc + cleaningFee + securityDeposit : 0;
-  }, [nightly, nights, cleaningFee, securityDeposit, weeklyDiscountPercent, monthlyDiscountPercent]);
+  const amountInfo = useMemo(() =>
+    useAmount(
+      nightly,
+      cleaningFee,
+      formik.values.checkIn ? formik.values.checkIn.toISOString() : undefined,
+      formik.values.checkOut ? formik.values.checkOut.toISOString() : undefined,
+      weeklyDiscountPercent,
+      monthlyDiscountPercent,
+      securityDeposit
+    ),
+    [nightly, cleaningFee, formik.values.checkIn, formik.values.checkOut, weeklyDiscountPercent, monthlyDiscountPercent, securityDeposit]
+  );
+
+  const total = amountInfo.total;
 
   const proceedNext = async () => {
     try {
