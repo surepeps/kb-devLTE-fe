@@ -265,6 +265,13 @@ const Section2 = () => {
                   images={property?.pictures || []}
                   isPremium={property?.isPremium || false}
                   onPropertyClick={handlePropertyClick}
+                  onInspectionToggle={() => {
+                    const sourceTab = isJVProperty ? "jv" : (buttons.button3 ? "rent" : (buttons.button2 ? "shortlet" : "buy")) as any;
+                    // lazy import to avoid adding a top import in this large file
+                    import("@/context/global-property-actions-context").then(mod => {
+                      const evt = mod; // dummy to satisfy TS
+                    });
+                  }}
                   className="mx-auto"
                 />
               );

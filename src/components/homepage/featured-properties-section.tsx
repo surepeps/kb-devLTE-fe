@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { GET_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from '@/components/common/property-cards';
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 interface Property {
   _id: string;
@@ -48,6 +49,7 @@ interface Property {
 }
 
 const FeaturedPropertiesSection = () => {
+  const { toggleInspectionSelection } = useGlobalPropertyActions();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -158,6 +160,10 @@ const FeaturedPropertiesSection = () => {
                     images={property.pictures}
                     isPremium={property.isPremium || false}
                     onPropertyClick={() => handlePropertyClick(property)}
+                    onInspectionToggle={() => {
+                      const sourceTab = isJVProperty ? "jv" : (property.briefType.toLowerCase().includes('rent') ? 'rent' : 'buy') as any;
+                      toggleInspectionSelection(property, sourceTab, "home page");
+                    }}
                     className="hover:scale-105 transition-transform duration-300"
                   />
                 </motion.div>
