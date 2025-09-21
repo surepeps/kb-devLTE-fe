@@ -53,7 +53,7 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // FIXED: Restrict to document formats only - removed image formats
+  // Accept images and common document types
   const acceptedFileTypes = [
     "application/pdf",
     "application/msword",
@@ -63,8 +63,10 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
   const maxFileSize = 10 * 1024 * 1024; // Increased to 10MB for documents
 
   const handleFileSelect = async (file: File) => {
-    if (!acceptedFileTypes.includes(file.type)) {
-      toast.error("Please select a valid document file (PDF, DOC, DOCX only)");
+    const isImage = file.type?.startsWith("image/");
+    const isDoc = acceptedFileTypes.includes(file.type);
+    if (!isImage && !isDoc) {
+      toast.error("Please select an image or document (PNG, JPG, JPEG, PDF, DOC, DOCX)");
       return;
     }
 
@@ -329,9 +331,17 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
                             </p>
                           )}
                           {fileUrl && !isUploading && (
-                            <p className="text-green-600 text-sm">
-                              ✓ Uploaded successfully
-                            </p>
+                            <div className="flex items-center gap-3">
+                              <span className="text-green-600 text-sm">✓ Uploaded</span>
+                              <a
+                                href={fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#0B423D] underline text-sm"
+                              >
+                                View
+                              </a>
+                            </div>
                           )}
                         </div>
                       </div>
@@ -343,14 +353,20 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                     </div>
+                    {/* Inline preview for images */}
+                    {fileUrl && selectedFile?.type?.startsWith("image/") && (
+                      <div className="mt-3">
+                        <img src={fileUrl} alt="Uploaded preview" className="max-h-48 rounded border border-[#E9EBEB]" />
+                      </div>
+                    )}
                   </div>
                 )}
 
-                {/* FIXED: Updated accept attribute to only include document formats */}
+                {/* Accept images and documents */}
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".pdf,.doc,.docx"
+                  accept="image/*,.pdf,.doc,.docx"
                   onChange={handleFileInputChange}
                   className="hidden"
                 />
