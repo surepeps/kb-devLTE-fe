@@ -384,6 +384,9 @@ export default function AgentSubscriptionsPage() {
                   const amount = subscription.transaction?.amount || subscription.amount || 0;
                   const txnRef = subscription.transaction?._id || subscription.transaction?.reference || subscription.transaction?.id || '-';
                   const txnStatus = subscription.transaction?.status || subscription.status || '-';
+                  const isFreePlan = ((planObj && ((planObj as any).basePrice === 0 || (planObj as any).isTrial)) ||
+                    /free|trial/i.test(String(planName)) ||
+                    Number(amount || 0) === 0);
 
                   return (
                     <div key={subscription._id || subscription.id} className="bg-white rounded-lg border border-gray-200 p-6">
@@ -417,7 +420,7 @@ export default function AgentSubscriptionsPage() {
                         <div className="text-xs text-gray-600">Ref: {txnRef} • {txnStatus}</div>
                       </div>
 
-                      {subscription.status === 'active' && (
+                      {subscription.status === 'active' && !isFreePlan && (
                         <button
                           onClick={() => {
                             setSelectedSubscription(subscription);

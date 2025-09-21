@@ -25,38 +25,18 @@ const isJVProperty = (property: any): boolean => {
   if (!property) return false;
 
   // Check briefType first (most reliable)
-  if (property.briefType === "Joint Venture" ||
-      property.briefType === "jv" ||
-      property.briefType === "JV") {
+  const brief = String(property.briefType || "").toLowerCase();
+  if (brief === "joint venture" || brief === "jv") {
     return true;
   }
 
-  // Check category field
-  if (property.category === "joint-venture" || property.category === "jv") {
+  // Check category field explicitly for JV
+  const category = String(property.category || property.propertyCategory || "").toLowerCase();
+  if (category === "joint-venture" || category === "jv" || category === "joint venture") {
     return true;
   }
 
-  // Check propertyType for Land or Commercial (which are typically JV)
-  if (property.propertyType === "Land" ||
-      property.propertyType === "Commercial" ||
-      property.propertyType === "land" ||
-      property.propertyType === "commercial") {
-    return true;
-  }
-
-  // Check propertyCategory as fallback
-  if (property.propertyCategory === "Land" ||
-      property.propertyCategory === "Commercial" ||
-      property.propertyCategory === "land" ||
-      property.propertyCategory === "commercial") {
-    return true;
-  }
-
-  // Check type field
-  if (property.type === "land" || property.type === "commercial") {
-    return true;
-  }
-
+  // Do not infer JV from property type alone (e.g., Land/Commercial can be sell/rent)
   return false;
 };
 
