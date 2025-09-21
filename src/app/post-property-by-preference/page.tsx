@@ -884,6 +884,44 @@ const PostPropertyByPreference = () => {
     return <Loading />;
   }
 
+  // If preference is already closed/matched, show notice and actions
+  if (preference && preference.status?.toLowerCase() === 'closed') {
+    return (
+      <CombinedAuthGuard
+        requireAuth={true}
+        allowedUserTypes={["Agent"]}
+        requireAgentOnboarding={false}
+        requireAgentApproval={false}
+        requireActiveSubscription={true}
+        agentCustomMessage="You must complete onboarding and be approved before you can post properties."
+      >
+        <div className="min-h-screen bg-[#EEF1F1] py-10">
+          <div className="container mx-auto px-4 md:px-6 max-w-2xl">
+            <div className="bg-white rounded-xl shadow-sm p-6 md:p-8 text-center border border-gray-200">
+              <div className="mx-auto mb-4 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold">✓</div>
+              <h2 className="text-xl md:text-2xl font-bold text-[#09391C] mb-2">Preference Already Matched</h2>
+              <p className="text-[#5A5D63] mb-6">This buyer preference has been closed because it’s already matched. You can find another active preference to submit your property to.</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => router.push('/agent-marketplace')}
+                  className="px-6 py-3 bg-[#8DDB90] hover:bg-[#7BC97F] text-white rounded-lg font-semibold transition-colors"
+                >
+                  Find another preference
+                </button>
+                <button
+                  onClick={() => router.push('/dashboard')}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-semibold transition-colors"
+                >
+                  Go to dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CombinedAuthGuard>
+    );
+  }
+
   return (
     <CombinedAuthGuard
       requireAuth={true} // User must be logged in
