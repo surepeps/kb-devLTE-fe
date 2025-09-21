@@ -85,11 +85,11 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
     const formData = new FormData();
     formData.append("file", file);
 
-    const url = `${URLS.BASE}${URLS.uploadFile}`;
+    const url = `${URLS.BASE}${URLS.uploadSingleImg}`;
 
     try {
       const response = await toast.promise(
-        POST_REQUEST_FILE_UPLOAD(url, formData) as Promise<ApiResponse<{ url?: string; imageUrl?: string }>>,
+        POST_REQUEST_FILE_UPLOAD(url, formData) as Promise<any>,
         {
           loading: "Uploading document...",
           success: "Document uploaded successfully",
@@ -97,7 +97,16 @@ const LOIUploadModal: React.FC<LOIUploadModalProps> = ({
         },
       );
 
-      const uploadedUrl = response.data?.url || response.data?.imageUrl;
+      const uploadedUrl =
+        response?.data?.url ||
+        response?.url ||
+        response?.data?.imageUrl ||
+        response?.imageUrl ||
+        response?.data?.secure_url ||
+        response?.secure_url ||
+        response?.data?.path ||
+        response?.path ||
+        "";
 
       if (!uploadedUrl) {
         throw new Error("No URL in server response");
