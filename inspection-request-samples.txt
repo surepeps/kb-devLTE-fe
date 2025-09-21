@@ -1,0 +1,163 @@
+Khabi-Teq Inspection Request API Samples
+
+Endpoint: POST https://khabiteq-realty.onrender.com/api/inspections/request-inspection
+
+1) Sample Request (Card payment flow)
+{
+  "requestedBy": {
+    "fullName": "Jane Doe",
+    "phoneNumber": "+2348012345678",
+    "email": "jane.doe@example.com"
+  },
+  "inspectionDetails": {
+    "inspectionDate": "Oct 15, 2025",
+    "inspectionTime": "10:00 AM",
+    "inspectionMode": "in_person"
+  },
+  "inspectionAmount": 15000,
+  "properties": [
+    {
+      "propertyId": "66f1a2b3c4d5e6f7890a1234",
+      "inspectionType": "price",
+      "negotiationPrice": 48500000,
+      "requestSource": { "page": "marketplace" }
+    },
+    {
+      "propertyId": "66f1a2b3c4d5e6f7890a5678",
+      "inspectionType": "LOI",
+      "letterOfIntention": "https://cdn.khabiteq.com/loi/abc123.pdf",
+      "requestSource": { "page": "matches", "matchedId": "m_9d8f7a6b5c4e3d2c1b0a", "preferenceId": "p_1234567890abcdef" }
+    }
+  ]
+}
+
+Sample Success Response (Card payment flow)
+{
+  "success": true,
+  "message": "Inspection request created",
+  "data": {
+    "transaction": {
+      "id": "trx_01JABCDXYZ",
+      "reference": "INS-20250921-000123",
+      "transactionType": "inspection-request",
+      "amount": 15000,
+      "currency": "NGN",
+      "status": "pending",
+      "paymentMode": "card",
+      "platform": "paystack",
+      "authorization_url": "https://checkout.paystack.com/abcd1234",
+      "access_code": "ACCESS_CODE_123"
+    },
+    "inspections": [
+      {
+        "_id": "6740f1e2d3c4b5a69788aa01",
+        "propertyId": {
+          "_id": "66f1a2b3c4d5e6f7890a1234",
+          "propertyType": "Apartment",
+          "briefType": "Outright Sales",
+          "price": 50000000,
+          "location": { "state": "Lagos", "localGovernment": "Ikeja", "area": "GRA" },
+          "pictures": [],
+          "thumbnail": null
+        },
+        "inspectionDate": "Oct 15, 2025",
+        "inspectionTime": "10:00 AM",
+        "inspectionMode": "in_person",
+        "status": "pending_transaction",
+        "requestedBy": { "_id": "user_01XYZ", "fullName": "Jane Doe" },
+        "transaction": "trx_01JABCDXYZ",
+        "isNegotiating": true,
+        "negotiationPrice": 48500000,
+        "letterOfIntention": null,
+        "owner": { "_id": "agent_0123", "id": "agent_0123" },
+        "sellerCounterOffer": 0,
+        "pendingResponseFrom": "buyer",
+        "stage": "negotiation",
+        "createdAt": "2025-09-21T12:00:00.000Z",
+        "updatedAt": "2025-09-21T12:00:00.000Z",
+        "__v": 0,
+        "inspectionStatus": "new",
+        "inspectionType": "price",
+        "isLOI": false
+      }
+    ]
+  }
+}
+
+2) Sample Request (Bank transfer receipt upload flow)
+{
+  "requestedBy": {
+    "fullName": "John Smith",
+    "phoneNumber": "+2348098765432",
+    "email": "john.smith@example.com"
+  },
+  "inspectionDetails": {
+    "inspectionDate": "Oct 18, 2025",
+    "inspectionTime": "2:00 PM",
+    "inspectionMode": "virtual"
+  },
+  "transaction": {
+    "fullName": "John Smith",
+    "transactionReceipt": "https://cdn.khabiteq.com/receipts/receipt_01XY.pdf"
+  },
+  "properties": [
+    {
+      "propertyId": "66f1a2b3c4d5e6f7890a9999",
+      "inspectionType": "LOI",
+      "letterOfIntention": "https://cdn.khabiteq.com/loi/loi_987.pdf",
+      "requestSource": { "page": "marketplace" }
+    }
+  ]
+}
+
+Sample Success Response (Bank transfer flow)
+{
+  "success": true,
+  "message": "Inspection request submitted",
+  "data": {
+    "transaction": {
+      "id": "trx_01JEFGHKLM",
+      "reference": "INS-20250921-000456",
+      "transactionType": "inspection-request",
+      "amount": 0,
+      "currency": "NGN",
+      "status": "pending",
+      "paymentMode": "bank_transfer",
+      "platform": "manual",
+      "transactionReceipt": "https://cdn.khabiteq.com/receipts/receipt_01XY.pdf"
+    },
+    "inspections": [
+      {
+        "_id": "6740f3a1b2c3d4e5f678bb02",
+        "propertyId": {
+          "_id": "66f1a2b3c4d5e6f7890a9999",
+          "propertyType": "Land",
+          "briefType": "Joint Venture",
+          "price": 0,
+          "location": { "state": "Abuja", "localGovernment": "AMAC", "area": "Wuse II" },
+          "pictures": [],
+          "thumbnail": null
+        },
+        "inspectionDate": "Oct 18, 2025",
+        "inspectionTime": "2:00 PM",
+        "inspectionMode": "virtual",
+        "status": "pending_transaction",
+        "requestedBy": { "_id": "user_02XYZ", "fullName": "John Smith" },
+        "transaction": "trx_01JEFGHKLM",
+        "isNegotiating": true,
+        "negotiationPrice": 0,
+        "letterOfIntention": "https://cdn.khabiteq.com/loi/loi_987.pdf",
+        "owner": { "_id": "agent_0456", "id": "agent_0456" },
+        "sellerCounterOffer": 0,
+        "pendingResponseFrom": "buyer",
+        "stage": "negotiation",
+        "createdAt": "2025-09-21T12:10:00.000Z",
+        "updatedAt": "2025-09-21T12:10:00.000Z",
+        "__v": 0,
+        "inspectionStatus": "new",
+        "inspectionType": "LOI",
+        "isLOI": true
+      }
+    ]
+  }
+}
