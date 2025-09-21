@@ -40,13 +40,31 @@ const UpdatePropertyRedirect = () => {
 
         if (response.data && response.data.success) {
           const property = response.data.data;
-          
+
+          // Populate post property context so downstream pages don't re-fetch
+          try {
+            populatePropertyData && populatePropertyData(property);
+            // also set existing images in local context for faster load
+            if (property.pictures && property.pictures.length > 0) {
+              const existingImages = property.pictures.map((url: string, index: number) => ({
+                id: `existing-${index}`,
+                file: null,
+                preview: url,
+                url,
+                isUploading: false,
+              }));
+              setImages && setImages(existingImages);
+            }
+          } catch (err) {
+            // ignore if provider not available
+          }
+
           // Determine property type from briefType
           const propertyType = property.briefType === "Outright Sales" ? "outright-sales" :
                               property.briefType === "Rent" ? "rent" :
                               property.briefType === "Shortlet" ? "shortlet" :
                               property.briefType === "Joint Venture" ? "joint-venture" : "outright-sales";
-          
+
           // Redirect to the specific property type route
           router.replace(`/update-property/${propertyId}/${propertyType}`);
         } else {
