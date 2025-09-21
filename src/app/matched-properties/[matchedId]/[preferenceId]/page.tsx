@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 interface MatchDetails {
   _id: string;
