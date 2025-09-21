@@ -20,13 +20,13 @@ Endpoint: POST https://khabiteq-realty.onrender.com/api/inspections/request-insp
       "propertyId": "66f1a2b3c4d5e6f7890a1234",
       "inspectionType": "price",
       "negotiationPrice": 48500000,
-      "requestSource": { "page": "marketplace" }
+      "requestSource": { "page": "market-place" }
     },
     {
       "propertyId": "66f1a2b3c4d5e6f7890a5678",
       "inspectionType": "LOI",
       "letterOfIntention": "https://cdn.khabiteq.com/loi/abc123.pdf",
-      "requestSource": { "page": "matches", "matchedId": "m_9d8f7a6b5c4e3d2c1b0a", "preferenceId": "p_1234567890abcdef" }
+      "requestSource": { "page": "market-place" }
     }
   ]
 }

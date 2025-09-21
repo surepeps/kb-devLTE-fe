@@ -162,7 +162,7 @@ const FeaturedPropertiesSection = () => {
                     onPropertyClick={() => handlePropertyClick(property)}
                     onInspectionToggle={() => {
                       const sourceTab = isJVProperty ? "jv" : (property.briefType.toLowerCase().includes('rent') ? 'rent' : 'buy') as any;
-                      toggleInspectionSelection(property, sourceTab, "home page");
+                      toggleInspectionSelection(property, sourceTab, "home-page");
                     }}
                     className="hover:scale-105 transition-transform duration-300"
                   />
