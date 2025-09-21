@@ -391,10 +391,11 @@ const SharedUpdatePropertyForm: React.FC<SharedUpdatePropertyFormProps> = ({
       }
     };
 
-    if (propertyId && user) {
+    // Only fetch from API when the post-property context has not been populated yet
+    if (propertyId && user && (!propertyData || !propertyData.propertyType)) {
       fetchPropertyData();
     }
-  }, [propertyId, user, setPropertyData, setImages, propertyType, router]);
+  }, [propertyId, user, setPropertyData, setImages, propertyType, router, propertyData]);
 
   // Scroll to top on page load
   useEffect(() => {
