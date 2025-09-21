@@ -8,6 +8,7 @@ import GlobalJVPropertyCard from "./GlobalJVPropertyCard";
 import SimplifiedPriceNegotiationModal from "@/components/modals/SimplifiedPriceNegotiationModal";
 import randomImage from "@/assets/noImageAvailable.png";
 import ShortletBookingModal from "@/components/shortlet/ShortletBookingModal";
+import LOIUploadModal from "@/components/new-marketplace/modals/LOIUploadModal";
 
 interface EnhancedGlobalPropertyCardProps {
   type: "standard" | "jv";
@@ -38,6 +39,9 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     addNegotiatedPrice,
     removeNegotiatedPrice,
     getNegotiatedPrice,
+    addLOIDocument,
+    removeLOIDocument,
+    getLOIDocument,
   } = useGlobalPropertyActions();
 
   const [priceNegotiationModal, setPriceNegotiationModal] = useState<{
@@ -52,6 +56,8 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
     isOpen: boolean;
     mode: "instant" | "request";
   }>({ isOpen: false, mode: "instant" });
+
+  const [loiModal, setLoiModal] = useState<{ isOpen: boolean; property: any | null }>({ isOpen: false, property: null });
 
   const isSelected = isSelectedForInspection(property._id);
   const negotiatedPrice = getNegotiatedPrice(property._id);
@@ -105,6 +111,16 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
   const transformedImages = transformImages(images);
 
   if (type === "jv") {
+    const existingLOI = getLOIDocument(property._id);
+
+    const handleLOISubmit = (prop: any, document: File, url?: string) => {
+      addLOIDocument(prop._id, document, url);
+      if (!isSelectedForInspection(prop._id)) {
+        toggleInspectionSelection(prop, "jv", "auto-loi");
+      }
+      setLoiModal({ isOpen: false, property: null });
+    };
+
     return (
       <>
         <GlobalJVPropertyCard
@@ -113,21 +129,21 @@ const EnhancedGlobalPropertyCard: React.FC<EnhancedGlobalPropertyCardProps> = ({
           images={transformedImages}
           isPremium={isPremium}
           onPropertyClick={onPropertyClick}
-          onPriceNegotiation={handlePriceNegotiation}
           onInspectionToggle={handleInspectionToggle}
-          onRemoveNegotiation={handleRemoveNegotiation}
           isSelected={isSelected}
-          negotiatedPrice={negotiatedPrice}
           className={className}
+          onLOIUpload={() => setLoiModal({ isOpen: true, property })}
+          onRemoveLOI={(id) => removeLOIDocument(id)}
+          loiDocument={existingLOI}
         />
 
-        {priceNegotiationModal.isOpen && (
-          <SimplifiedPriceNegotiationModal
-            isOpen={priceNegotiationModal.isOpen}
-            property={priceNegotiationModal.property}
-            onClose={() => setPriceNegotiationModal({ isOpen: false, property: null })}
-            onSubmit={handleNegotiationSubmit}
-            existingNegotiation={getNegotiatedPrice(priceNegotiationModal.property?._id)}
+        {loiModal.isOpen && (
+          <LOIUploadModal
+            isOpen={loiModal.isOpen}
+            property={property}
+            onClose={() => setLoiModal({ isOpen: false, property: null })}
+            onSubmit={handleLOISubmit}
+            existingDocument={existingLOI}
           />
         )}
       </>
