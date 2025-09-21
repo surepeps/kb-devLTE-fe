@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { GET_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
