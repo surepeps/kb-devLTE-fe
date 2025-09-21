@@ -102,15 +102,16 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
           <div className="flex items-center gap-2">
             {cardData.map((item, idx) => {
               if (item.header === "Price") {
+                const durationLabel = (property as any)?.shortletDuration;
+                const suffix = computedMode === "shortlet" && durationLabel ? ` / ${durationLabel}` : "";
                 return (
                   <div key={idx} className="flex items-center gap-2">
                     {hasNegotiatedPrice ? (
                       <div className="flex items-center gap-2">
                         <h2 className="text-md font-semibold text-[#8DDB90]">
-                          ��
-                          {Number(
-                            negotiatedPrice!.negotiatedPrice,
-                          ).toLocaleString()}
+                          ₦
+                          {Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}
+                          {suffix}
                         </h2>
                         {onRemoveNegotiation && (
                           <button
@@ -125,12 +126,12 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                           </button>
                         )}
                         <span className="text-sm text-[#5A5D63] line-through">
-                          {item.value}
+                          {item.value}{suffix}
                         </span>
                       </div>
                     ) : (
                       <h2 className="text-lg font-semibold text-[#000000]">
-                        {item.value}
+                        {item.value}{suffix}
                       </h2>
                     )}
                   </div>
