@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useUserContext } from "@/context/user-context";
+import { usePostPropertyContext } from "@/context/post-property-context";
 import Loading from "@/components/loading-component/loading";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
