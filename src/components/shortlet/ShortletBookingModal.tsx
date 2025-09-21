@@ -599,6 +599,18 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                       <p className="text-sm text-gray-600">Nightly</p>
                       <p className="text-sm font-semibold">{formatCurrency(nightly)}</p>
                     </div>
+                    {weeklyDiscountPercent > 0 && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600">Weekly Discount</p>
+                        <p className="text-sm font-semibold">-{Math.min(100, Math.max(0, weeklyDiscountPercent))}%</p>
+                      </div>
+                    )}
+                    {monthlyDiscountPercent > 0 && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-600">Monthly Discount</p>
+                        <p className="text-sm font-semibold">-{Math.min(100, Math.max(0, monthlyDiscountPercent))}%</p>
+                      </div>
+                    )}
                     {cleaningFee > 0 && (
                       <div className="flex items-center justify-between">
                         <p className="text-sm text-gray-600">Cleaning Fee</p>

@@ -79,9 +79,18 @@ const slice = createSlice({
       const featuresArr = Array.isArray(sub.features) ? sub.features : [];
       const featuresByKey: Record<string, ActiveFeatureEntry> = {};
       for (const f of featuresArr) {
-        const featureId = f.feature;
-        const cat = state.catalog.byId[featureId];
-        const key = cat?.key || featureId; // fallback to id until catalog loads
+        // Support backend returning either a feature id string or a feature object
+        let featureId: string = '';
+        let featureKey: string | null = null;
+        if (f && typeof f.feature === 'string') {
+          featureId = f.feature;
+        } else if (f && typeof f.feature === 'object' && f.feature !== null) {
+          featureId = f.feature._id || f.feature.id || '';
+          featureKey = f.feature.key || null;
+        }
+
+        const cat = featureId ? state.catalog.byId[featureId] : undefined;
+        const key = (cat && cat.key) || featureKey || featureId || String(f.feature || 'unknown_feature'); // fallback
         const type = String(f.type) as FeatureType;
         const isUnlimited = type === 'unlimited' || (type === 'count' && (f.value === -1 || f.remaining === -1));
         featuresByKey[key] = {

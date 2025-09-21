@@ -112,7 +112,7 @@ const SubscriptionFeaturesFAB: React.FC = () => {
           <div className="space-y-2">
             {features.length === 0 && <div className="text-sm text-gray-500">No features available</div>}
             {features.map(([key, entry]: any) => {
-              const label = (catalog && catalog[key]?.label) || key;
+              const label = (catalog && typeof catalog[key]?.label === 'string' ? catalog[key].label : (typeof key === 'string' ? key : String(key)));
               const type = entry.type;
               const value = entry.value;
               const remaining = entry.remaining;
