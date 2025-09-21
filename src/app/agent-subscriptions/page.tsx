@@ -466,7 +466,19 @@ export default function AgentSubscriptionsPage() {
                 )}
 
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                    {(() => {
+                      const isFreePlan = plan.basePrice === 0 || plan.isTrial || /free/i.test(plan.name || '');
+                      const kycApproved = (user as any)?.agentData?.kycStatus === 'approved';
+                      if (isFreePlan && kycApproved) {
+                        return (
+                          <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">Used / Exhausted</span>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
                   <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
                 </div>
 
