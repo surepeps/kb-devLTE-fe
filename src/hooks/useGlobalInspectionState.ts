@@ -9,6 +9,10 @@ export interface InspectionProperty {
   property: any;
   sourceTab?: "buy" | "jv" | "rent" | "shortlet";
   sourcePage?: string;
+  sourceMeta?: {
+    matchedId?: string;
+    preferenceId?: string;
+  };
 }
 
 export interface NegotiatedPrice {
@@ -47,9 +51,10 @@ export const useGlobalInspectionState = () => {
   const addProperty = useCallback((
     property: any,
     sourceTab?: "buy" | "jv" | "rent" | "shortlet",
-    sourcePage?: string
+    sourcePage?: string,
+    sourceMeta?: { matchedId?: string; preferenceId?: string }
   ) => {
-    toggleInspectionSelection(property, sourceTab, sourcePage);
+    toggleInspectionSelection(property, sourceTab, sourcePage, sourceMeta);
   }, [toggleInspectionSelection]);
 
   // Remove property from inspection (wrapper around global context)
@@ -61,9 +66,10 @@ export const useGlobalInspectionState = () => {
   const toggleProperty = useCallback((
     property: any,
     sourceTab?: "buy" | "jv" | "rent" | "shortlet",
-    sourcePage?: string
+    sourcePage?: string,
+    sourceMeta?: { matchedId?: string; preferenceId?: string }
   ) => {
-    toggleInspectionSelection(property, sourceTab, sourcePage);
+    toggleInspectionSelection(property, sourceTab, sourcePage, sourceMeta);
   }, [toggleInspectionSelection]);
 
   // Check if property is selected (wrapper around global context)
