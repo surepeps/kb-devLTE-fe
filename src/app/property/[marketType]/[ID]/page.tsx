@@ -44,6 +44,7 @@ import "swiper/css/thumbs";
 import Loading from "@/components/loading-component/loading";
 import { kebabToTitleCase } from "@/utils/helpers";
 import ShortletBookingModal from "@/components/shortlet/ShortletBookingModal";
+import LOIUploadModal from "@/components/new-marketplace/modals/LOIUploadModal";
 
 interface PropertyDetails {
   _id: string;
@@ -591,6 +592,9 @@ const ActionButtons = ({
   isSelected,
   onBookNow,
   onRequestToBook,
+  onLOIUpload,
+  hasLOI,
+  onClearLOI,
 }: {
   details: PropertyDetails;
   onInspection: () => void;
@@ -598,6 +602,9 @@ const ActionButtons = ({
   isSelected: boolean;
   onBookNow?: () => void;
   onRequestToBook?: () => void;
+  onLOIUpload?: () => void;
+  hasLOI?: boolean;
+  onClearLOI?: () => void;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -626,6 +633,7 @@ const ActionButtons = ({
   };
 
   const isShortlet = details.briefType === "Shortlet" || (details as any).propertyType === "Shortlet";
+  const isJV = details.briefType === "Joint Venture";
 
   return (
     <div className="space-y-4">
@@ -662,6 +670,35 @@ const ActionButtons = ({
             className="flex-1 min-h-[44px] py-3 px-4 bg-[#1976D2] text-white text-sm font-bold rounded-xl hover:bg-[#1565C0] transition-colors flex items-center justify-center"
           >
             Request to Book
+          </button>
+        </div>
+      ) : isJV ? (
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={onLOIUpload || (() => {})}
+            className="flex-1 bg-[#FF9800] hover:bg-[#F57C00] whitespace-nowrap text-sm text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center"
+          >
+            <ExternalLink className="w-5 h-5 mr-2" />
+            {hasLOI ? "Edit LOI" : "Submit LOI"}
+          </button>
+          {hasLOI && (
+            <button
+              onClick={onClearLOI || (() => {})}
+              className="flex-1 bg-[#F44336] hover:bg-[#D32F2F] whitespace-nowrap text-sm text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center"
+            >
+              Clear LOI
+            </button>
+          )}
+          <button
+            onClick={onInspection}
+            className={`flex-1 font-semibold py-3 px-4 whitespace-nowrap text-sm rounded-xl transition-colors duration-200 flex items-center justify-center ${
+              isSelected
+                ? "bg-red-600 hover:bg-red-700 text-white"
+                : "bg-green-600 hover:bg-green-700 text-white"
+            }`}
+          >
+            <Eye className="w-5 h-5 mr-2" />
+            {isSelected ? "Remove" : "Add to Inspection"}
           </button>
         </div>
       ) : (
@@ -730,7 +767,10 @@ const ProductDetailsPage = () => {
     toggleInspectionSelection,
     isSelectedForInspection,
     addNegotiatedPrice,
-    getNegotiatedPrice
+    getNegotiatedPrice,
+    addLOIDocument,
+    getLOIDocument,
+    removeLOIDocument,
   } = useGlobalPropertyActions();
 
   // Price negotiation modal state
@@ -738,6 +778,8 @@ const ProductDetailsPage = () => {
     isOpen: boolean;
     property: PropertyDetails | null;
   }>({ isOpen: false, property: null });
+
+  const [loiModal, setLoiModal] = useState<{ isOpen: boolean }>({ isOpen: false });
 
   const marketType = params?.marketType ?? "";
   const id = params?.ID ?? "";
@@ -1069,6 +1111,9 @@ const ProductDetailsPage = () => {
                 isSelected={isSelectedForInspection(details._id)}
                 onBookNow={() => setBookingModal({ isOpen: true, mode: "instant" })}
                 onRequestToBook={() => setBookingModal({ isOpen: true, mode: "request" })}
+                onLOIUpload={() => setLoiModal({ isOpen: true })}
+                hasLOI={!!getLOIDocument(details._id)}
+                onClearLOI={() => removeLOIDocument(details._id)}
               />
             </motion.div>
 
@@ -1178,6 +1223,19 @@ const ProductDetailsPage = () => {
         onSubmit={handleNegotiationSubmit}
         existingNegotiation={details ? getNegotiatedPrice(details._id) : null}
       />
+      {/* LOI Upload Modal for JV */}
+      {details && (
+        <LOIUploadModal
+          isOpen={loiModal.isOpen && details.briefType === "Joint Venture"}
+          property={details}
+          onClose={() => setLoiModal({ isOpen: false })}
+          onSubmit={(prop, file, url) => {
+            addLOIDocument(prop._id, file, url);
+            if (!isSelectedForInspection(prop._id)) toggleInspectionSelection(prop, "jv", "auto-loi");
+          }}
+          existingDocument={getLOIDocument(details._id)}
+        />
+      )}
       {/* Shortlet Booking Modal */}
       <ShortletBookingModal
         isOpen={bookingModal.isOpen}

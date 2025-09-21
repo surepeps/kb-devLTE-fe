@@ -19,17 +19,17 @@ interface GlobalJVPropertyCardProps {
   images: PropertyImage[];
   isPremium: boolean;
   onPropertyClick?: () => void;
-  onPriceNegotiation?: () => void;
-  onEditPrice?: () => void;
   onInspectionToggle?: () => void;
-  onRemoveNegotiation?: (propertyId: string) => void;
   isSelected?: boolean;
-  negotiatedPrice?: {
-    propertyId: string;
-    originalPrice: number;
-    negotiatedPrice: number;
-  } | null;
   className?: string;
+  // LOI-specific props
+  onLOIUpload?: () => void;
+  onRemoveLOI?: (propertyId: string) => void;
+  loiDocument?: {
+    propertyId: string;
+    document: File | null;
+    documentUrl?: string;
+  } | null;
 } 
 
 const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
@@ -38,16 +38,14 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
   images,
   isPremium,
   onPropertyClick,
-  onPriceNegotiation,
-  onEditPrice,
   onInspectionToggle,
-  onRemoveNegotiation,
   isSelected = false,
-  negotiatedPrice,
   className = "",
+  onLOIUpload,
+  onRemoveLOI,
+  loiDocument,
 }) => {
-
-  const hasNegotiatedPrice = negotiatedPrice != null && negotiatedPrice !== undefined;
+  const hasLOI = !!loiDocument;
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -74,19 +72,22 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
 
         {/* Content Section */}
         <div className="flex flex-col gap-[6px] flex-grow">
-          {/* Property Type */}
+          {/* Property Type (hide generic JV label) */}
           <div className="flex gap-[7px]">
             {cardData.map((item, idx) => {
               if (item.header === "Property Type") {
+                const val = String(item.value || "").trim();
+                if (val.toLowerCase() === "joint venture") return null;
                 return (
                   <div
                     key={idx}
                     className="min-w-fit h-[26px] px-[6px] flex items-center rounded-[3px] bg-[#E4EFE7] text-xs text-[#000000]"
                   >
-                    {item.value}
+                    {val}
                   </div>
                 );
               }
+              return null;
             })}
           </div>
 
@@ -129,35 +130,41 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
             })()}
           </div>
 
-          {/* Investment Type */}
+          {/* Investment Type (hide generic JV label) */}
           <div className="flex gap-[9px]">
             {cardData.map((item, idx) => {
               if (item.header === "Investment Type") {
+                const val = String(item.value || "").trim();
+                if (!val || val.toLowerCase() === "joint venture") return null;
                 return (
                   <div
                     key={idx}
                     className="min-w-fit h-[22px] px-[4px] flex items-center rounded-[2px] bg-[#FFF3E0] text-xs text-[#E65100]"
                   >
-                    {item.value}
+                    {val}
                   </div>
                 );
               }
+              return null;
             })}
           </div>
 
-          {/* Expected ROI */}
+          {/* Expected ROI (hide when N/A or empty) */}
           <div className="flex gap-[9px]">
             {cardData.map((item, idx) => {
               if (item.header === "Expected ROI") {
+                const val = String(item.value || "").trim();
+                if (!val || val.toLowerCase() === "n/a") return null;
                 return (
                   <h2
                     key={idx}
                     className="text-xs font-semibold text-[#8DDB90]"
                   >
-                    Expected ROI: {item.value}
+                    Expected ROI: {val}
                   </h2>
                 );
               }
+              return null;
             })}
           </div>
 
@@ -196,58 +203,43 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
 
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 pt-2 mt-auto">
-            {/* Price Negotiation Button */}
-            {hasNegotiatedPrice && isSelected ? (
+            {/* Submit LOI Button */}
+            {hasLOI ? (
               <div className="flex gap-2">
                 <Button
-                  value="Edit Price"
+                  value="Edit LOI"
                   type="button"
-                  onClick={onEditPrice || onPriceNegotiation || (() => {})}
-                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors rounded"
+                  onClick={onLOIUpload || (() => {})}
+                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#F57C00] transition-colors rounded"
                 />
-                <Button
-                  value="Clear"
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (onRemoveNegotiation) {
-                      if (property._id) {
-                        onRemoveNegotiation(property._id);
-                      }
-                    }
-                  }}
-                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors rounded"
-                />
-              </div>
-            ) : hasNegotiatedPrice ? (
-              <div className="flex gap-2">
-                <Button
-                  value={`₦${Number(negotiatedPrice!.negotiatedPrice).toLocaleString()}`}
-                  type="button"
-                  onClick={onPriceNegotiation || (() => {})}
-                  className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#8DDB90] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#76c77a] transition-colors rounded"
-                />
-                {onRemoveNegotiation && (
-                  <button
+                {loiDocument?.documentUrl && (
+                  <a
+                    href={loiDocument.documentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#0B423D] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#09391C] transition-colors rounded text-center flex items-center justify-center"
+                  >
+                    View LOI
+                  </a>
+                )}
+                {onRemoveLOI && (
+                  <Button
+                    value="Clear"
+                    type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (property._id) {
-                        onRemoveNegotiation(property._id);
-                      }
+                      if (property._id) onRemoveLOI(property._id);
                     }}
-                    className="min-h-[40px] px-3 bg-[#F44336] text-[#FFFFFF] hover:bg-[#D32F2F] transition-colors rounded flex items-center justify-center"
-                    title="Clear negotiated price"
-                  >
-                    <X size={16} />
-                  </button>
+                    className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#F44336] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#D32F2F] transition-colors rounded"
+                  />
                 )}
               </div>
             ) : (
               <Button
-                value="Price Negotiation"
+                value="Submit LOI"
                 type="button"
-                onClick={onPriceNegotiation || (() => {})}
-                className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors"
+                onClick={onLOIUpload || (() => {})}
+                className="min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#F57C00] transition-colors rounded"
               />
             )}
 

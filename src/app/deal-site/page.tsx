@@ -908,15 +908,45 @@ export default function DealSitePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-700 mb-1">Business Name</label>
-          <input type="text" value={form.paymentDetails?.businessName || ""} onChange={(e) => setForm({ ...form, paymentDetails: { ...(form.paymentDetails || {}), businessName: e.target.value } })} className={inputBase} placeholder="Registered business name" />
+          <input type="text" value={form.paymentDetails?.businessName || ""} onChange={(e) => setForm(prev => ({
+            ...prev,
+            paymentDetails: {
+              businessName: e.target.value,
+              accountNumber: prev.paymentDetails?.accountNumber ?? "",
+              sortCode: prev.paymentDetails?.sortCode ?? "",
+              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
+              primaryContactName: prev.paymentDetails?.primaryContactName,
+              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
+            }
+          }))} className={inputBase} placeholder="Registered business name" />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Account Number</label>
-          <input type="text" value={form.paymentDetails?.accountNumber || ""} onChange={(e) => setForm({ ...form, paymentDetails: { ...(form.paymentDetails || {}), accountNumber: e.target.value.replace(/\D/g, '') } })} className={inputBase} placeholder="10-digit account number" />
+          <input type="text" value={form.paymentDetails?.accountNumber || ""} onChange={(e) => setForm(prev => ({
+            ...prev,
+            paymentDetails: {
+              businessName: prev.paymentDetails?.businessName ?? "",
+              accountNumber: e.target.value.replace(/\D/g, ''),
+              sortCode: prev.paymentDetails?.sortCode ?? "",
+              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
+              primaryContactName: prev.paymentDetails?.primaryContactName,
+              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
+            }
+          }))} className={inputBase} placeholder="10-digit account number" />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Settlement Bank</label>
-          <select value={form.paymentDetails?.sortCode || ""} onChange={(e) => setForm({ ...form, paymentDetails: { ...(form.paymentDetails || {}), sortCode: e.target.value } })} className={selectBase}>
+          <select value={form.paymentDetails?.sortCode || ""} onChange={(e) => setForm(prev => ({
+            ...prev,
+            paymentDetails: {
+              businessName: prev.paymentDetails?.businessName ?? "",
+              accountNumber: prev.paymentDetails?.accountNumber ?? "",
+              sortCode: e.target.value,
+              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
+              primaryContactName: prev.paymentDetails?.primaryContactName,
+              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
+            }
+          }))} className={selectBase}>
             <option value="" disabled>{banksLoading ? "Loading banks..." : "Select bank"}</option>
             {bankList.map((b) => (
               <option key={b.code} value={b.code}>{b.name}</option>
@@ -925,15 +955,45 @@ export default function DealSitePage() {
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Primary Contact Email (optional)</label>
-          <input type="email" value={form.paymentDetails?.primaryContactEmail || ""} onChange={(e) => setForm({ ...form, paymentDetails: { ...(form.paymentDetails || {}), primaryContactEmail: e.target.value } })} className={inputBase} placeholder="email@example.com" />
+          <input type="email" value={form.paymentDetails?.primaryContactEmail || ""} onChange={(e) => setForm(prev => ({
+            ...prev,
+            paymentDetails: {
+              businessName: prev.paymentDetails?.businessName ?? "",
+              accountNumber: prev.paymentDetails?.accountNumber ?? "",
+              sortCode: prev.paymentDetails?.sortCode ?? "",
+              primaryContactEmail: e.target.value,
+              primaryContactName: prev.paymentDetails?.primaryContactName,
+              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
+            }
+          }))} className={inputBase} placeholder="email@example.com" />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Primary Contact Name (optional)</label>
-          <input type="text" value={form.paymentDetails?.primaryContactName || ""} onChange={(e) => setForm({ ...form, paymentDetails: { ...(form.paymentDetails || {}), primaryContactName: e.target.value } })} className={inputBase} placeholder="Full name" />
+          <input type="text" value={form.paymentDetails?.primaryContactName || ""} onChange={(e) => setForm(prev => ({
+            ...prev,
+            paymentDetails: {
+              businessName: prev.paymentDetails?.businessName ?? "",
+              accountNumber: prev.paymentDetails?.accountNumber ?? "",
+              sortCode: prev.paymentDetails?.sortCode ?? "",
+              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
+              primaryContactName: e.target.value,
+              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
+            }
+          }))} className={inputBase} placeholder="Full name" />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Primary Contact Phone (optional)</label>
-          <input type="tel" value={form.paymentDetails?.primaryContactPhone || ""} onChange={(e) => setForm({ ...form, paymentDetails: { ...(form.paymentDetails || {}), primaryContactPhone: e.target.value } })} className={inputBase} placeholder="e.g. +2348012345678" />
+          <input type="tel" value={form.paymentDetails?.primaryContactPhone || ""} onChange={(e) => setForm(prev => ({
+            ...prev,
+            paymentDetails: {
+              businessName: prev.paymentDetails?.businessName ?? "",
+              accountNumber: prev.paymentDetails?.accountNumber ?? "",
+              sortCode: prev.paymentDetails?.sortCode ?? "",
+              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
+              primaryContactName: prev.paymentDetails?.primaryContactName,
+              primaryContactPhone: e.target.value,
+            }
+          }))} className={inputBase} placeholder="e.g. +2348012345678" />
         </div>
       </div>
       <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
