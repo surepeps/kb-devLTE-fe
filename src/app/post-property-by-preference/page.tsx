@@ -785,7 +785,7 @@ const PostPropertyByPreference = () => {
 
       // 5. Submit to API
       const response = await POST_REQUEST(
-        `${URLS.BASE}${URLS.accountPropertyBaseUrl}/create`,
+        `${URLS.BASE}/account/preferences/${preferenceId}/properties`,
         payload,
         Cookies.get("token"),
       );
