@@ -17,6 +17,10 @@ interface InspectionProperty {
   property: any;
   sourceTab?: "buy" | "jv" | "rent" | "shortlet";
   sourcePage?: string;
+  sourceMeta?: {
+    matchedId?: string;
+    preferenceId?: string;
+  };
 }
 
 interface NegotiatedPrice {
@@ -37,7 +41,8 @@ interface GlobalPropertyActionsContextType {
   toggleInspectionSelection: (
     property: any,
     sourceTab?: "buy" | "jv" | "rent" | "shortlet",
-    sourcePage?: string
+    sourcePage?: string,
+    sourceMeta?: { matchedId?: string; preferenceId?: string }
   ) => void;
   removeFromInspection: (propertyId: string) => void;
   clearInspectionSelection: () => void;
@@ -146,7 +151,8 @@ export const GlobalPropertyActionsProvider: React.FC<{
     (
       property: any,
       sourceTab?: "buy" | "jv" | "rent" | "shortlet",
-      sourcePage?: string
+      sourcePage?: string,
+      sourceMeta?: { matchedId?: string; preferenceId?: string }
     ) => {
       const propertyId = property._id;
 
@@ -175,7 +181,7 @@ export const GlobalPropertyActionsProvider: React.FC<{
           setTimeout(() => toast.success("Property selected for inspection"), 0);
           return [
             ...current,
-            { propertyId, property, sourceTab, sourcePage },
+            { propertyId, property, sourceTab, sourcePage, sourceMeta },
           ];
         }
       });
