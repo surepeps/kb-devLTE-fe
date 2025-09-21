@@ -11,6 +11,7 @@ import FailedRequest from "@/components/general-components/FailedRequest";
 import StandardPreloader from "./StandardPreloader";
 import { IsMobile } from "@/hooks/isMobile";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 interface PropertyGridProps {
   tab: "buy" | "rent" | "shortlet" | "jv";
@@ -42,6 +43,7 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
 }) => {
   const isMobile = IsMobile();
   const { setTabPage } = useNewMarketplace();
+  const { toggleInspectionSelection } = useGlobalPropertyActions();
 
 
 
@@ -116,6 +118,10 @@ const PropertyGrid: React.FC<PropertyGridProps> = ({
                     images={property.pictures || property.images || []}
                     isPremium={property.isPremium || false}
                     onPropertyClick={() => onPropertyClick(property)}
+                    onInspectionToggle={() => {
+                      const sourceTab = tab === "jv" ? "jv" : tab;
+                      toggleInspectionSelection(property, sourceTab, "market-place");
+                    }}
                   />
                 </motion.div>
               );
