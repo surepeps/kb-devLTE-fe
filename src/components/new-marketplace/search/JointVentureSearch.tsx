@@ -197,8 +197,8 @@ const JointVentureSearch = () => {
       {/* JV Specific Notice */}
       <div className="px-4 py-2 bg-[#FFF3E0] border-b border-[#FFE0B2]">
         <p className="text-sm text-[#E65100]">
-          <strong>Note:</strong> Joint venture investments require submission of
-          Letter of Intent (LOI) documents.
+         <strong>Note:</strong> For joint venture investments, you may optionally submit a 
+          Letter of Intent (LOI) document.
         </p>
       </div>
 

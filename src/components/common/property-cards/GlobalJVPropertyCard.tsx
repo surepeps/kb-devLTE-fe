@@ -53,7 +53,7 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
       transition={{ delay: 0.2, duration: 0.5 }}
       exit={{ opacity: 0, y: 20 }}
       viewport={{ once: true }}
-      className={`w-full max-w-[320px] md:w-[280px] lg:w-[285px] xl:w-[280px] h-auto min-h-[450px] rounded-md shrink-0 bg-white border-[1px] p-3 gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col ${className}`}
+      className={`w-full max-w-[320px] sm:max-w-[280px] md:w-[280px] lg:w-[285px] xl:w-[280px] h-auto min-h-[420px] sm:min-h-[400px] rounded-md shrink-0 bg-white border-[1px] p-3 gap-[10px] transition-all duration-500 hover:shadow-lg flex flex-col mx-auto ${className}`}
     >
       <div className="flex flex-col gap-[8px] w-full flex-grow">
         {/* Image Section */}
@@ -128,44 +128,6 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
                 </>
               );
             })()}
-          </div>
-
-          {/* Investment Type (hide generic JV label) */}
-          <div className="flex gap-[9px]">
-            {cardData.map((item, idx) => {
-              if (item.header === "Investment Type") {
-                const val = String(item.value || "").trim();
-                if (!val || val.toLowerCase() === "joint venture") return null;
-                return (
-                  <div
-                    key={idx}
-                    className="min-w-fit h-[22px] px-[4px] flex items-center rounded-[2px] bg-[#FFF3E0] text-xs text-[#E65100]"
-                  >
-                    {val}
-                  </div>
-                );
-              }
-              return null;
-            })}
-          </div>
-
-          {/* Expected ROI (hide when N/A or empty) */}
-          <div className="flex gap-[9px]">
-            {cardData.map((item, idx) => {
-              if (item.header === "Expected ROI") {
-                const val = String(item.value || "").trim();
-                if (!val || val.toLowerCase() === "n/a") return null;
-                return (
-                  <h2
-                    key={idx}
-                    className="text-xs font-semibold text-[#8DDB90]"
-                  >
-                    Expected ROI: {val}
-                  </h2>
-                );
-              }
-              return null;
-            })}
           </div>
 
           {/* Location and View Details - Moved above buttons */}
