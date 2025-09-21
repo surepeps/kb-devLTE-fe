@@ -23,15 +23,21 @@ const UpdateOutrightSalesPropertyForm: React.FC<UpdateOutrightSalesPropertyFormP
   const params = useParams();
   const propertyId = params?.propertyId as string;
   const { user } = useUserContext();
-  const { populatePropertyData, updatePropertyData } = usePostPropertyContext();
-  
+  const { populatePropertyData, updatePropertyData, propertyData } = usePostPropertyContext();
+
   const [propertyLoading, setPropertyLoading] = useState(true);
 
-  // Load property data on component mount
+  // Load property data on component mount - skip if context already populated
   useEffect(() => {
     const loadPropertyData = async () => {
       try {
         if (!propertyId) return;
+
+        // If context already has property data populated, skip network call
+        if (propertyData && propertyData.propertyType) {
+          setPropertyLoading(false);
+          return;
+        }
 
         const url = `${process.env.NEXT_PUBLIC_API_URL}/account/properties/${propertyId}/getOne`;
         const response = await axios.get(url, {
@@ -56,7 +62,7 @@ const UpdateOutrightSalesPropertyForm: React.FC<UpdateOutrightSalesPropertyFormP
     };
 
     loadPropertyData();
-  }, [propertyId, populatePropertyData, router]);
+  }, [propertyId, populatePropertyData, router, propertyData]);
 
   // Set property type on component mount
   useEffect(() => {

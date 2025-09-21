@@ -155,11 +155,17 @@ const UpdateRentPropertyForm: React.FC<UpdateRentPropertyFormProps> = ({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [propertyLoading, setPropertyLoading] = useState(true);
 
-  // Load property data on component mount
+  // Load property data on component mount - skip if context already populated
   useEffect(() => {
     const loadPropertyData = async () => {
       try {
         if (!propertyId) return;
+
+        // If context already populated, skip fetching
+        if (propertyData && propertyData.propertyType) {
+          setPropertyLoading(false);
+          return;
+        }
 
         const url = `${process.env.NEXT_PUBLIC_API_URL}/account/properties/${propertyId}/getOne`;
         const response = await axios.get(url, {
@@ -184,7 +190,7 @@ const UpdateRentPropertyForm: React.FC<UpdateRentPropertyFormProps> = ({
     };
 
     loadPropertyData();
-  }, [propertyId, populatePropertyData, router]);
+  }, [propertyId, populatePropertyData, router, propertyData]);
 
   // Set property type on component mount
   useEffect(() => {

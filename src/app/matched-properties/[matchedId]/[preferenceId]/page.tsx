@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, DollarSign, Home, FileText, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EnhancedGlobalPropertyCard, createPropertyCardData } from "@/components/common/property-cards";
+import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 
 interface MatchDetails {
   _id: string;
@@ -125,7 +126,8 @@ const MatchedPropertiesPage = () => {
   const router = useRouter();
   const params = useParams();
   const { matchedId, preferenceId } = params;
-  
+  const { toggleInspectionSelection } = useGlobalPropertyActions();
+
   const [data, setData] = useState<MatchedPropertiesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -443,9 +445,17 @@ const MatchedPropertiesPage = () => {
                           images={images}
                           isPremium={property.isPremium}
                           onPropertyClick={() => {
-                            // Navigate to property details page
                             const marketType = property.briefType === "Outright Sales" ? "buy" : "rent";
                             router.push(`/property/${marketType}/${property.id}`);
+                          }}
+                          onInspectionToggle={() => {
+                            // Tag selection with matched-properties source and meta
+                            toggleInspectionSelection(
+                              transformedProperty,
+                              "buy",
+                              "matched-properties",
+                              { matchedId: String(matchedId), preferenceId: String(preferenceId) }
+                            );
                           }}
                           className="w-full h-full"
                         />
