@@ -3,7 +3,7 @@
 'use client';
 import Image from 'next/image';
 import React from 'react';
-import comingSoon from '@/assets/cominsoon.png';
+import comingSoon from '@/assets/noImageAvailable.png';
 
 const ComingSoon = () => {
   return (

@@ -4,8 +4,6 @@ import React from 'react';
 import Counts from '../general-components/counts';
 import Link from 'next/link';
 import { color, motion } from 'framer-motion';
-import Image from 'next/image';
-import image from '@/assets/Agentpic.png';
 import '@/styles/hero.css';
 /**
  *

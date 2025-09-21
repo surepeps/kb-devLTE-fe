@@ -3,8 +3,7 @@
 
 'use client';
 import React, { FC } from 'react';
-import Image, { StaticImageData } from 'next/image';
-//import houseImage from '@/assets/assets.png';
+import Image, { StaticImageData } from 'next/image';s
 import lineStyle from '@/svgs/linestyle.svg';
 import Button from '../general-components/button';
 import '@/styles/hero.css';

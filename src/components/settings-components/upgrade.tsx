@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import Input from '../general-components/Input';
 import { usePageContext } from '@/context/page-context';
 import Image from 'next/image';
-import sampleImage from '@/assets/bgImg.jpg';
+import sampleImage from '@/assets/noImageAvailable.png';
 
 interface SelectOption {
   value: string;
