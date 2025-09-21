@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import React, { FC } from 'react';
 import locationIcon from '@/svgs/location.svg';
-import imgSample from '@/assets/assets.png';
+import imgSample from '@/assets/noImageAvailable.png';
 import { motion } from 'framer-motion';
 
 interface HouseFrameProps {

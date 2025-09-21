@@ -34,7 +34,7 @@ import { URLS } from "@/utils/URLS";
 import { useSelectedBriefs } from "@/context/selected-briefs-context";
 import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 import GlobalPriceNegotiationModal from "@/components/modals/GlobalPriceNegotiationModal";
-import sampleImage from "@/assets/Rectangle.png";
+import sampleImage from "@/assets/noImageAvailable.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, Thumbs } from "swiper/modules";
 import "swiper/css";

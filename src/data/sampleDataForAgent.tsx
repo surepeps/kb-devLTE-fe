@@ -1,6 +1,6 @@
 /** @format */
 import { City, State } from 'country-state-city';
-import sampleImg from '@/assets/assets.png';
+import sampleImg from '@/assets/noImageAvailable.png';
 
 // Define valid states and cities for Nigeria (country code: NG)
 const nigeriaStates = State.getStatesOfCountry('NG');

@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePageContext } from '@/context/page-context';
 import Card from '../general-components/card';
-import sampleImage from '@/assets/Agentpic.png';
+import sampleImage from '@/assets/noImageAvailable.png';
 import Select from 'react-select';
 import { useRouter } from 'next/navigation';
 
