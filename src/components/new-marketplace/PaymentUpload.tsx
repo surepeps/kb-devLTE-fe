@@ -124,12 +124,29 @@ const PaymentUpload: React.FC<PaymentUploadProps> = ({
         (doc) => doc.propertyId === property.propertyId,
       );
 
-      return {
+      const propertyPayload: any = {
         propertyId: property.propertyId,
         inspectionType: property.sourceTab === "jv" ? "LOI" : "price",
         negotiationPrice: negotiatedPrice?.negotiatedPrice || undefined,
         letterOfIntention: loiDoc?.documentUrl || undefined,
       };
+
+      // Include source tracking if present
+      if (property.sourcePage) {
+        propertyPayload.requestSource = {
+          page: property.sourcePage,
+        };
+      }
+
+      if (property.sourceMeta) {
+        propertyPayload.requestSource = {
+          ...(propertyPayload.requestSource || {}),
+          matchedId: property.sourceMeta.matchedId,
+          preferenceId: property.sourceMeta.preferenceId,
+        };
+      }
+
+      return propertyPayload;
     });
 
     return {
