@@ -18,6 +18,7 @@ import { NewMarketplaceProvider } from '@/context/new-marketplace-context';
 import { GlobalPropertyActionsProvider } from '@/context/global-property-actions-context';
 import NegotiationContextWrapper from '@/components/common/NegotiationContextWrapper';
 import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsFAB';
+import SubscriptionFeaturesClient from '@/components/subscription/SubscriptionFeaturesClient';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 import WhatsAppChatWidget from '@/components/whatsapp-chat-widget';
 
@@ -88,6 +89,7 @@ export default function RootLayout({
                               <Body>{children}</Body>
                             </HeaderFooterWrapper>
                             <GlobalPropertyActionsFAB />
+                            <SubscriptionFeaturesClient />
                             <WhatsAppChatWidget />
                             <Toaster />
                             <ChunkErrorHandler />
