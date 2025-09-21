@@ -72,19 +72,22 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
 
         {/* Content Section */}
         <div className="flex flex-col gap-[6px] flex-grow">
-          {/* Property Type */}
+          {/* Property Type (hide generic JV label) */}
           <div className="flex gap-[7px]">
             {cardData.map((item, idx) => {
               if (item.header === "Property Type") {
+                const val = String(item.value || "").trim();
+                if (val.toLowerCase() === "joint venture") return null;
                 return (
                   <div
                     key={idx}
                     className="min-w-fit h-[26px] px-[6px] flex items-center rounded-[3px] bg-[#E4EFE7] text-xs text-[#000000]"
                   >
-                    {item.value}
+                    {val}
                   </div>
                 );
               }
+              return null;
             })}
           </div>
 
@@ -127,35 +130,41 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
             })()}
           </div>
 
-          {/* Investment Type */}
+          {/* Investment Type (hide generic JV label) */}
           <div className="flex gap-[9px]">
             {cardData.map((item, idx) => {
               if (item.header === "Investment Type") {
+                const val = String(item.value || "").trim();
+                if (!val || val.toLowerCase() === "joint venture") return null;
                 return (
                   <div
                     key={idx}
                     className="min-w-fit h-[22px] px-[4px] flex items-center rounded-[2px] bg-[#FFF3E0] text-xs text-[#E65100]"
                   >
-                    {item.value}
+                    {val}
                   </div>
                 );
               }
+              return null;
             })}
           </div>
 
-          {/* Expected ROI */}
+          {/* Expected ROI (hide when N/A or empty) */}
           <div className="flex gap-[9px]">
             {cardData.map((item, idx) => {
               if (item.header === "Expected ROI") {
+                const val = String(item.value || "").trim();
+                if (!val || val.toLowerCase() === "n/a") return null;
                 return (
                   <h2
                     key={idx}
                     className="text-xs font-semibold text-[#8DDB90]"
                   >
-                    Expected ROI: {item.value}
+                    Expected ROI: {val}
                   </h2>
                 );
               }
+              return null;
             })}
           </div>
 
@@ -203,6 +212,16 @@ const GlobalJVPropertyCard: React.FC<GlobalJVPropertyCardProps> = ({
                   onClick={onLOIUpload || (() => {})}
                   className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#FF9800] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#F57C00] transition-colors rounded"
                 />
+                {loiDocument?.documentUrl && (
+                  <a
+                    href={loiDocument.documentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 min-h-[40px] py-[8px] px-[16px] bg-[#0B423D] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#09391C] transition-colors rounded text-center flex items-center justify-center"
+                  >
+                    View LOI
+                  </a>
+                )}
                 {onRemoveLOI && (
                   <Button
                     value="Clear"
