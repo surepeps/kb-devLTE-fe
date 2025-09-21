@@ -14,6 +14,7 @@ const UpdatePropertyRedirect = () => {
   const params = useParams();
   const propertyId = params?.propertyId as string;
   const { user } = useUserContext();
+  const { populatePropertyData, setImages } = usePostPropertyContext();
   const [loadingError, setLoadingError] = useState<string | null>(null);
 
   useEffect(() => {
