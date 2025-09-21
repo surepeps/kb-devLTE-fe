@@ -393,19 +393,22 @@ const AgentMarketplace = () => {
           </svg>
         </button>
 
-        {/* Primary Action */}
-        <button
-          onClick={() => handleIHaveIt(preference.preferenceId)}
-          className="relative w-full bg-gray-900 hover:bg-black text-white py-3 text-sm font-medium rounded transition-all duration-300 overflow-hidden group/action"
-        >
-          {/* Button content */}
-          <span className="relative z-10 flex items-center justify-center gap-2">
-            <span>I Have This Property</span>
-          </span>
-
-          {/* Hover effect */}
-          <div className="absolute inset-0 bg-[#8DDB90] transform scale-x-0 group-hover/action:scale-x-100 transition-transform duration-300 origin-left"></div>
-        </button>
+        {/* Primary Action or Matched Badge */}
+        {preference.status?.toLowerCase() === 'closed' ? (
+          <div className="w-full py-2.5 rounded bg-green-100 text-green-700 text-xs font-semibold text-center uppercase tracking-wide">
+            Matched
+          </div>
+        ) : (
+          <button
+            onClick={() => handleIHaveIt(preference.preferenceId)}
+            className="relative w-full bg-gray-900 hover:bg-black text-white py-3 text-sm font-medium rounded transition-all duration-300 overflow-hidden group/action"
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              <span>I Have This Property</span>
+            </span>
+            <div className="absolute inset-0 bg-[#8DDB90] transform scale-x-0 group-hover/action:scale-x-100 transition-transform duration-300 origin-left"></div>
+          </button>
+        )}
       </div>
     </div>
   );
