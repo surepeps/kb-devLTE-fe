@@ -94,18 +94,18 @@ export const useGlobalInspectionState = () => {
 
   // Get property type for display
   const getPropertyType = useCallback((property: any) => {
-    // Check briefType first
+    // Prefer explicit briefType from backend
     if (property?.briefType) {
       return property.briefType;
     }
 
-    // Check propertyType and map to briefType
-    const propertyType = property?.propertyType;
-    if (propertyType === "Land" || propertyType === "Commercial") {
+    // Fallbacks: detect JV only when explicitly labeled as such
+    const category = String(property?.category || property?.propertyCategory || "").toLowerCase();
+    if (category === "joint-venture" || category === "jv" || category === "joint venture") {
       return "Joint Venture";
     }
 
-    // Default based on context or fall back to "Outright Sales"
+    // Otherwise default to Outright Sales (avoid inferring JV from propertyType alone)
     return "Outright Sales";
   }, []);
 
