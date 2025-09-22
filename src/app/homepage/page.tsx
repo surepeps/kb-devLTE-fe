@@ -19,6 +19,7 @@ import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import BannerSlot from '@/components/promo/BannerSlot';
+import PromoMount from '@/components/promo/PromoMount';
 
 /**
  * @Homepage - A function that returns the web homepage
