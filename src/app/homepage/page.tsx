@@ -73,7 +73,17 @@ const Homepage = ({
           <HeroSection />
 
           {/* Inline homepage banner after hero */}
-          <div id="promo-homepage-inline" className="w-full overflow-hidden bg-transparent h-28 my-6" />
+          <div id="promo-homepage-inline" className="w-full overflow-hidden bg-transparent h-28 my-6">
+            <div className="container mx-auto px-4 h-full flex items-center justify-center bg-[#FFFFFF] border border-dashed border-gray-200">
+              <div className="flex items-center gap-4">
+                <img src="/check.svg" alt="promo-sample" className="h-12 w-auto object-contain" />
+                <div>
+                  <div className="text-sm font-semibold">Advert slot</div>
+                  <div className="text-xs text-gray-500">This space is available for promotions</div>
+                </div>
+              </div>
+            </div>
+          </div>
           <PromoMount slot="homepage-inline" targetId="promo-homepage-inline" height="h-28" />
           {/**Details About website Componet ~ Takes no props */}
           <Section1 />
