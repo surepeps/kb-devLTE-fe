@@ -52,8 +52,9 @@ const Homepage = ({
 
   return (
     <Fragment>
-      {/* Homepage top banner slot */}
-      <BannerSlot slot="homepage-top" className="mb-4" height="h-36" />
+      {/* Homepage top banner placeholder */}
+      <div id="promo-homepage-top" className="w-full overflow-hidden bg-transparent h-36 mb-4" />
+      <PromoMount slot="homepage-top" targetId="promo-homepage-top" height="h-36" />
       <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
         <main className="w-full bg-[#EEF1F1]">
           {/**
