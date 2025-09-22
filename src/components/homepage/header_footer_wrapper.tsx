@@ -2,7 +2,7 @@
 
 "use client";
 
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 import { usePathname } from "next/navigation";
 import HeaderLogic from "@/logic/headerLogic";
 import NewFooter from "./new-footer";
