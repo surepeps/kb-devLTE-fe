@@ -289,8 +289,8 @@ const AgentMarketplace = () => {
       {/* Status Indicator */}
       <div className="absolute top-3 right-3 z-10">
         <div className="relative">
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-          <div className="absolute inset-0 w-2 h-2 bg-green-500 rounded-full animate-ping opacity-75"></div>
+          <div className={`w-2 h-2 rounded-full ${preference.status?.toLowerCase() === 'closed' ? 'bg-red-500' : 'bg-green-500'}`}></div>
+          <div className={`absolute inset-0 w-2 h-2 rounded-full animate-ping opacity-75 ${preference.status?.toLowerCase() === 'closed' ? 'bg-red-500' : 'bg-green-500'}`}></div>
         </div>
       </div>
 
@@ -516,7 +516,7 @@ const AgentMarketplace = () => {
                 Hot Opportunities
               </div>
               <h2 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-[#09391C] mb-2 md:mb-3">
-                🎯 Buyers Just Got Matched!
+                ��� Buyers Just Got Matched!
               </h2>
               <p className="text-gray-600 text-sm md:text-lg max-w-2xl mx-auto px-2">
                 Fresh opportunities waiting for the right properties.
