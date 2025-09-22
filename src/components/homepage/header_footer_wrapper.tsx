@@ -21,15 +21,6 @@ export default function HeaderFooterWrapper({ children, isComingSoon }: Props) {
 	const { viewImage, imageData } = usePageContext();
 	return (
 		<Fragment>
-			{/* Promo slot rendered before header - global top banner */}
-			{/* BannerSlot is lazy loaded to keep header render fast */}
-			{/* eslint-disable-next-line @next/next/no-img-element */}
-			{typeof window !== 'undefined' && (
-				<React.Suspense fallback={null}>
-					{/* dynamic import to avoid adding to server bundle */}
-					{React.createElement(require('@/components/promo/BannerSlot').default, { slot: 'top-header', className: 'mb-2', height: 'h-20' })}
-				</React.Suspense>
-			)}
 			<HeaderLogic isComingSoon={isComingSoon} />
 			{children}
 			<NewFooter isComingSoon={isComingSoon} />
