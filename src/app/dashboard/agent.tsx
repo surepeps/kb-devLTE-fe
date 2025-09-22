@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import {
   Briefcase as BriefcaseIcon,
   TrendingUp as TrendingUpIcon,
-  DollarSign as DollarSignIcon,
+  CheckCircle as CheckCircleIcon,
   Users as UsersIcon,
   Clock as ClockIcon,
   MapPin as MapPinIcon,
@@ -169,7 +169,7 @@ export default function AgentDashboard() {
     {
       title: "Completed Deals",
       value: stats.completedDeals,
-      icon: DollarSignIcon,
+      icon: CheckCircleIcon,
       color: "bg-yellow-500",
       textColor: "text-yellow-600",
     },
