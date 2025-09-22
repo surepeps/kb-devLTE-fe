@@ -62,11 +62,7 @@ const Homepage = ({
           <HeroSection />
 
           {/* Inline homepage banner after hero */}
-          {typeof window !== 'undefined' && (
-            <React.Suspense fallback={null}>
-              {React.createElement(require('@/components/promo/BannerSlot').default, { slot: 'homepage-inline', className: 'my-6', height: 'h-28' })}
-            </React.Suspense>
-          )}
+          <BannerSlot slot="homepage-inline" className="my-6" height="h-28" />
           {/**Details About website Componet ~ Takes no props */}
           <Section1 />
           {/**
