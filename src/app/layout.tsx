@@ -23,7 +23,7 @@ import WhatsAppChatWidget from '@/components/whatsapp-chat-widget';
 
 const SHOW_COMING_SOON = false;
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Khabiteq',
   description:
     "Simplifying real estate transactions in Lagos. Buy, sell, rent, and manage properties with ease through Khabi-Teq's trusted platform",
