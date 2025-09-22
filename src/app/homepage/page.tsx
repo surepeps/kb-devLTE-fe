@@ -63,7 +63,8 @@ const Homepage = ({
           <HeroSection />
 
           {/* Inline homepage banner after hero */}
-          <BannerSlot slot="homepage-inline" className="my-6" height="h-28" />
+          <div id="promo-homepage-inline" className="w-full overflow-hidden bg-transparent h-28 my-6" />
+          <PromoMount slot="homepage-inline" targetId="promo-homepage-inline" height="h-28" />
           {/**Details About website Componet ~ Takes no props */}
           <Section1 />
           {/**
