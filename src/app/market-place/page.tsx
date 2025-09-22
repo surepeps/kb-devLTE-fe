@@ -8,7 +8,8 @@ import BannerSlot from '@/components/promo/BannerSlot';
 const NewMarketplacePage = () => {
   return (
     <>
-      <BannerSlot slot="marketplace-top" className="mb-4" height="h-28" />
+      <div id="promo-marketplace-top" className="w-full overflow-hidden bg-transparent h-28 mb-4" />
+      <PromoMount slot="marketplace-top" targetId="promo-marketplace-top" height="h-28" />
       <NewMarketPlace />
     </>
   );
