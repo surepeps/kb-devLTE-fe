@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { PROMOTIONS, Promotion } from "@/data/promotions";
 import { usePathname } from "next/navigation";
