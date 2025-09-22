@@ -193,7 +193,8 @@ const StandardPropertyCard: React.FC<StandardPropertyCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-2 mt-auto pt-4">
-          {/* Price Negotiation Button */}
+          {/* Price Negotiation Button - disabled */}
+          {/**
           {showPriceNegotiation && (
             <>
               {hasNegotiatedPrice ? (
@@ -227,6 +228,7 @@ const StandardPropertyCard: React.FC<StandardPropertyCardProps> = ({
               )}
             </>
           )}
+          **/}
 
           {/* Select for Inspection Button */}
           {showInspectionToggle && (
