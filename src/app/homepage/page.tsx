@@ -51,12 +51,26 @@ const Homepage = ({
 
   return (
     <Fragment>
+      {/* Homepage top banner slot */}
+      {typeof window !== 'undefined' && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <React.Suspense fallback={null}>
+          {React.createElement(require('@/components/promo/BannerSlot').default, { slot: 'homepage-top', className: 'mb-4', height: 'h-36' })}
+        </React.Suspense>
+      )}
       <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
         <main className="w-full bg-[#EEF1F1]">
           {/**
            * Hero Section Component ~ Takes no props
            */}
           <HeroSection />
+
+          {/* Inline homepage banner after hero */}
+          {typeof window !== 'undefined' && (
+            <React.Suspense fallback={null}>
+              {React.createElement(require('@/components/promo/BannerSlot').default, { slot: 'homepage-inline', className: 'my-6', height: 'h-28' })}
+            </React.Suspense>
+          )}
           {/**Details About website Componet ~ Takes no props */}
           <Section1 />
           {/**
