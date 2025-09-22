@@ -8,11 +8,7 @@ import BannerSlot from '@/components/promo/BannerSlot';
 const NewMarketplacePage = () => {
   return (
     <>
-      {typeof window !== 'undefined' && (
-        <React.Suspense fallback={null}>
-          {React.createElement(require('@/components/promo/BannerSlot').default, { slot: 'marketplace-top', className: 'mb-4', height: 'h-28' })}
-        </React.Suspense>
-      )}
+      <BannerSlot slot="marketplace-top" className="mb-4" height="h-28" />
       <NewMarketPlace />
     </>
   );
