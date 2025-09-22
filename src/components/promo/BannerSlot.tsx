@@ -33,8 +33,8 @@ const BannerSlot: React.FC<Props> = ({ slot, className, height = "h-20", autoRot
   const active = promos[index % promos.length];
 
   return (
-    <div className={clsx("w-full overflow-hidden bg-transparent", className)}>
-      <div className={clsx("container mx-auto px-4", height)}>
+    <div className={`w-full overflow-hidden bg-transparent ${className || ""}`}>
+      <div className={`container mx-auto px-4 ${height}`}>
         {active.link ? (
           <Link href={active.link} className="block w-full h-full">
             <img src={active.imageUrl} alt={`promo-${active.id}`} className="w-full h-full object-contain" />
