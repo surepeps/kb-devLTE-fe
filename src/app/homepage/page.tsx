@@ -18,6 +18,7 @@ import ClientTestimonials from "@/components/homepage/client-testimonials";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import BannerSlot from '@/components/promo/BannerSlot';
 
 /**
  * @Homepage - A function that returns the web homepage
