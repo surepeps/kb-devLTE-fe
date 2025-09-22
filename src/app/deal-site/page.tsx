@@ -1511,6 +1511,7 @@ export default function DealSitePage() {
                   { id: "inspection", label: "Inspection Settings" },
                   { id: "contact", label: "Contact" },
                   { id: "social", label: "Social Links" },
+                  { id: "payment", label: "Payment" },
                   { id: "featured", label: "Featured Listings" },
                   { id: "listings", label: "Listings" },
                   { id: "security", label: "Security Settings", icon: <Shield size={14} /> },
@@ -1531,6 +1532,7 @@ export default function DealSitePage() {
                 {activeTab === "inspection" && renderInspectionSettings}
                 {activeTab === "contact" && renderContactVisibility}
                 {activeTab === "social" && renderSocialLinks}
+                {activeTab === "payment" && renderBankDetails}
                 {activeTab === "featured" && renderFeaturedListings}
                 {activeTab === "listings" && renderListingsLimit}
                 {activeTab === "security" && renderSecuritySettings}

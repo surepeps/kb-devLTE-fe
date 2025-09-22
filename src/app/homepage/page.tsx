@@ -18,6 +18,7 @@ import ClientTestimonials from "@/components/homepage/client-testimonials";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import PromoMount from '@/components/promo/PromoMount';
 
 /**
  * @Homepage - A function that returns the web homepage
@@ -51,12 +52,39 @@ const Homepage = ({
 
   return (
     <Fragment>
+      {/* Homepage top banner placeholder */}
+      <div id="promo-homepage-top" className="w-full overflow-hidden bg-transparent h-36 mb-4">
+        <div className="container mx-auto px-4 h-full flex items-center justify-center bg-[#F8FAFC] border border-dashed border-gray-200">
+          <div className="flex items-center gap-4">
+            <img src="/khabi-teq.svg" alt="promo-sample" className="h-20 w-auto object-contain" />
+            <div>
+              <div className="text-lg font-semibold">Promote with Khabi-Teq</div>
+              <div className="text-sm text-gray-500">Your banner could appear here — contact us to advertise</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <PromoMount slot="homepage-top" targetId="promo-homepage-top" height="h-36" />
       <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
         <main className="w-full bg-[#EEF1F1]">
           {/**
            * Hero Section Component ~ Takes no props
            */}
           <HeroSection />
+
+          {/* Inline homepage banner after hero */}
+          <div id="promo-homepage-inline" className="w-full overflow-hidden bg-transparent h-28 my-6">
+            <div className="container mx-auto px-4 h-full flex items-center justify-center bg-[#FFFFFF] border border-dashed border-gray-200">
+              <div className="flex items-center gap-4">
+                <img src="/check.svg" alt="promo-sample" className="h-12 w-auto object-contain" />
+                <div>
+                  <div className="text-sm font-semibold">Advert slot</div>
+                  <div className="text-xs text-gray-500">This space is available for promotions</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <PromoMount slot="homepage-inline" targetId="promo-homepage-inline" height="h-28" />
           {/**Details About website Componet ~ Takes no props */}
           <Section1 />
           {/**
