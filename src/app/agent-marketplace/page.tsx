@@ -245,8 +245,17 @@ const AgentMarketplace = () => {
   };
 
   const handleIHaveIt = (preferenceId: string) => {
-    // Always go to preference details page first, regardless of auth status
-    router.push(`/agent-marketplace/${preferenceId}`);
+    const href = `/agent-marketplace/${preferenceId}`;
+    if (typeof window !== 'undefined') {
+      try {
+        // Force full navigation to avoid fetchServerResponse issues in some environments
+        window.location.href = href;
+      } catch {
+        router.push(href);
+      }
+    } else {
+      router.push(href);
+    }
   };
 
   const formatPrice = (price: number, currency: string = 'NGN') => {
@@ -395,15 +404,15 @@ const AgentMarketplace = () => {
       <div className="p-5 pt-0 space-y-3 border-t border-gray-50">
         {/* View Details */}
         {preference.status?.toLowerCase() !== 'closed' && (
-          <button
-            onClick={() => router.push(`/agent-marketplace/${preference.preferenceId}`)}
+          <a
+            href={`/agent-marketplace/${preference.preferenceId}`}
             className="w-full text-gray-600 hover:text-gray-900 text-xs font-medium py-2 flex items-center justify-center gap-1 group/btn transition-colors"
           >
             <span>View Details</span>
             <svg className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </button>
+          </a>
         )}
 
         {/* Primary Action or Matched Badge */}
