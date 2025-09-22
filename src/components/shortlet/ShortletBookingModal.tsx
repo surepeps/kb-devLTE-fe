@@ -534,19 +534,41 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                     <label className="block text-sm font-medium text-gray-700">Guests</label>
                     <div className={`flex items-center bg-white border ${formik.errors.guests ? "border-red-400" : "border-gray-300"} rounded-lg px-3 py-2 gap-2`}>
                       <Users className="w-4 h-4 text-emerald-600" />
-                      <input
-                        type="number"
-                        min={1}
-                        max={maxGuests}
-                        value={formik.values.guests}
-                        onChange={(e) =>
+                      <button
+                        type="button"
+                        aria-label="Decrease guests"
+                        onClick={() =>
                           formik.setFieldValue(
                             "guests",
-                            Math.min(maxGuests, Math.max(1, Number(e.target.value) || 1))
+                            Math.max(1, Number(formik.values.guests || 1) - 1)
                           )
                         }
-                        className="w-full outline-none text-sm"
+                        disabled={Number(formik.values.guests || 1) <= 1}
+                        className={`h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 ${Number(formik.values.guests || 1) <= 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        -
+                      </button>
+                      <input
+                        type="text"
+                        readOnly
+                        value={formik.values.guests}
+                        className="w-full select-none text-sm text-center cursor-default bg-transparent outline-none"
+                        aria-label="Guest count"
                       />
+                      <button
+                        type="button"
+                        aria-label="Increase guests"
+                        onClick={() =>
+                          formik.setFieldValue(
+                            "guests",
+                            Math.min(maxGuests, Number(formik.values.guests || 1) + 1)
+                          )
+                        }
+                        disabled={Number(formik.values.guests || 1) >= maxGuests}
+                        className={`h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 ${Number(formik.values.guests || 1) >= maxGuests ? "opacity-50 cursor-not-allowed" : ""}`}
+                      >
+                        +
+                      </button>
                     </div>
                     {formik.errors.guests && (
                       <p className="mt-1 text-xs text-red-500">{formik.errors.guests as string}</p>
@@ -568,13 +590,16 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
 
                   {bookedIntervals.length > 0 && (
                     <div className="md:col-span-2 bg-red-50 rounded-lg p-3 border border-red-200 text-red-800">
-                      <p className="text-sm font-semibold mb-1">Some dates are unavailable</p>
+                      <p className="text-sm font-semibold mb-1">Booked dates</p>
                       <ul className="text-xs list-disc pl-5 space-y-0.5 max-h-24 overflow-auto">
-                        {bookedIntervals.map((b: { start: string | Date; end: string | Date }, i: any) => (
+                        {bookedIntervals.slice(0, 5).map((b: { start: string | Date; end: string | Date }, i: any) => (
                           <li key={i}>
-                            {new Date(b.start).toLocaleString()} - {new Date(b.end).toLocaleString()}
+                            {new Date(b.start).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                            {" - "}
+                            {new Date(b.end).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                           </li>
                         ))}
+                        {bookedIntervals.length > 5 && <li>… and more</li>}
                       </ul>
                     </div>
                   )}
