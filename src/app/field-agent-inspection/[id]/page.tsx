@@ -594,7 +594,7 @@ export default function InspectionDetailPage() {
                     </button>
                   </div>
 
-                  {Boolean((inspection as any)?.owner) ? (
+                  {typeof (inspection as any)?.owner === "object" && (inspection as any)?.owner?.fullName ? (
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
