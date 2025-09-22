@@ -714,6 +714,8 @@ const ActionButtons = ({
             <Eye className="w-5 h-5 mr-2" />
             {isSelected ? "Remove" : "Add to Inspection"}
           </button>
+          {/* Price Negotiation button disabled */}
+          {/**
           <button
             onClick={onNegotiation}
             className="flex-1 bg-blue-600 hover:bg-blue-700 whitespace-nowrap text-sm text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex items-center justify-center"
@@ -721,6 +723,7 @@ const ActionButtons = ({
             <ExternalLink className="w-5 h-5 mr-2" />
             Price Negotiation
           </button>
+          **/}
         </div>
       )}
 

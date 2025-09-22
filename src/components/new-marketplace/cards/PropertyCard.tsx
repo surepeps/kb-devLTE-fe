@@ -184,7 +184,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-2 mt-auto pt-4">
-          {/* Price Negotiation Button */}
+          {/* Price Negotiation Button - disabled */}
+          {/**
           {hasNegotiatedPrice ? (
             <div className="flex gap-2">
               <Button
@@ -212,6 +213,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
               className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold hover:bg-[#1565C0] transition-colors"
             />
           )}
+          **/}
 
           {/* Select for Inspection Button */}
           <button
