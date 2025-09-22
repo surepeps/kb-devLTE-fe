@@ -543,28 +543,17 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                             Math.max(1, Number(formik.values.guests || 1) - 1)
                           )
                         }
-                        className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        disabled={Number(formik.values.guests || 1) <= 1}
+                        className={`h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 ${Number(formik.values.guests || 1) <= 1 ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
                         -
                       </button>
                       <input
-                        type="number"
-                        min={1}
-                        max={maxGuests}
+                        type="text"
+                        readOnly
                         value={formik.values.guests}
-                        onChange={(e) =>
-                          formik.setFieldValue(
-                            "guests",
-                            Math.min(maxGuests, Math.max(1, Number(e.target.value) || 1))
-                          )
-                        }
-                        onBlur={() =>
-                          formik.setFieldValue(
-                            "guests",
-                            Math.min(maxGuests, Math.max(1, Number(formik.values.guests) || 1))
-                          )
-                        }
-                        className="w-full outline-none text-sm text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-full select-none text-sm text-center cursor-default bg-transparent outline-none"
+                        aria-label="Guest count"
                       />
                       <button
                         type="button"
@@ -575,7 +564,8 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                             Math.min(maxGuests, Number(formik.values.guests || 1) + 1)
                           )
                         }
-                        className="h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        disabled={Number(formik.values.guests || 1) >= maxGuests}
+                        className={`h-8 w-8 inline-flex items-center justify-center rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 ${Number(formik.values.guests || 1) >= maxGuests ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
                         +
                       </button>
