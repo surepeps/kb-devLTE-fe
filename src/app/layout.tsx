@@ -88,9 +88,13 @@ export default function RootLayout({
                             <body
                               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                             >
+                              {/* Server-rendered placeholder for top promo banner to avoid hydration mismatch */}
+                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent h-20" />
                               <HeaderFooterWrapper>
                                 <Body>{children}</Body>
                               </HeaderFooterWrapper>
+                              {/* Client mounts BannerSlot into the placeholder without changing DOM structure during hydration */}
+                              <PromoMount slot="top-header" targetId="promo-top-placeholder" className="mb-2" height="h-20" />
                               <GlobalPropertyActionsFAB />
                               <SubscriptionFeaturesClient />
                               <WhatsAppChatWidget />
