@@ -3,7 +3,6 @@
 "use client";
 import React from "react";
 import NewMarketPlace from "@/components/new-marketplace";
-import BannerSlot from '@/components/promo/BannerSlot';
 import PromoMount from '@/components/promo/PromoMount';
 
 const NewMarketplacePage = () => {
