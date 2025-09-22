@@ -91,7 +91,17 @@ export default function RootLayout({
                               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                             >
                               {/* Server-rendered placeholder for top promo banner to avoid hydration mismatch */}
-                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent h-20" />
+                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent h-20">
+                                <div className="container mx-auto px-4 h-full flex items-center justify-center bg-[#F8FAFC] border border-dashed border-gray-200">
+                                  <div className="flex items-center gap-4">
+                                    <img src="/placeholder-property.svg" alt="promo-sample" className="h-12 w-auto object-contain" />
+                                    <div>
+                                      <div className="text-sm font-semibold">Place your advert here</div>
+                                      <div className="text-xs text-gray-500">Reach thousands of visitors — contact us to advertise</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                               <HeaderFooterWrapper>
                                 <Body>{children}</Body>
                               </HeaderFooterWrapper>
