@@ -53,7 +53,17 @@ const Homepage = ({
   return (
     <Fragment>
       {/* Homepage top banner placeholder */}
-      <div id="promo-homepage-top" className="w-full overflow-hidden bg-transparent h-36 mb-4" />
+      <div id="promo-homepage-top" className="w-full overflow-hidden bg-transparent h-36 mb-4">
+        <div className="container mx-auto px-4 h-full flex items-center justify-center bg-[#F8FAFC] border border-dashed border-gray-200">
+          <div className="flex items-center gap-4">
+            <img src="/khabi-teq.svg" alt="promo-sample" className="h-20 w-auto object-contain" />
+            <div>
+              <div className="text-lg font-semibold">Promote with Khabi-Teq</div>
+              <div className="text-sm text-gray-500">Your banner could appear here — contact us to advertise</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <PromoMount slot="homepage-top" targetId="promo-homepage-top" height="h-36" />
       <section className={`w-full filter ${isComingSoon && "blur-sm"}`}>
         <main className="w-full bg-[#EEF1F1]">
