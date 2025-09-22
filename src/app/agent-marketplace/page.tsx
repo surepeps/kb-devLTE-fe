@@ -271,7 +271,7 @@ const AgentMarketplace = () => {
 
 
   const PreferenceCard = ({ preference }: { preference: Preference }) => (
-    <div className="group relative bg-white border border-gray-200/80 hover:border-gray-300 rounded-lg overflow-hidden flex flex-col h-full transition-all duration-500 hover:translate-y-[-2px]">
+    <div className={`group relative bg-white border border-gray-200/80 hover:border-gray-300 rounded-lg overflow-hidden flex flex-col h-full transition-all duration-500 hover:translate-y-[-2px] ${preference.status?.toLowerCase() === 'closed' ? 'select-none' : ''}`}>
       {/* Watermark for closed preferences */}
       {preference.status?.toLowerCase() === 'closed' && (
         <>
@@ -394,15 +394,17 @@ const AgentMarketplace = () => {
       {/* Footer Actions */}
       <div className="p-5 pt-0 space-y-3 border-t border-gray-50">
         {/* View Details */}
-        <button
-          onClick={() => router.push(`/agent-marketplace/${preference.preferenceId}`)}
-          className="w-full text-gray-600 hover:text-gray-900 text-xs font-medium py-2 flex items-center justify-center gap-1 group/btn transition-colors"
-        >
-          <span>View Details</span>
-          <svg className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        {preference.status?.toLowerCase() !== 'closed' && (
+          <button
+            onClick={() => router.push(`/agent-marketplace/${preference.preferenceId}`)}
+            className="w-full text-gray-600 hover:text-gray-900 text-xs font-medium py-2 flex items-center justify-center gap-1 group/btn transition-colors"
+          >
+            <span>View Details</span>
+            <svg className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
 
         {/* Primary Action or Matched Badge */}
         {preference.status?.toLowerCase() === 'closed' ? (
@@ -516,7 +518,7 @@ const AgentMarketplace = () => {
                 Hot Opportunities
               </div>
               <h2 className="font-display text-xl md:text-2xl lg:text-3xl font-bold text-[#09391C] mb-2 md:mb-3">
-                ��� Buyers Just Got Matched!
+                🎯 Buyers Just Got Matched!
               </h2>
               <p className="text-gray-600 text-sm md:text-lg max-w-2xl mx-auto px-2">
                 Fresh opportunities waiting for the right properties.
