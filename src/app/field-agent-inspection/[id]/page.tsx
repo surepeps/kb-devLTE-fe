@@ -21,9 +21,13 @@ import {
   FileText as FileTextIcon,
   Send as SendIcon,
   ChevronLeft as ChevronLeftIcon,
+  Share2 as ShareIcon,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
+import OverlayPreloader from "@/components/general-components/OverlayPreloader";
+import ModalWrapper from "@/components/general-components/modal-wrapper";
+import ConfirmationModal from "@/components/modals/confirmation-modal";
 
 interface Property {
   location: {
@@ -119,6 +123,9 @@ export default function InspectionDetailPage() {
     notes: "",
   });
 
+  const [shareConfirm, setShareConfirm] = useState<{ open: boolean; mode: "buyer-to-seller" | "seller-to-buyer" | null }>({ open: false, mode: null });
+  const [preloader, setPreloader] = useState<{ visible: boolean; message: string }>({ visible: false, message: "" });
+
   const inspectionId = params?.id as string;
 
   useEffect(() => {
@@ -212,7 +219,6 @@ export default function InspectionDetailPage() {
     try {
       setIsSubmitting(true);
 
-      // Validate required fields
       if (!report.notes.trim()) {
         toast.error("Please provide notes");
         return;
@@ -231,6 +237,30 @@ export default function InspectionDetailPage() {
       toast.error("Failed to submit inspection report");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const openShareConfirm = (mode: "buyer-to-seller" | "seller-to-buyer") => {
+    setShareConfirm({ open: true, mode });
+  };
+
+  const shareDetails = async (mode: "buyer-to-seller" | "seller-to-buyer") => {
+    try {
+      const message = mode === "buyer-to-seller" ? "Sending buyer details to seller..." : "Sending seller details to buyer...";
+      setPreloader({ visible: true, message });
+
+      await POST_REQUEST(
+        `${URLS.BASE}/account/inspectionsFieldAgent/${inspectionId}/sendDetails`,
+        { send: mode },
+        Cookies.get("token")
+      );
+
+      toast.success("Details shared successfully");
+    } catch (error) {
+      console.error("Failed to share details:", error);
+      toast.error("Failed to share details");
+    } finally {
+      setPreloader({ visible: false, message: "" });
     }
   };
 
@@ -494,10 +524,19 @@ export default function InspectionDetailPage() {
                   animate={{ opacity: 1, x: 0 }}
                   className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
                 >
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                    <UserIcon className="w-5 h-5 mr-2" />
-                    Buyer Information
-                  </h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                      <UserIcon className="w-5 h-5 mr-2" />
+                      Buyer Information
+                    </h2>
+                    <button
+                      onClick={() => openShareConfirm("buyer-to-seller")}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                    >
+                      <ShareIcon className="w-4 h-4" />
+                      Share details with seller
+                    </button>
+                  </div>
 
                   <div className="space-y-4">
                     <div>
@@ -533,6 +572,66 @@ export default function InspectionDetailPage() {
                       </a>
                     </div>
                   </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                      <UserIcon className="w-5 h-5 mr-2" />
+                      Seller Information
+                    </h2>
+                    <button
+                      onClick={() => openShareConfirm("seller-to-buyer")}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+                    >
+                      <ShareIcon className="w-4 h-4" />
+                      Share details with buyer
+                    </button>
+                  </div>
+
+                  {typeof (inspection as any)?.owner === "object" && (inspection as any)?.owner?.fullName ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Name
+                        </label>
+                        <p className="text-gray-900">{(inspection as any).owner.fullName}</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Phone
+                        </label>
+                        <a
+                          href={`tel:${(inspection as any).owner.phoneNumber}`}
+                          className="text-blue-600 hover:text-blue-700 flex items-center"
+                        >
+                          <PhoneIcon className="w-4 h-4 mr-1" />
+                          {(inspection as any).owner.phoneNumber}
+                        </a>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Email
+                        </label>
+                        <a
+                          href={`mailto:${(inspection as any).owner.email}`}
+                          className="text-blue-600 hover:text-blue-700 flex items-center"
+                        >
+                          <MailIcon className="w-4 h-4 mr-1" />
+                          {(inspection as any).owner.email}
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-600">Seller information not available.</p>
+                  )}
                 </motion.div>
 
                 <motion.div
@@ -719,6 +818,35 @@ export default function InspectionDetailPage() {
           )}
         </div>
       </div>
+
+      <OverlayPreloader isVisible={preloader.visible} message={preloader.message || "Processing..."} />
+
+      <ModalWrapper
+        isOpen={shareConfirm.open}
+        onClose={() => setShareConfirm({ open: false, mode: null })}
+        title="Confirm Share"
+        size="sm"
+      >
+        <div className="p-4">
+          <ConfirmationModal
+            title="Share Contact Details"
+            message={
+              shareConfirm.mode === "buyer-to-seller"
+                ? "Are you sure you want to share the buyer's contact details with the seller?"
+                : "Are you sure you want to share the seller's contact details with the buyer?"
+            }
+            type="warning"
+            confirmText="Share"
+            cancelText="Cancel"
+            onConfirm={() => {
+              if (shareConfirm.mode) {
+                shareDetails(shareConfirm.mode);
+              }
+            }}
+            onClose={() => setShareConfirm({ open: false, mode: null })}
+          />
+        </div>
+      </ModalWrapper>
     </CombinedAuthGuard>
   );
 }
