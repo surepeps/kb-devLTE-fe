@@ -1,4 +1,3 @@
-import type { Metadata } from 'next';
 import './globals.css';
 import { PageContextProvider } from '@/context/page-context';
 import HeaderFooterWrapper from '@/components/homepage/header_footer_wrapper';
@@ -35,6 +34,9 @@ export const metadata: Metadata = {
 
 import ReduxWrapper from '@/components/providers/ReduxWrapper';
 import SubscriptionInitializer from '@/components/providers/SubscriptionInitializer';
+
+// Promo provider
+import { PromoProvider } from '@/context/promo-context';
 
 export default function RootLayout({
   children,
@@ -81,20 +83,22 @@ export default function RootLayout({
                   <NewMarketplaceProvider>
                     <GlobalPropertyActionsProvider>
                       <NegotiationContextWrapper>
-                        <html lang="en">
-                          <body
-                            className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-                          >
-                            <HeaderFooterWrapper>
-                              <Body>{children}</Body>
-                            </HeaderFooterWrapper>
-                            <GlobalPropertyActionsFAB />
-                            <SubscriptionFeaturesClient />
-                            <WhatsAppChatWidget />
-                            <Toaster />
-                            <ChunkErrorHandler />
-                          </body>
-                        </html>
+                        <PromoProvider>
+                          <html lang="en">
+                            <body
+                              className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+                            >
+                              <HeaderFooterWrapper>
+                                <Body>{children}</Body>
+                              </HeaderFooterWrapper>
+                              <GlobalPropertyActionsFAB />
+                              <SubscriptionFeaturesClient />
+                              <WhatsAppChatWidget />
+                              <Toaster />
+                              <ChunkErrorHandler />
+                            </body>
+                          </html>
+                        </PromoProvider>
                       </NegotiationContextWrapper>
                     </GlobalPropertyActionsProvider>
                   </NewMarketplaceProvider>
