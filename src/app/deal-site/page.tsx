@@ -511,9 +511,11 @@ export default function DealSitePage() {
         const res = await POST_REQUEST(`${URLS.BASE}/account/dealSite/setUp`, payload, token);
         hidePreloader();
         if ((res as any)?.success) {
-          toast.success("Deal Site created");
+          toast.success("Setup complete. Your deal site is pending activation.");
           setSlugLocked(true);
+          setIsPaused(true);
           setActiveView("manage");
+          setActiveTab("overview");
           return;
         }
         throw new Error((res as any)?.message || "Setup failed");
@@ -1490,7 +1492,7 @@ export default function DealSitePage() {
                     disabled={saving}
                     className="inline-flex items-center gap-2 px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60"
                   >
-                    <Save size={16} /> {saving ? "Saving..." : "Save & Go Live"}
+                    <Save size={16} /> {saving ? "Saving..." : "Save & Finish Setup"}
                   </button>
                 )}
               </div>
@@ -1498,6 +1500,16 @@ export default function DealSitePage() {
           ) : (
             <>
               {ManageHeader}
+              {isPaused && slugLocked && (
+                <div className="mb-4 p-4 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800 flex items-center justify-between gap-3">
+                  <div className="text-sm">
+                    <span className="font-semibold">Pending activation.</span> Your deal site setup is complete but paused by default. Click Resume to make it live.
+                  </div>
+                  <button onClick={resumeDealSite} className="inline-flex items-center gap-2 px-3 py-2 border border-yellow-300 rounded-lg text-sm bg-white hover:bg-yellow-100">
+                    <Play size={16} /> Resume now
+                  </button>
+                </div>
+              )}
 
               <Tabs
                 active={activeTab}
