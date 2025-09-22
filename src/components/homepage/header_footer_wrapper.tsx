@@ -22,7 +22,6 @@ export default function HeaderFooterWrapper({ children, isComingSoon }: Props) {
 	return (
 		<Fragment>
 			{/* Promo slot rendered before header - global top banner */}
-			import HeaderLogic from "@/logic/headerLogic"; // ensure header import remains
 			{/* BannerSlot is lazy loaded to keep header render fast */}
 			{/* eslint-disable-next-line @next/next/no-img-element */}
 			{typeof window !== 'undefined' && (
