@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { usePromos } from "@/context/promo-context";
 import Link from "next/link";
-import clsx from "clsx";
 
 interface Props {
   slot: string;
