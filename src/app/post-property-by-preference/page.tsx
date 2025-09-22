@@ -473,11 +473,13 @@ const PostPropertyByPreference = () => {
 
           // Set buyer contact information
           if (pref.buyer) {
+            const fullName = pref.buyer.fullName || '';
+            const [first, ...rest] = fullName.split(' ').filter(Boolean);
             updatedData.contactInfo = {
-              firstName: pref.buyer.fullName.split(' ')[0] || '',
-              lastName: pref.buyer.fullName.split(' ').slice(1).join(' ') || '',
-              email: pref.buyer.email,
-              phone: pref.buyer.phoneNumber,
+              firstName: first || '',
+              lastName: rest.join(' ') || '',
+              email: pref.buyer.email || '',
+              phone: pref.buyer.phoneNumber || '',
             };
           }
 
@@ -711,7 +713,7 @@ const PostPropertyByPreference = () => {
         typeOfBuilding: propertyData.typeOfBuilding,
         rentalType: propertyData.rentalType,
         features: propertyData.features,
-        docOnProperty: propertyData.documents.map((doc) => ({
+        docOnProperty: (propertyData.documents || []).map((doc) => ({
           docName: doc,
           isProvided: true,
         })),

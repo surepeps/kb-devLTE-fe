@@ -272,6 +272,17 @@ const AgentMarketplace = () => {
 
   const PreferenceCard = ({ preference }: { preference: Preference }) => (
     <div className="group relative bg-white border border-gray-200/80 hover:border-gray-300 rounded-lg overflow-hidden flex flex-col h-full transition-all duration-500 hover:translate-y-[-2px]">
+      {/* Watermark for closed preferences */}
+      {preference.status?.toLowerCase() === 'closed' && (
+        <>
+          <div className="absolute inset-0 bg-white/70 z-20 pointer-events-none"></div>
+          <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+            <div className="px-6 py-2 text-3xl md:text-4xl font-extrabold tracking-widest text-red-600/50 border-4 border-red-600/40 rounded rotate-[-20deg] bg-white/60">
+              CLOSED
+            </div>
+          </div>
+        </>
+      )}
       {/* Animated Top Border */}
       <div className="absolute top-0 left-0 w-0 h-[2px] bg-[#8DDB90] group-hover:w-full transition-all duration-700 ease-out"></div>
 
