@@ -272,21 +272,7 @@ const Card = ({
               </button>
             </div>
           ) : (
-            <Button
-              value={`Price Negotiation`}
-              type="button"
-              onClick={() => {
-                // Auto-add to selected briefs when negotiating price
-                if (!isSelectedForInspectionCheck) {
-                  
-                }
-                setIsAddInspectionModalOpened?.(true);
-                setPropertySelected?.([property]);
-                setIsComingFromPriceNeg?.(true);
-              }}
-              red={isRed}
-              className="min-h-[50px] py-[12px] px-[24px] bg-[#1976D2] text-[#FFFFFF] text-base leading-[25.6px] font-bold"
-            />
+            null
           )}
           <button
             onClick={onClick}

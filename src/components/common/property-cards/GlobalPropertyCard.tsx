@@ -212,7 +212,8 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
               </>
             ) : (
               <>
-                {/* Price Negotiation Button */}
+                {/* Price Negotiation Button - disabled */}
+                {/**
                 {hasNegotiatedPrice && isSelected ? (
                   <div className="flex gap-2">
                     <Button
@@ -266,6 +267,7 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
                     className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors rounded"
                   />
                 )}
+                **/}
 
                 {/* Select for Inspection Button */}
                 <button
