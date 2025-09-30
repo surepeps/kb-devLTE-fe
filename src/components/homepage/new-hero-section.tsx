@@ -145,16 +145,9 @@ const NewHeroSection = () => {
     // Pause all videos on slide change to prevent overlap
     pauseAllVideos();
 
-    // Auto-play the new current video after a short delay to ensure it's ready
-    setTimeout(() => {
-      const newCurrentVideo = videoRefs.current[selectedIndex];
-      if (newCurrentVideo && !isPlayPending) {
-        newCurrentVideo.play().catch((error) => {
-          console.log('Auto-play failed:', error);
-        });
-      }
-    }, 100);
-  }, [emblaApi, currentVideoIndex, isPlayPending]);
+    // IMPORTANT: Do NOT auto-play the newly selected slide except for the very first slide (index 0).
+    // Auto-play on slide change is intentionally disabled to ensure videos don't auto-play when navigating.
+  }, [emblaApi, currentVideoIndex]);
 
   // Setup embla carousel event listeners with slider state management
   useEffect(() => {
