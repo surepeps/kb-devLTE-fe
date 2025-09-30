@@ -441,8 +441,10 @@ const NewHeroSection = () => {
                                     // Pause current video when slider is disabled
                                     pauseCurrentVideo();
                                   } else {
-                                    // Resume current video when slider is re-enabled
-                                    playCurrentVideo();
+                                    // Resume current video only if we're on the first slide (index 0)
+                                    if (currentVideoIndex === 0) {
+                                      playCurrentVideo();
+                                    }
                                   }
                                 }}
                                 className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 ${
