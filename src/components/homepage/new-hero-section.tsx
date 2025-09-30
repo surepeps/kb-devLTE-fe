@@ -22,7 +22,6 @@ const NewHeroSection = () => {
   const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(true);
-  const [sliderIsActive, setSliderIsActive] = useState(true);
   const [isPlayPending, setIsPlayPending] = useState(false);
 
   // Get hero video URLs from settings with fallbacks
@@ -158,32 +157,24 @@ const NewHeroSection = () => {
     // Handle slide selection
     emblaApi.on('select', onSelect);
 
-    // Handle slider interactions (detect when user is actively using slider)
-    const handlePointerDown = () => {
-      setSliderIsActive(true);
-    };
-
     const handleSettle = () => {
-      // Slider has settled - only auto-play if it's the first slide and slider is active
       if (!isPlayPending) {
         const idx = emblaApi.selectedScrollSnap?.();
-        if (typeof idx === 'number' && idx === 0 && sliderIsActive) {
+        if (typeof idx === 'number' && idx === 0) {
           playCurrentVideo();
         }
       }
     };
 
-    emblaApi.on('pointerDown', handlePointerDown);
     emblaApi.on('settle', handleSettle);
 
     onSelect(); // Initialize with current selection (will pause any playing videos)
 
     return () => {
       emblaApi.off('select', onSelect);
-      emblaApi.off('pointerDown', handlePointerDown);
       emblaApi.off('settle', handleSettle);
     };
-  }, [emblaApi, onSelect, sliderIsActive, isPlayPending]);
+  }, [emblaApi, onSelect, isPlayPending]);
 
   // Add event listeners to videos to ensure mutual exclusion and state sync
   useEffect(() => {
@@ -245,7 +236,7 @@ const NewHeroSection = () => {
 
   // Auto-play functionality - videos auto-play on load and slide change
   useEffect(() => {
-    if (!heroVideos.length || !sliderIsActive || isPlayPending) return;
+    if (!heroVideos.length || isPlayPending) return;
 
     const firstVideo = videoRefs.current[0];
     if (!firstVideo) return;
@@ -287,7 +278,7 @@ const NewHeroSection = () => {
       firstVideo.removeEventListener('canplay', handleReady);
       firstVideo.removeEventListener('loadeddata', handleReady);
     };
-  }, [heroVideos.length, sliderIsActive, isPlayPending, firstVideoReady]);
+  }, [heroVideos.length, isPlayPending, firstVideoReady]);
 
   // Attach canplaythrough / loadeddata handlers to mark videos ready
   useEffect(() => {
@@ -453,37 +444,16 @@ const NewHeroSection = () => {
 
                             {/* Control buttons container */}
                             <div className='absolute bottom-4 right-4 flex gap-2 pointer-events-auto'>
-                              {/* Slider pause/resume toggle */}
+                              {/* Play/Pause button */}
                               <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  const newSliderState = !sliderIsActive;
-                                  setSliderIsActive(newSliderState);
-
-                                  if (!newSliderState) {
-                                    // Pause current video when slider is disabled
-                                    pauseCurrentVideo();
-                                  } else {
-                                    // Resume current video only if we're on the first slide (index 0)
-                                    if (currentVideoIndex === 0) {
-                                      playCurrentVideo();
-                                    }
-                                  }
-                                }}
-                                className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 ${
-                                  sliderIsActive
-                                    ? 'bg-black/50 hover:bg-black/70'
-                                    : 'bg-red-500/70 hover:bg-red-600/80'
-                                }`}
-                                title={sliderIsActive ? 'Pause Slider' : 'Resume Slider'}>
-                                {sliderIsActive ? (
-                                  // Slider active icon (pause slider)
+                                onClick={(event) => handlePlayPause(event, index)}
+                                className='w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 bg-black/50 hover:bg-black/70'
+                                title={playingIndex === index ? 'Pause video' : 'Play video'}>
+                                {playingIndex === index ? (
                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 011 1v4a1 1 0 11-2 0V8a1 1 0 011-1zm4-1a1 1 0 00-1 1v4a1 1 0 002 0V7a1 1 0 00-1-1z" clipRule="evenodd" />
                                   </svg>
                                 ) : (
-                                  // Slider paused icon (resume slider)
                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                                   </svg>
@@ -512,9 +482,6 @@ const NewHeroSection = () => {
                           {/* Status indicator */}
                           <div className='absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
                             {(playingIndex === index && currentVideoIndex === index) ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
-                            {!sliderIsActive && currentVideoIndex === index && (
-                              <span className='block text-yellow-300 text-xs mt-1'>Slider Paused</span>
-                            )}
                           </div>
                         </div>
                       </div>
