@@ -138,7 +138,7 @@ const Register = () => {
                   subtitle="A verification email has been sent to your email. Please verify your email to continue."
                 />
               );
-              router.push("/auth/verification-sent");
+              router.push(fromParam ? `/auth/verification-sent?from=${encodeURIComponent(fromParam)}` : "/auth/verification-sent");
             }, 2000);
 
             return "Registration successful";
