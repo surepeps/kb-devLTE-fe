@@ -258,8 +258,23 @@ const AgentMarketplace = () => {
     }
   };
 
-  const formatPrice = (price: number, currency: string = 'NGN') => {
-    return `${currency === 'NGN' ? '₦' : currency}${price.toLocaleString('en-US')}`;
+  const formatPrice = (price: number | string | null | undefined, currency?: string) => {
+    const normalizedCurrency = (currency || 'NGN').toUpperCase();
+    const numericValue =
+      typeof price === 'number'
+        ? price
+        : typeof price === 'string'
+          ? Number(price.replace(/[^0-9.-]/g, ''))
+          : NaN;
+
+    if (!Number.isFinite(numericValue)) {
+      return 'N/A';
+    }
+
+    const formatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+    const prefix = normalizedCurrency === 'NGN' ? '₦' : `${normalizedCurrency} `;
+
+    return `${prefix}${formatter.format(numericValue)}`;
   };
 
   const formatLocation = (location: Location) => {
@@ -354,7 +369,7 @@ const AgentMarketplace = () => {
               <span className="text-gray-600 text-xs font-medium">Budget</span>
             </div>
             <span className="text-gray-900 text-sm font-medium">
-              {formatPrice(preference.budget.minPrice)} - {formatPrice(preference.budget.maxPrice)}
+              {formatPrice(preference.budget?.minPrice, preference.budget?.currency)} - {formatPrice(preference.budget?.maxPrice, preference.budget?.currency)}
             </span>
           </div>
 
