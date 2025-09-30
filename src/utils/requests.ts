@@ -1,5 +1,7 @@
 /** @format */
 
+import Cookies from 'js-cookie';
+
 interface ApiResponse<T = any> {
   success: boolean;
   message?: string;
@@ -7,6 +9,26 @@ interface ApiResponse<T = any> {
   error?: string;
   pagination?: T | null
 }
+
+const isAuthExpiredMessage = (msg?: string) => {
+  if (!msg) return false;
+  const m = msg.toLowerCase();
+  return m.includes('unauthorized') || m.includes('jwt') || m.includes('expired') || m.includes('malformed');
+};
+
+const handleAuthExpirySideEffects = () => {
+  try { Cookies.remove('token'); } catch {}
+  try {
+    if (typeof window !== 'undefined') {
+      try { localStorage.removeItem('token'); } catch {}
+      const current = (window.location?.pathname || '') + (window.location?.search || '');
+      if (current && !sessionStorage.getItem('redirectAfterLogin')) {
+        try { sessionStorage.setItem('redirectAfterLogin', current); } catch {}
+      }
+      try { window.dispatchEvent(new CustomEvent('auth:expired')); } catch {}
+    }
+  } catch {}
+};
 
 export const GET_REQUEST = async <T = any>(
   url: string,
@@ -48,7 +70,9 @@ export const GET_REQUEST = async <T = any>(
     // Check if request was successful
     if (!request.ok) {
       const errorMessage = `HTTP ${request.status}: ${request.statusText}`;
-      // Request failed
+      if (request.status === 401) {
+        handleAuthExpirySideEffects();
+      }
       return {
         error: errorMessage,
         success: false,
@@ -71,6 +95,9 @@ export const GET_REQUEST = async <T = any>(
 
     try {
       const response = JSON.parse(text);
+      if (!response?.success && isAuthExpiredMessage(response?.message || response?.error)) {
+        handleAuthExpirySideEffects();
+      }
       return response;
     } catch (parseError) {
       // JSON parse error for response
@@ -116,7 +143,13 @@ export const DELETE_REQUEST = async <T = any>(url: string, data?: unknown, token
       headers,
       body: data ? JSON.stringify(data) : undefined,
     });
+    if (!request.ok && request.status === 401) {
+      handleAuthExpirySideEffects();
+    }
     const response = await request.json();
+    if (!response?.success && isAuthExpiredMessage(response?.message || response?.error)) {
+      handleAuthExpirySideEffects();
+    }
     return response;
   } catch (error: unknown) {
     // Error occurred
@@ -162,8 +195,15 @@ export const POST_REQUEST = async <T = any>(
     const parsed = text ? (() => { try { return JSON.parse(text); } catch { return { success: false, error: "Invalid JSON response" }; } })() : {};
 
     if (!request.ok) {
+      if (request.status === 401) {
+        handleAuthExpirySideEffects();
+      }
       const errMsg = (parsed as any)?.error || (parsed as any)?.message || `HTTP ${request.status}`;
       throw new Error(errMsg);
+    }
+
+    if (!(parsed as any)?.success && isAuthExpiredMessage((parsed as any)?.message || (parsed as any)?.error)) {
+      handleAuthExpirySideEffects();
     }
 
     return parsed as T;
@@ -187,7 +227,13 @@ export const POST_REQUEST_FILE_UPLOAD = async <T = any>(
       },
       body: data,
     });
+    if (!request.ok && request.status === 401) {
+      handleAuthExpirySideEffects();
+    }
     const response = await request.json();
+    if (!response?.success && isAuthExpiredMessage(response?.message || response?.error)) {
+      handleAuthExpirySideEffects();
+    }
     return response;
   } catch (error: unknown) {
     // Error occurred
@@ -219,7 +265,13 @@ export const PUT_REQUEST = async <T = any>(
       headers,
       body: JSON.stringify(data),
     });
+    if (!request.ok && request.status === 401) {
+      handleAuthExpirySideEffects();
+    }
     const response = await request.json();
+    if (!response?.success && isAuthExpiredMessage(response?.message || response?.error)) {
+      handleAuthExpirySideEffects();
+    }
     return response;
   } catch (error: unknown) {
     // Error occurred
