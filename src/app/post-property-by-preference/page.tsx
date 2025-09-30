@@ -39,6 +39,7 @@ import Breadcrumb from "@/components/extrals/Breadcrumb";
 import { useAppSelector } from "@/store/hooks";
 import { selectFeatureEntry } from "@/store/subscriptionFeaturesSlice";
 import { FEATURE_KEYS } from "@/hooks/useFeatureGate";
+import FeatureGate from "@/components/access/FeatureGate";
 
 // Preference interfaces
 interface Buyer {
