@@ -46,6 +46,7 @@ const Register = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const referralFromUrl = (searchParams.get("ref") || searchParams.get("referral") || "").trim();
+  const fromParam = searchParams.get('from');
   const [agreed, setAgreed] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
