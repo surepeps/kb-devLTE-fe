@@ -39,6 +39,7 @@ import Breadcrumb from "@/components/extrals/Breadcrumb";
 import { useAppSelector } from "@/store/hooks";
 import { selectFeatureEntry } from "@/store/subscriptionFeaturesSlice";
 import { FEATURE_KEYS } from "@/hooks/useFeatureGate";
+import FeatureGate from "@/components/access/FeatureGate";
 
 // Preference interfaces
 interface Buyer {
@@ -897,218 +898,191 @@ const PostPropertyByPreference = () => {
         requireActiveSubscription={true}
         agentCustomMessage="You must complete onboarding and be approved before you can post properties."
       >
-        <div className="min-h-screen bg-[#EEF1F1] py-10">
-          <div className="container mx-auto px-4 md:px-6 max-w-2xl">
-            <div className="bg-white rounded-xl shadow-sm p-6 md:p-8 text-center border border-gray-200">
-              <div className="mx-auto mb-4 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold">✓</div>
-              <h2 className="text-xl md:text-2xl font-bold text-[#09391C] mb-2">Preference Already Matched</h2>
-              <p className="text-[#5A5D63] mb-6">This buyer preference has been closed because it’s already matched. You can find another active preference to submit your property to.</p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={() => router.push('/agent-marketplace')}
-                  className="px-6 py-3 bg-[#8DDB90] hover:bg-[#7BC97F] text-white rounded-lg font-semibold transition-colors"
-                >
-                  Find another preference
-                </button>
-                <button
-                  onClick={() => router.push('/dashboard')}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-semibold transition-colors"
-                >
-                  Go to dashboard
-                </button>
+        <FeatureGate featureKeys={[FEATURE_KEYS.AGENT_MARKETPLACE]}>
+          <div className="min-h-screen bg-[#EEF1F1] py-10">
+            <div className="container mx-auto px-4 md:px-6 max-w-2xl">
+              <div className="bg-white rounded-xl shadow-sm p-6 md:p-8 text-center border border-gray-200">
+                <div className="mx-auto mb-4 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold">✓</div>
+                <h2 className="text-xl md:text-2xl font-bold text-[#09391C] mb-2">Preference Already Matched</h2>
+                <p className="text-[#5A5D63] mb-6">This buyer preference has been closed because it’s already matched. You can find another active preference to submit your property to.</p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    onClick={() => router.push('/agent-marketplace')}
+                    className="px-6 py-3 bg-[#8DDB90] hover:bg-[#7BC97F] text-white rounded-lg font-semibold transition-colors"
+                  >
+                    Find another preference
+                  </button>
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-semibold transition-colors"
+                  >
+                    Go to dashboard
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </FeatureGate>
       </CombinedAuthGuard>
     );
   }
 
   return (
     <CombinedAuthGuard
-      requireAuth={true} // User must be logged in
-      allowedUserTypes={["Agent"]} // Only these user types can access
+      requireAuth={true}
+      allowedUserTypes={["Agent"]}
       requireAgentOnboarding={false}
       requireAgentApproval={false}
       requireActiveSubscription={true}
       agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
-      <Preloader isVisible={isSubmitting} message="Submitting Property..." />
-      <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
-        <div className="container mx-auto px-4 md:px-6">
-          {/* Breadcrumb */}
-          <Breadcrumb items={breadcrumbItems} />
+      <FeatureGate featureKeys={[FEATURE_KEYS.AGENT_MARKETPLACE]}>
+        <Preloader isVisible={isSubmitting} message="Submitting Property..." />
+        <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
+          <div className="container mx-auto px-4 md:px-6">
+            <Breadcrumb items={breadcrumbItems} />
 
-          {/* Header */}
-          <div className="text-center mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-2 md:mb-4">
-              Submit Property for Buyer Preference
-            </h1>
-            <div className="mb-3">
-              <span className="inline-flex items-center rounded-full bg-[#EEF1F1] text-[#09391C] text-xs md:text-sm px-3 py-1 font-medium">
-                Listings quota: {quotaText}
-              </span>
-            </div>
-            <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
-              {preference && (
-                <span className="block mb-2">
-                  For: <strong>{preference.buyer.fullName}</strong> - {preference.preferenceType === 'buy' ? 'Looking to Buy' : preference.preferenceType === 'rent' ? 'Looking to Rent' : 'Looking for Shortlet'}
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold text-[#09391C] font-display mb-2 md:mb-4">
+                Submit Property for Buyer Preference
+              </h1>
+              <div className="mb-3">
+                <span className="inline-flex items-center rounded-full bg-[#EEF1F1] text-[#09391C] text-xs md:text-sm px-3 py-1 font-medium">
+                  Listings quota: {quotaText}
                 </span>
-              )}
-              {showPropertySummary
-                ? "Review your property listing before submission"
-                : showCommissionModal
-                  ? "Review and accept the commission terms"
-                  : "Follow these simple steps to list your property that matches the buyer's requirements"}
-            </p>
-          </div>
+              </div>
+              <p className="text-[#5A5D63] text-sm md:text-lg max-w-2xl mx-auto px-4">
+                {preference && (
+                  <span className="block mb-2">
+                    For: <strong>{preference.buyer.fullName}</strong> - {preference.preferenceType === 'buy' ? 'Looking to Buy' : preference.preferenceType === 'rent' ? 'Looking to Rent' : 'Looking for Shortlet'}
+                  </span>
+                )}
+                {showPropertySummary
+                  ? "Review your property listing before submission"
+                  : showCommissionModal
+                    ? "Review and accept the commission terms"
+                    : "Follow these simple steps to list your property that matches the buyer's requirements"}
+              </p>
+            </div>
 
-          {/* Preference Summary Card */}
-          {preference && !showPropertySummary && !showCommissionModal && (
-            <div className="bg-white rounded-xl border-l-4 border-[#8DDB90] p-4 mb-6 md:mb-8 max-w-4xl mx-auto">
-              <div className="flex items-start space-x-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-[#09391C] mb-2">Buyer&apos;s Requirements</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600">Type:</span>
-                      <span className="ml-2 font-medium">{preference.preferenceType}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Budget:</span>
-                      <span className="ml-2 font-medium">
-                        ₦{preference.budget.minPrice.toLocaleString()} - ₦{preference.budget.maxPrice.toLocaleString()}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Location:</span>
-                      <span className="ml-2 font-medium">{preference.location.state}</span>
+            {preference && !showPropertySummary && !showCommissionModal && (
+              <div className="bg-white rounded-xl border-l-4 border-[#8DDB90] p-4 mb-6 md:mb-8 max-w-4xl mx-auto">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-2">Buyer&apos;s Requirements</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-600">Type:</span>
+                        <span className="ml-2 font-medium">{preference.preferenceType}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Budget:</span>
+                        <span className="ml-2 font-medium">
+                          ₦{preference.budget.minPrice.toLocaleString()} - ₦{preference.budget.maxPrice.toLocaleString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Location:</span>
+                        <span className="ml-2 font-medium">{preference.location.state}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Stepper */}
-          {!showPropertySummary && !showCommissionModal && (
-            <div className="mb-6 md:mb-8 overflow-x-auto">
-              <Stepper steps={steps} />
-            </div>
-          )}
+            {!showPropertySummary && !showCommissionModal && (
+              <div className="mb-6 md:mb-8 overflow-x-auto">
+                <Stepper steps={steps} />
+              </div>
+            )}
 
-          {/* Main Content with Formik */}
-          <Formik
-            initialValues={propertyData}
-            validationSchema={getValidationSchema(currentStep, propertyData as unknown as Record<string, unknown>)}
-            onSubmit={() => {}}
-            enableReinitialize
-          >
-            {({
-              errors,
-              touched,
-              validateForm,
-              setFieldTouched,
-              isValid,
-              isSubmitting: formikSubmitting,
-            }) => (
-              <Form>
-                <div className="bg-white rounded-xl p-4 md:p-8 mb-6 md:mb-8">
-                  {renderCurrentStep()}
-                </div>
+            <Formik
+              initialValues={propertyData}
+              validationSchema={getValidationSchema(currentStep, propertyData as unknown as Record<string, unknown>)}
+              onSubmit={() => {}}
+              enableReinitialize
+            >
+              {({ errors, touched, validateForm, setFieldTouched, isValid, isSubmitting: formikSubmitting }) => (
+                <Form>
+                  <div className="bg-white rounded-xl p-4 md:p-8 mb-6 md:mb-8">
+                    {renderCurrentStep()}
+                  </div>
 
-                {/* Navigation Buttons */}
-                {!showCommissionModal && !showPropertySummary && (
-                  <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
-                    <Button
-                      type="button"
-                      value={currentStep === 0 ? "Back to Marketplace" : "Previous"}
-                      onClick={
-                        currentStep === 0
-                          ? () => router.push("/agent-marketplace")
-                          : handlePrevious
-                      }
-                      className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                      isDisabled={isSubmitting}
-                    />
+                  {!showCommissionModal && !showPropertySummary && (
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 max-w-4xl mx-auto">
+                      <Button
+                        type="button"
+                        value={currentStep === 0 ? "Back to Marketplace" : "Previous"}
+                        onClick={currentStep === 0 ? () => router.push("/agent-marketplace") : handlePrevious}
+                        className="w-full md:w-auto bg-gray-500 hover:bg-gray-600 text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                        isDisabled={isSubmitting}
+                      />
 
-                    {/* Step indicator - centered */}
-                    <div className="flex md:hidden justify-center">
-                      <span className="text-sm text-[#5A5D63] font-medium">
-                        Step {currentStep + 1} of {steps.length}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
-                      {/* Desktop step indicator */}
-                      <div className="hidden md:block">
+                      <div className="flex md:hidden justify-center">
                         <span className="text-sm text-[#5A5D63] font-medium">
                           Step {currentStep + 1} of {steps.length}
                         </span>
                       </div>
 
-                      <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                        {currentStep === 4 && (
+                      <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+                        <div className="hidden md:block">
+                          <span className="text-sm text-[#5A5D63] font-medium">
+                            Step {currentStep + 1} of {steps.length}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                          {currentStep === 4 && (
+                            <Button
+                              type="button"
+                              value="Review Property"
+                              onClick={() => setShowPropertySummary(true)}
+                              className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
+                              isDisabled={isSubmitting}
+                            />
+                          )}
                           <Button
                             type="button"
-                            value="Review Property"
-                            onClick={() => setShowPropertySummary(true)}
-                            className="w-full md:w-auto border-2 border-[#8DDB90] text-[#8DDB90] hover:bg-[#8DDB90] hover:text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors"
-                            isDisabled={isSubmitting}
+                            value={currentStep === 4 ? "Complete" : "Next"}
+                            onClick={() => handleNext(validateForm, errors, setFieldTouched)}
+                            className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            isDisabled={
+                              isSubmitting ||
+                              isLoading ||
+                              images.some((img) => img.isUploading) ||
+                              (propertyData.videos && propertyData.videos.some((video) => video.isUploading)) ||
+                              !isStepValid(currentStep, propertyData, areImagesValid, errors, touched)
+                            }
                           />
-                        )}
-                        <Button
-                          type="button"
-                          value={currentStep === 4 ? "Complete" : "Next"}
-                          onClick={() =>
-                            handleNext(validateForm, errors, setFieldTouched)
-                          }
-                          className="w-full md:w-auto bg-[#8DDB90] hover:bg-[#7BC87F] text-white px-6 md:px-8 py-3 rounded-lg font-semibold transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                          isDisabled={
-                            isSubmitting ||
-                            isLoading ||
-                            images.some((img) => img.isUploading) ||
-                            (propertyData.videos &&
-                              propertyData.videos.some(
-                                (video) => video.isUploading,
-                              )) ||
-                            !isStepValid(
-                              currentStep,
-                              propertyData,
-                              areImagesValid,
-                              errors,
-                              touched,
-                            )
-                          }
-                        />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </Form>
-            )}
-          </Formik>
+                  )}
+                </Form>
+              )}
+            </Formik>
 
-          <AgreementModal
-            open={showCommissionModal}
-            onClose={() => setShowCommissionModal(false)}
-            onAccept={() => {
-              setShowCommissionModal(false);
-              handleSubmit();
-            }}
-            textValue={"Agree and Post Property"}
-            userName={`${user.firstName} ${user.lastName}`}
-            userType={user?.userType === "Agent" ? "agent" : "landowner"}
-          />
+            <AgreementModal
+              open={showCommissionModal}
+              onClose={() => setShowCommissionModal(false)}
+              onAccept={() => {
+                setShowCommissionModal(false);
+                handleSubmit();
+              }}
+              textValue={"Agree and Post Property"}
+              userName={`${user.firstName} ${user.lastName}`}
+              userType={user?.userType === "Agent" ? "agent" : "landowner"}
+            />
 
-          {/* Success Modal */}
-          <PreferenceSuccessModal
-            isOpen={showSuccessModal}
-            onClose={() => setShowSuccessModal(false)}
-            buyerName={preference?.buyer?.fullName}
-          />
+            <PreferenceSuccessModal
+              isOpen={showSuccessModal}
+              onClose={() => setShowSuccessModal(false)}
+              buyerName={preference?.buyer?.fullName}
+            />
+          </div>
         </div>
-      </div>
+      </FeatureGate>
     </CombinedAuthGuard>
   );
 };
