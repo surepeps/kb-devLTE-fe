@@ -98,7 +98,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
       setIsInitialized(true);
       if (pathName && !pathName.includes("/auth")) {
-        router.push("/auth/login");
+        const from = typeof window !== 'undefined' ? (window.location.pathname + (window.location.search || '')) : (pathName || '/');
+        router.push(`/auth/login?from=${encodeURIComponent(from)}`);
       }
       return;
     }
@@ -118,13 +119,17 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           response.message.toLowerCase().includes("malformed"))
       ) {
         Cookies.remove("token");
+        try { localStorage.removeItem('token'); } catch {}
         toast.error("Session expired, please login again");
-        router.push("/auth/login");
+        const from = typeof window !== 'undefined' ? (window.location.pathname + (window.location.search || '')) : (pathName || '/');
+        try { if (!sessionStorage.getItem('redirectAfterLogin')) sessionStorage.setItem('redirectAfterLogin', from); } catch {}
+        router.push(`/auth/login?from=${encodeURIComponent(from)}`);
       }
     } catch (error) {
       console.log("Error", error);
       if (pathName && !pathName.includes("/auth")) {
-        router.push("/auth/login");
+        const from = typeof window !== 'undefined' ? (window.location.pathname + (window.location.search || '')) : (pathName || '/');
+        router.push(`/auth/login?from=${encodeURIComponent(from)}`);
       }
     } finally {
       setIsLoading(false);
