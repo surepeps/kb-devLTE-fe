@@ -150,8 +150,23 @@ const PreferenceDetailPage = () => {
     }
   };
 
-  const formatPrice = (price: number, currency: string = 'NGN') => {
-    return `${currency === 'NGN' ? '₦' : currency}${price.toLocaleString('en-US')}`;
+  const formatPrice = (price: number | string | null | undefined, currency?: string) => {
+    const normalizedCurrency = (currency || 'NGN').toUpperCase();
+    const numericValue =
+      typeof price === 'number'
+        ? price
+        : typeof price === 'string'
+          ? Number(price.replace(/[^0-9.-]/g, ''))
+          : NaN;
+
+    if (!Number.isFinite(numericValue)) {
+      return 'N/A';
+    }
+
+    const formatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+    const prefix = normalizedCurrency === 'NGN' ? '₦' : `${normalizedCurrency} `;
+
+    return `${prefix}${formatter.format(numericValue)}`;
   };
 
   const formatLocation = (location: Location) => {
@@ -302,12 +317,12 @@ const PreferenceDetailPage = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Price Range:</span>
                   <span className="font-semibold text-lg text-[#09391C]">
-                    {formatPrice(preference.budget.minPrice)} - {formatPrice(preference.budget.maxPrice)}
+                    {formatPrice(preference.budget?.minPrice, preference.budget?.currency)} - {formatPrice(preference.budget?.maxPrice, preference.budget?.currency)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Currency:</span>
-                  <span className="font-medium">{preference.budget.currency}</span>
+                  <span className="font-medium">{preference.budget?.currency ? preference.budget.currency.toUpperCase() : 'N/A'}</span>
                 </div>
               </div>
             </div>
