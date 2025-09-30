@@ -6,7 +6,7 @@
 import React, { FC, useEffect, useState, useCallback } from "react"; // Added useCallback
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "js-cookie";
 import { useGoogleLogin } from "@react-oauth/google";
 import toast from "react-hot-toast";
@@ -44,6 +44,8 @@ const Login: FC = () => {
   const { isContactUsClicked } = usePageContext();
   const { setUser } = useUserContext();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromParam = searchParams?.get('from') || null;
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,6 +61,12 @@ const Login: FC = () => {
     password: Yup.string().required("Password is required"),
   });
 
+  useEffect(() => {
+    if (fromParam) {
+      try { sessionStorage.setItem('redirectAfterLogin', decodeURIComponent(fromParam)); } catch {}
+    }
+  }, [fromParam]);
+
   const handleAuthSuccess = useCallback((response: any) => {
     const userPayload = response.data.user;
 
@@ -68,14 +76,13 @@ const Login: FC = () => {
     setOverlayVisible(true);
 
     setTimeout(() => {
-      // Check for redirect URL in sessionStorage
-      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+      const redirectUrl = fromParam || sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
-        sessionStorage.removeItem('redirectAfterLogin');
-        router.push(redirectUrl);
+        try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
+        router.push(redirectUrl.startsWith('/') ? redirectUrl : decodeURIComponent(redirectUrl));
         setOverlayVisible(false);
         return;
-      } 
+      }
 
       router.push("/dashboard");
 
@@ -94,7 +101,7 @@ const Login: FC = () => {
 
       setOverlayVisible(false);
     }, 1500);
-  }, [router, setUser]);
+  }, [router, setUser, fromParam]);
  
   const formik = useFormik({
     initialValues: {
@@ -143,11 +150,10 @@ const Login: FC = () => {
 
           const userPayload = response.data.user;
 
-          // Check for redirect URL in sessionStorage
-          const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+          const redirectUrl = fromParam || sessionStorage.getItem('redirectAfterLogin');
           if (redirectUrl) {
-            sessionStorage.removeItem('redirectAfterLogin');
-            router.push(redirectUrl);
+            try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
+            router.push(redirectUrl.startsWith('/') ? redirectUrl : decodeURIComponent(redirectUrl));
             return;
           }
 
@@ -231,11 +237,10 @@ const Login: FC = () => {
 
                     const userPayload = result.data.user;
 
-                    // Check for redirect URL in sessionStorage
-                    const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+                    const redirectUrl = fromParam || sessionStorage.getItem('redirectAfterLogin');
                     if (redirectUrl) {
-                      sessionStorage.removeItem('redirectAfterLogin');
-                      router.push(redirectUrl);
+                      try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
+                      router.push(redirectUrl.startsWith('/') ? redirectUrl : decodeURIComponent(redirectUrl));
                       return;
                     }
 
@@ -330,7 +335,7 @@ const Login: FC = () => {
             Don&apos;t have an account?{" "}
             <Link
               className="font-semibold text-[#09391C]"
-              href={"/auth/register"}
+              href={fromParam ? `/auth/register?from=${encodeURIComponent(fromParam)}` : "/auth/register"}
             >
               Sign Up
             </Link>

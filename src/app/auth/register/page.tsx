@@ -46,6 +46,7 @@ const Register = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const referralFromUrl = (searchParams.get("ref") || searchParams.get("referral") || "").trim();
+  const fromParam = searchParams.get('from');
   const [agreed, setAgreed] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
@@ -137,7 +138,7 @@ const Register = () => {
                   subtitle="A verification email has been sent to your email. Please verify your email to continue."
                 />
               );
-              router.push("/auth/verification-sent");
+              router.push(fromParam ? `/auth/verification-sent?from=${encodeURIComponent(fromParam)}` : "/auth/verification-sent");
             }, 2000);
 
             return "Registration successful";
