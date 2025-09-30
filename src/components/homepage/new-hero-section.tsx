@@ -145,16 +145,9 @@ const NewHeroSection = () => {
     // Pause all videos on slide change to prevent overlap
     pauseAllVideos();
 
-    // Auto-play the new current video after a short delay to ensure it's ready
-    setTimeout(() => {
-      const newCurrentVideo = videoRefs.current[selectedIndex];
-      if (newCurrentVideo && !isPlayPending) {
-        newCurrentVideo.play().catch((error) => {
-          console.log('Auto-play failed:', error);
-        });
-      }
-    }, 100);
-  }, [emblaApi, currentVideoIndex, isPlayPending]);
+    // IMPORTANT: Do NOT auto-play the newly selected slide except for the very first slide (index 0).
+    // Auto-play on slide change is intentionally disabled to ensure videos don't auto-play when navigating.
+  }, [emblaApi, currentVideoIndex]);
 
   // Setup embla carousel event listeners with slider state management
   useEffect(() => {
@@ -169,23 +162,26 @@ const NewHeroSection = () => {
     };
 
     const handleSettle = () => {
-      // Slider has settled - auto-play current video
+      // Slider has settled - only auto-play if it's the first slide and slider is active
       if (!isPlayPending) {
-        playCurrentVideo();
+        const idx = emblaApi.selectedScrollSnap?.();
+        if (typeof idx === 'number' && idx === 0 && sliderIsActive) {
+          playCurrentVideo();
+        }
       }
     };
 
     emblaApi.on('pointerDown', handlePointerDown);
     emblaApi.on('settle', handleSettle);
 
-    onSelect(); // Initialize with current selection
+    onSelect(); // Initialize with current selection (will pause any playing videos)
 
     return () => {
       emblaApi.off('select', onSelect);
       emblaApi.off('pointerDown', handlePointerDown);
       emblaApi.off('settle', handleSettle);
     };
-  }, [emblaApi, onSelect, sliderIsActive]);
+  }, [emblaApi, onSelect, sliderIsActive, isPlayPending]);
 
   // Add event listeners to videos to ensure mutual exclusion and state sync
   useEffect(() => {
@@ -445,8 +441,10 @@ const NewHeroSection = () => {
                                     // Pause current video when slider is disabled
                                     pauseCurrentVideo();
                                   } else {
-                                    // Resume current video when slider is re-enabled
-                                    playCurrentVideo();
+                                    // Resume current video only if we're on the first slide (index 0)
+                                    if (currentVideoIndex === 0) {
+                                      playCurrentVideo();
+                                    }
                                   }
                                 }}
                                 className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 ${
