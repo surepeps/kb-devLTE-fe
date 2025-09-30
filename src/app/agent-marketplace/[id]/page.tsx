@@ -322,7 +322,7 @@ const PreferenceDetailPage = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Currency:</span>
-                  <span className="font-medium">{preference.budget?.currency?.toUpperCase?.() || 'N/A'}</span>
+                  <span className="font-medium">{preference.budget?.currency ? preference.budget.currency.toUpperCase() : 'N/A'}</span>
                 </div>
               </div>
             </div>
