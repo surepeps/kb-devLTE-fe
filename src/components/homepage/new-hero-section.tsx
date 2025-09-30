@@ -20,7 +20,7 @@ const NewHeroSection = () => {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [sliderIsActive, setSliderIsActive] = useState(true);
   const [isPlayPending, setIsPlayPending] = useState(false);
@@ -52,11 +52,12 @@ const NewHeroSection = () => {
   };
 
   const pauseAllVideos = () => {
-    videoRefs.current.forEach((video, index) => {
+    videoRefs.current.forEach(video => {
       if (video && !video.paused) {
         video.pause();
       }
     });
+    setPlayingIndex(null);
   };
 
   const pauseVideoAtIndex = (index: number) => {
@@ -64,6 +65,7 @@ const NewHeroSection = () => {
     if (video && !video.paused) {
       video.pause();
     }
+    setPlayingIndex(prev => (prev === index ? null : prev));
   };
 
   const playCurrentVideo = async () => {
@@ -74,10 +76,10 @@ const NewHeroSection = () => {
       setIsPlayPending(true);
       // Start playing current video first
       await currentVideo.play();
+      setPlayingIndex(currentVideoIndex);
       // Only pause others after current video starts playing
       pauseOtherVideos(currentVideoIndex);
       setIsPlayPending(false);
-      // State will be updated by event listener
     } catch (error) {
       console.log('Video play failed:', error);
       setIsPlayPending(false);
@@ -92,25 +94,25 @@ const NewHeroSection = () => {
     // State will be updated by event listener
   };
 
-  const handlePlayPause = async (e: React.MouseEvent) => {
+  const handlePlayPause = async (e: React.MouseEvent, targetIndex?: number) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const currentVideo = getCurrentVideo();
-    if (!currentVideo || isPlayPending) return;
+    const indexToControl = typeof targetIndex === 'number' ? targetIndex : currentVideoIndex;
+    const targetVideo = videoRefs.current[indexToControl];
+    if (!targetVideo || isPlayPending) return;
 
     try {
-      if (currentVideo.paused) {
+      if (targetVideo.paused) {
         setIsPlayPending(true);
-        // Start playing current video first
-        await currentVideo.play();
+        await targetVideo.play();
+        setPlayingIndex(indexToControl);
         // Only pause others after current video starts playing to avoid flicker
-        pauseOtherVideos(currentVideoIndex);
+        pauseOtherVideos(indexToControl);
         setIsPlayPending(false);
-        // State will be updated by event listener
       } else {
-        currentVideo.pause();
-        // State will be updated by event listener
+        targetVideo.pause();
+        setPlayingIndex(prev => (prev === indexToControl ? null : prev));
       }
     } catch (error) {
       console.log('Video control failed:', error);
@@ -185,85 +187,107 @@ const NewHeroSection = () => {
 
   // Add event listeners to videos to ensure mutual exclusion and state sync
   useEffect(() => {
-    const videos = videoRefs.current.filter(Boolean);
+    const entries = videoRefs.current
+      .map((video, index) => ({ video, index }))
+      .filter((entry): entry is { video: HTMLVideoElement; index: number } => Boolean(entry.video));
 
-    const handlePlay = (playingVideo: HTMLVideoElement, index: number) => {
-      // When any video starts playing, pause all others
-      videos.forEach(video => {
-        if (video && video !== playingVideo && !video.paused) {
-          video.pause();
+    entries.forEach(({ video, index }) => {
+      const playHandler = () => {
+        videoRefs.current.forEach((otherVideo, otherIndex) => {
+          if (otherVideo && otherIndex !== index && !otherVideo.paused) {
+            otherVideo.pause();
+          }
+        });
+        setPlayingIndex(index);
+        setIsMuted(video.muted);
+      };
+
+      const pauseHandler = () => {
+        setPlayingIndex(prev => (prev === index ? null : prev));
+        if (index === currentVideoIndex) {
+          setIsMuted(video.muted);
         }
-      });
+      };
 
-      // Update playing state only if this is the current video
-      if (index === currentVideoIndex) {
-        setIsPlaying(true);
-      }
-    };
+      video.addEventListener('play', playHandler);
+      video.addEventListener('pause', pauseHandler);
 
-    const handlePause = (pausedVideo: HTMLVideoElement, index: number) => {
-      // Update playing state if this is the current video
-      if (index === currentVideoIndex) {
-        setIsPlaying(false);
-      }
-    };
-
-    // Add play and pause event listeners to all videos
-    videos.forEach((video, index) => {
-      if (video) {
-        const playHandler = () => handlePlay(video, index);
-        const pauseHandler = () => handlePause(video, index);
-
-        video.addEventListener('play', playHandler);
-        video.addEventListener('pause', pauseHandler);
-
-        // Store the handlers for cleanup
-        (video as any).__playHandler = playHandler;
-        (video as any).__pauseHandler = pauseHandler;
-      }
+      (video as any).__playHandler = playHandler;
+      (video as any).__pauseHandler = pauseHandler;
     });
 
     return () => {
-      // Cleanup event listeners
-      videos.forEach(video => {
-        if (video) {
-          if ((video as any).__playHandler) {
-            video.removeEventListener('play', (video as any).__playHandler);
-            delete (video as any).__playHandler;
-          }
-          if ((video as any).__pauseHandler) {
-            video.removeEventListener('pause', (video as any).__pauseHandler);
-            delete (video as any).__pauseHandler;
-          }
+      entries.forEach(({ video }) => {
+        const playHandler = (video as any).__playHandler;
+        const pauseHandler = (video as any).__pauseHandler;
+
+        if (playHandler) {
+          video.removeEventListener('play', playHandler);
+          delete (video as any).__playHandler;
+        }
+
+        if (pauseHandler) {
+          video.removeEventListener('pause', pauseHandler);
+          delete (video as any).__pauseHandler;
         }
       });
     };
-  }, [heroVideos, currentVideoIndex]);
+  }, [heroVideos.length, currentVideoIndex]);
 
   // Track readiness of each video (can play) to show skeletons until video thumbnails/content are ready
   const [videoReady, setVideoReady] = useState<boolean[]>([]);
+  const firstVideoReady = videoReady[0];
 
   useEffect(() => {
-    // reset readiness when heroVideos change
     setVideoReady(Array(heroVideos.length).fill(false));
+    setPlayingIndex(null);
   }, [heroVideos.length]);
 
   // Auto-play functionality - videos auto-play on load and slide change
   useEffect(() => {
-    if (heroVideos.length > 0 && videoRefs.current[0] && !isPlayPending) {
-      // Small delay to ensure video is ready
-      const timer = setTimeout(() => {
-        const firstVideo = videoRefs.current[0];
-        if (firstVideo && firstVideo.readyState >= 3) { // HAVE_FUTURE_DATA or better
-          firstVideo.play().catch((error) => {
-            console.log('Initial auto-play failed:', error);
-          });
-        }
-      }, 500);
+    if (!heroVideos.length || !sliderIsActive || isPlayPending) return;
 
-      return () => clearTimeout(timer);
+    const firstVideo = videoRefs.current[0];
+    if (!firstVideo) return;
+
+    const attemptPlay = () => {
+      const videoElement = videoRefs.current[0];
+      if (!videoElement) return;
+
+      if (!videoElement.paused) {
+        setPlayingIndex(0);
+        return;
+      }
+
+      videoElement.play()
+        .then(() => {
+          setPlayingIndex(0);
+          videoRefs.current.forEach((otherVideo, otherIndex) => {
+            if (otherVideo && otherIndex !== 0 && !otherVideo.paused) {
+              otherVideo.pause();
+            }
+          });
+        })
+        .catch((error) => {
+          console.log('Initial auto-play failed:', error);
+        });
+    };
+
+    if (firstVideoReady) {
+      attemptPlay();
+      return;
     }
-  }, [heroVideos.length, isPlayPending]);
+
+    const handleReady = () => attemptPlay();
+
+    firstVideo.addEventListener('canplay', handleReady);
+    firstVideo.addEventListener('loadeddata', handleReady);
+
+    return () => {
+      firstVideo.removeEventListener('canplay', handleReady);
+      firstVideo.removeEventListener('loadeddata', handleReady);
+    };
+  }, [heroVideos.length, sliderIsActive, isPlayPending, firstVideoReady]);
 
   // Attach canplaythrough / loadeddata handlers to mark videos ready
   useEffect(() => {
@@ -385,7 +409,7 @@ const NewHeroSection = () => {
                             playsInline
                             preload="metadata"
                             poster="/placeholder-property.svg"
-                            onClick={handlePlayPause}
+                            onClick={(event) => handlePlayPause(event, index)}
                             onEnded={handleVideoEnded}
                             // mark ready when canplay/loadeddata fire on the element
                             onCanPlay={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
@@ -411,9 +435,9 @@ const NewHeroSection = () => {
                             {/* Main play/pause button */}
                             <div
                               className='absolute inset-0 flex items-center justify-center cursor-pointer pointer-events-auto'
-                              onClick={handlePlayPause}>
+                              onClick={(event) => handlePlayPause(event, index)}>
                               <div className='w-16 h-16 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
-                                {isPlaying ? (
+                                {playingIndex === index && currentVideoIndex === index ? (
                                   // Pause icon
                                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 002 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -487,7 +511,7 @@ const NewHeroSection = () => {
 
                           {/* Status indicator */}
                           <div className='absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                            {(isPlaying && currentVideoIndex === index) ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
+                            {(playingIndex === index && currentVideoIndex === index) ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
                             {!sliderIsActive && currentVideoIndex === index && (
                               <span className='block text-yellow-300 text-xs mt-1'>Slider Paused</span>
                             )}
