@@ -162,23 +162,26 @@ const NewHeroSection = () => {
     };
 
     const handleSettle = () => {
-      // Slider has settled - auto-play current video
+      // Slider has settled - only auto-play if it's the first slide and slider is active
       if (!isPlayPending) {
-        playCurrentVideo();
+        const idx = emblaApi.selectedScrollSnap?.();
+        if (typeof idx === 'number' && idx === 0 && sliderIsActive) {
+          playCurrentVideo();
+        }
       }
     };
 
     emblaApi.on('pointerDown', handlePointerDown);
     emblaApi.on('settle', handleSettle);
 
-    onSelect(); // Initialize with current selection
+    onSelect(); // Initialize with current selection (will pause any playing videos)
 
     return () => {
       emblaApi.off('select', onSelect);
       emblaApi.off('pointerDown', handlePointerDown);
       emblaApi.off('settle', handleSettle);
     };
-  }, [emblaApi, onSelect, sliderIsActive]);
+  }, [emblaApi, onSelect, sliderIsActive, isPlayPending]);
 
   // Add event listeners to videos to ensure mutual exclusion and state sync
   useEffect(() => {
