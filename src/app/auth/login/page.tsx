@@ -329,7 +329,7 @@ const Login: FC = () => {
             Don&apos;t have an account?{" "}
             <Link
               className="font-semibold text-[#09391C]"
-              href={fromParam ? `/auth/register?from=${encodeURIComponent(fromParam)}` : "/auth/register"}
+              href={encodedRedirectTarget ? `/auth/register?from=${encodedRedirectTarget}` : "/auth/register"}
             >
               Sign Up
             </Link>
