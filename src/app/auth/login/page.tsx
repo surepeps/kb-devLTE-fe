@@ -69,10 +69,10 @@ const Login: FC = () => {
   });
 
   useEffect(() => {
-    if (fromParam) {
-      try { sessionStorage.setItem('redirectAfterLogin', decodeURIComponent(fromParam)); } catch {}
+    if (resolvedRedirectTarget) {
+      try { sessionStorage.setItem('redirectAfterLogin', resolvedRedirectTarget); } catch {}
     }
-  }, [fromParam]);
+  }, [resolvedRedirectTarget]);
 
   const handleAuthSuccess = useCallback((response: any) => {
     const userPayload = response.data.user;
