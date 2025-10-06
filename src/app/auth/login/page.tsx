@@ -17,6 +17,7 @@ import OverlayPreloader from "@/components/general-components/OverlayPreloader";
 import Button from "@/components/general-components/button";
 import { RegisterWith } from "@/components/general-components/registerWith";
 import InputField from "@/components/common/InputField";
+import { encodeRedirectTarget, resolveRedirectTarget } from "@/utils/authRedirect";
 
 // Hooks & Context
 import { useLoading } from "@/hooks/useLoading";
