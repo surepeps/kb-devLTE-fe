@@ -57,11 +57,11 @@ const KeyFeaturesSection = () => {
     },
     {
       id: 4,
-      title: "Create Public Page",
+      title: "Subscription Plans",
       description: "Unlock premium tools for agents and landlords.",
       videoThumbnail: homePageSettings.subscription_plan_thumbnail_url || "/placeholder-property.svg",
       videoUrl: homePageSettings.subscription_plan_video_url,
-      link: "/agent-subscriptions",
+      link: "/agent-subscriptions?tab=plans",
       icon: (
         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11.586 10 15 6.586V7z" clipRule="evenodd" />

@@ -129,14 +129,16 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
         }`}
       >
         <nav className={`h-[50px] container flex justify-between items-center`}>
-          <Image
-            src={khabiteqIcon}
-            width={1000}
-            height={1000}
-            className="md:w-[169px] md:h-[25px] w-[144px] h-[30px]"
-            alt=""
-          />
-
+          <Link href="/">
+            <Image
+              src={khabiteqIcon}
+              width={1000}
+              height={1000}
+              className="md:w-[169px] md:h-[25px] w-[144px] h-[30px]"
+              alt=""
+            />
+          </Link>
+          
           <div className="lg:flex gap-[20px] hidden">
             {navigationState.map((item: NavigationItem, idx: number) => {
               if (item.subItems && item.subItems.length > 0) {

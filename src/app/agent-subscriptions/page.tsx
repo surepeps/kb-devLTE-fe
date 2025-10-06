@@ -51,6 +51,21 @@ export default function AgentSubscriptionsPage() {
 
   const token = (getCookie('token') as string) || undefined;
 
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const urlTab = (searchParams.get('tab') || undefined) as ("subscriptions" | "plans" | "transactions") | undefined;
+
+
+  // Apply URL tab if provided
+  useEffect(() => {
+    if (urlTab) {
+      // Validate and set
+      const allowed = ['subscriptions', 'plans', 'transactions'];
+      if (allowed.includes(urlTab)) {
+        setActiveTab(urlTab as any);
+      }
+    }
+  }, [urlTab, setActiveTab]);
+
   // Redirect non-agents
   useEffect(() => {
     if (user && user.userType !== 'Agent') {
