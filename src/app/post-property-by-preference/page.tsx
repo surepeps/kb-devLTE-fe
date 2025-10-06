@@ -341,6 +341,7 @@ const PostPropertyByPreference = () => {
   const [preference, setPreference] = useState<Preference | null>(null);
   const [isLoadingPreference, setIsLoadingPreference] = useState(true);
   const [preferenceError, setPreferenceError] = useState<string | null>(null);
+  const listingsEntry = useAppSelector(selectFeatureEntry(FEATURE_KEYS.AGENT_MARKETPLACE));
 
   const preferenceId = searchParams?.get('preferenceId');
 
@@ -874,7 +875,7 @@ const PostPropertyByPreference = () => {
     );
   }
 
-  const listingsEntry = useAppSelector(selectFeatureEntry(FEATURE_KEYS.LISTINGS));
+  
   const quotaText = listingsEntry
     ? (listingsEntry.type === 'unlimited' || listingsEntry.remaining === -1)
       ? 'Unlimited'
@@ -978,7 +979,13 @@ const PostPropertyByPreference = () => {
                       <div>
                         <span className="text-gray-600">Budget:</span>
                         <span className="ml-2 font-medium">
-                          ₦{preference.budget.minPrice.toLocaleString()} - ₦{preference.budget.maxPrice.toLocaleString()}
+                          {preference?.budget?.minPrice
+                            ? `₦${preference.budget.minPrice.toLocaleString()}`
+                            : "Not specified"} 
+                          {" - "}
+                          {preference?.budget?.maxPrice
+                            ? `₦${preference.budget.maxPrice.toLocaleString()}`
+                            : "Not specified"}
                         </span>
                       </div>
                       <div>

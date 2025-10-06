@@ -215,7 +215,7 @@ export default function AgentDashboard() {
               className="bg-white hover:bg-gray-50 text-[#09391C] border border-gray-300 px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <PlusIcon size={20} />
-              Marketplace
+              Agent Marketplace
             </Link>
           </div>
         </div>

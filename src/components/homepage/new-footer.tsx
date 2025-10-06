@@ -13,19 +13,19 @@ import { URLS } from '@/utils/URLS';
 
 const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
   const exploreLinks = [
-    { name: 'Buy Properties', url: '/market-place' },
-    { name: 'Rent Properties', url: '/market-place' },
-    { name: 'Sell Properties', url: '/post-property' },
-    { name: 'Joint Ventures', url: '/joint-ventures' },
-    { name: 'Agent Marketplace', url: '/agent-marketplace' }
+    { name: 'Buy Properties', url: '#' },
+    { name: 'Rent Properties', url: '#' },
+    { name: 'Sell Properties', url: '#' },
+    { name: 'Joint Ventures', url: '#' },
+    { name: 'Agent Marketplace', url: '#' }
   ];
 
   const servicesLinks = [
-    { name: 'Document Verification', url: '/document-verification' },
-    { name: 'Property Inspection', url: '/my-inspection-requests' },
-    { name: 'Secure Transactions', url: '/transactions' },
-    { name: 'Agent Services', url: '/agent-onboard' },
-    { name: 'Referral Program', url: '/referral' }
+    { name: 'Document Verification', url: '#' },
+    { name: 'Property Inspection', url: '#' },
+    { name: 'Secure Transactions', url: '#' },
+    { name: 'Agent Services', url: '#' },
+    { name: 'Referral Program', url: '#' }
   ];
 
   const supportLinks = [
@@ -86,7 +86,7 @@ const NewFooter = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 
   const quickActions = [
     { name: 'Submit Property Preference', url: '/preference' },
-    { name: 'Join as an Agent', url: '/agent-onboard' },
+    { name: 'Join as an Agent', url: '/agent-kyc' },
     { name: 'Verify Documents', url: '/document-verification' },
     { name: 'Browse Properties', url: '/market-place' }
   ];
