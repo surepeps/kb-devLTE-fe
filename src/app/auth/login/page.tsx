@@ -95,7 +95,7 @@ const Login: FC = () => {
 
       setOverlayVisible(false);
     }, 1500);
-  }, [router, setUser, fromParam]);
+  }, [router, setUser, resolvedRedirectTarget]);
  
   const formik = useFormik({
     initialValues: {
