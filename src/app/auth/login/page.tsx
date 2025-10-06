@@ -3,7 +3,7 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { FC, useEffect, useState, useCallback } from "react"; // Added useCallback
+import React, { FC, useEffect, useState, useCallback, useMemo } from "react"; // Added useCallback
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -17,6 +17,7 @@ import OverlayPreloader from "@/components/general-components/OverlayPreloader";
 import Button from "@/components/general-components/button";
 import { RegisterWith } from "@/components/general-components/registerWith";
 import InputField from "@/components/common/InputField";
+import { encodeRedirectTarget, resolveRedirectTarget } from "@/utils/authRedirect";
 
 // Hooks & Context
 import { useLoading } from "@/hooks/useLoading";
@@ -45,7 +46,13 @@ const Login: FC = () => {
   const { setUser } = useUserContext();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const searchParamsString = searchParams?.toString() ?? "";
   const fromParam = searchParams?.get('from') || null;
+  const resolvedRedirectTarget = useMemo(
+    () => resolveRedirectTarget(fromParam, searchParams),
+    [fromParam, searchParamsString],
+  );
+  const encodedRedirectTarget = encodeRedirectTarget(resolvedRedirectTarget);
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
