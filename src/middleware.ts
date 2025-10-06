@@ -99,7 +99,8 @@ export function middleware(request: NextRequest) {
   if (isUserProtectedRoute) {
     if (!userToken) {
       const loginUrl = new URL("/auth/login", request.url);
-      loginUrl.searchParams.set("from", pathname);
+      const fullPath = pathname + (request.nextUrl.search || "");
+      loginUrl.searchParams.set("from", fullPath);
       return NextResponse.redirect(loginUrl);
     }
     return NextResponse.next();
