@@ -1,8 +1,7 @@
-/** @format */
-
 "use client";
-import React, { useEffect, useState } from "react";
-import { format, addDays } from "date-fns";
+
+import React, { useEffect, useMemo, useState } from "react";
+import { format } from "date-fns";
 import toast from "react-hot-toast";
 import Button from "@/components/general-components/button";
 import { POST_REQUEST } from "@/utils/requests";
@@ -20,6 +19,101 @@ interface DateTimeSelectionProps {
   onBack: () => void;
 }
 
+type InspectionMode = "in_person" | "virtual";
+
+type PropertySchedule = {
+  date: string;
+  time: string;
+};
+
+const INSPECTION_TIMES: string[] = [
+  "8:00 AM",
+  "9:00 AM",
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "1:00 PM",
+  "2:00 PM",
+  "3:00 PM",
+  "4:00 PM",
+  "5:00 PM",
+  "6:00 PM",
+];
+
+const getInitialDate = () => {
+  const date = new Date();
+  date.setDate(date.getDate() + 3);
+
+  while (date.getDay() === 0) {
+    date.setDate(date.getDate() + 1);
+  }
+
+  return format(date, "MMM d, yyyy");
+};
+
+const getInitialTime = () => {
+  const currentHour = new Date().getHours();
+  const nextHour = currentHour + 1;
+
+  const hourMap: Record<number, string> = {
+    8: "8:00 AM",
+    9: "9:00 AM",
+    10: "10:00 AM",
+    11: "11:00 AM",
+    12: "12:00 PM",
+    13: "1:00 PM",
+    14: "2:00 PM",
+    15: "3:00 PM",
+    16: "4:00 PM",
+    17: "5:00 PM",
+    18: "6:00 PM",
+  };
+
+  if (nextHour >= 8 && nextHour <= 18 && hourMap[nextHour]) {
+    return hourMap[nextHour];
+  }
+
+  return INSPECTION_TIMES[0];
+};
+
+const getAvailableDates = (count: number) => {
+  const dates: string[] = [];
+  const date = new Date();
+  date.setDate(date.getDate() + 3);
+
+  while (dates.length < count) {
+    if (date.getDay() !== 0) {
+      dates.push(format(date, "MMM d, yyyy"));
+    }
+    date.setDate(date.getDate() + 1);
+  }
+  return dates;
+};
+
+const getStaggeredTime = (position: number, baseTime: string) => {
+  const baseIndex = INSPECTION_TIMES.indexOf(baseTime);
+  if (baseIndex === -1) {
+    return INSPECTION_TIMES[Math.min(position, INSPECTION_TIMES.length - 1)];
+  }
+  const targetIndex = Math.min(baseIndex + position, INSPECTION_TIMES.length - 1);
+  return INSPECTION_TIMES[targetIndex];
+};
+
+const initializeSchedules = (
+  properties: any[],
+  defaultDate: string,
+  defaultTime: string,
+) => {
+  const schedules: Record<string, PropertySchedule> = {};
+  properties.forEach((property, index) => {
+    schedules[property.propertyId] = {
+      date: defaultDate,
+      time: getStaggeredTime(index, defaultTime),
+    };
+  });
+  return schedules;
+};
+
 const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   selectedProperties,
   inspectionFee,
@@ -29,79 +123,49 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   onComplete,
   onBack,
 }) => {
-  // Auto-select current date (or next available date if today is Sunday)
-  const getInitialDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() + 3); // Start from 3 days from now
+  const defaultInitialDate = useMemo(() => getInitialDate(), []);
+  const defaultInitialTime = useMemo(() => getInitialTime(), []);
 
-    // Skip Sundays
-    while (date.getDay() === 0) {
-      date.setDate(date.getDate() + 1);
-    }
-
-    return format(date, "MMM d, yyyy");
-  };
-
-  // Auto-select next available hour
-  const getInitialTime = () => {
-    const currentHour = new Date().getHours();
-    const nextHour = currentHour + 1;
-
-    const availableTimes = [
-      "8:00 AM",
-      "9:00 AM",
-      "10:00 AM",
-      "11:00 AM",
-      "12:00 PM",
-      "1:00 PM",
-      "2:00 PM",
-      "3:00 PM",
-      "4:00 PM",
-      "5:00 PM",
-      "6:00 PM",
-    ];
-
-    // Find the next available time slot
-    const hourMap: { [key: number]: string } = {
-      8: "8:00 AM",
-      9: "9:00 AM",
-      10: "10:00 AM",
-      11: "11:00 AM",
-      12: "12:00 PM",
-      13: "1:00 PM",
-      14: "2:00 PM",
-      15: "3:00 PM",
-      16: "4:00 PM",
-      17: "5:00 PM",
-      18: "6:00 PM",
-    };
-
-    // If next hour is within business hours, select it; otherwise select first available time
-    if (nextHour >= 8 && nextHour <= 18 && hourMap[nextHour]) {
-      return hourMap[nextHour];
-    }
-
-    return availableTimes[0]; // Default to first available time
-  };
-
-  const [selectedDate, setSelectedDate] = useState(getInitialDate());
-  const [selectedTime, setSelectedTime] = useState(getInitialTime());
-  const [inspectionMode, setInspectionMode] = useState<"in_person" | "virtual">("in_person");
-
-  // Buyer information form state
+  const [inspectionMode, setInspectionMode] =
+    useState<InspectionMode>("in_person");
   const [buyerInfo, setBuyerInfo] = useState({
     fullName: "",
     phoneNumber: "",
     email: "",
   });
-
   const [showMoreDates, setShowMoreDates] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
 
-  // Lock body scroll when uploading or submitting
+  const availableDates = useMemo(
+    () => getAvailableDates(showMoreDates ? 20 : 10),
+    [showMoreDates],
+  );
+
+  const [propertySchedules, setPropertySchedules] = useState<
+    Record<string, PropertySchedule>
+  >(() => initializeSchedules(selectedProperties, defaultInitialDate, defaultInitialTime));
+
   useEffect(() => {
-    if (isSubmitting) {
+    setPropertySchedules((prev) => {
+      const next: Record<string, PropertySchedule> = {};
+      selectedProperties.forEach((property, index) => {
+        const existing = prev[property.propertyId];
+        if (existing) {
+          next[property.propertyId] = existing;
+        } else {
+          next[property.propertyId] = {
+            date: defaultInitialDate,
+            time: getStaggeredTime(index, defaultInitialTime),
+          };
+        }
+      });
+      return next;
+    });
+  }, [selectedProperties, defaultInitialDate, defaultInitialTime]);
+
+  useEffect(() => {
+    if (isSubmitting || isRedirectingToPayment) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -110,39 +174,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isSubmitting]);
-
-  // Generate available dates (at least 10 weekdays, excluding Sundays)
-  const getAvailableDates = (count: number = 10) => {
-    const dates = [];
-    const date = new Date();
-    date.setDate(date.getDate() + 3); // Start from 3 days from now
-
-    while (dates.length < count) {
-      if (date.getDay() !== 0) {
-        // Exclude Sundays
-        dates.push(format(date, "MMM d, yyyy"));
-      }
-      date.setDate(date.getDate() + 1);
-    }
-    return dates;
-  };
-
-  const availableTimes = [
-    "8:00 AM",
-    "9:00 AM",
-    "10:00 AM",
-    "11:00 AM",
-    "12:00 PM",
-    "1:00 PM",
-    "2:00 PM",
-    "3:00 PM",
-    "4:00 PM",
-    "5:00 PM",
-    "6:00 PM",
-  ];
-
-  const availableDates = getAvailableDates(showMoreDates ? 20 : 10);
+  }, [isSubmitting, isRedirectingToPayment]);
 
   const handleBuyerInfoChange = (field: string, value: string) => {
     setBuyerInfo((prev) => ({
@@ -151,8 +183,55 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     }));
   };
 
+  const handleScheduleChange = (
+    propertyId: string,
+    field: keyof PropertySchedule,
+    value: string,
+  ) => {
+    setPropertySchedules((prev) => {
+      const schedule = prev[propertyId] ?? {
+        date: defaultInitialDate,
+        time: defaultInitialTime,
+      };
+
+      return {
+        ...prev,
+        [propertyId]: {
+          ...schedule,
+          [field]: value,
+        },
+      };
+    });
+  };
+
+  const copyScheduleFrom = (sourceId: string, targetId: string) => {
+    setPropertySchedules((prev) => {
+      const source = prev[sourceId];
+      if (!source) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [targetId]: { ...source },
+      };
+    });
+  };
+
+  const hasCompleteSchedules = useMemo(
+    () =>
+      selectedProperties.every((property) => {
+        const schedule = propertySchedules[property.propertyId];
+        return Boolean(schedule?.date && schedule?.time);
+      }),
+    [propertySchedules, selectedProperties],
+  );
 
   const buildInspectionPayload = () => {
+    const fallbackSchedule =
+      selectedProperties.length > 0
+        ? propertySchedules[selectedProperties[0].propertyId]
+        : undefined;
+
     const payload = selectedProperties.map((property) => {
       const negotiatedPrice = negotiatedPrices.find(
         (price) => price.propertyId === property.propertyId,
@@ -169,7 +248,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         letterOfIntention: loiDoc?.documentUrl || undefined,
       };
 
-      // attach request source info if available
       if (property.sourcePage) {
         propertyPayload.requestSource = { page: property.sourcePage };
       }
@@ -182,24 +260,30 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         };
       }
 
+      const schedule = propertySchedules[property.propertyId];
+      if (schedule) {
+        propertyPayload.inspectionDate = schedule.date;
+        propertyPayload.inspectionTime = schedule.time;
+      }
+
       return propertyPayload;
     });
 
     return {
       requestedBy: buyerInfo,
       inspectionDetails: {
-        inspectionDate: selectedDate,
-        inspectionTime: selectedTime,
-        inspectionMode: inspectionMode,
+        inspectionDate: fallbackSchedule?.date ?? defaultInitialDate,
+        inspectionTime: fallbackSchedule?.time ?? defaultInitialTime,
+        inspectionMode,
       },
       inspectionAmount: inspectionFee,
-      properties: payload
+      properties: payload,
     };
   };
 
   const handleSubmitInspectionRequest = async () => {
-    if (!selectedDate || !selectedTime) {
-      toast.error("Please select both date and time for inspection.");
+    if (!hasCompleteSchedules) {
+      toast.error("Please select an inspection date and time for each property.");
       return;
     }
 
@@ -214,65 +298,63 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
       return;
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(buyerInfo.email)) {
       toast.error("Please enter a valid email address.");
       return;
     }
 
-    // Basic phone number validation (should contain only numbers, spaces, +, -, ())
     const phoneRegex = /^[\d\s\-\+\(\)]+$/;
     if (!phoneRegex.test(buyerInfo.phoneNumber)) {
       toast.error("Please enter a valid phone number.");
       return;
     }
 
-      setIsSubmitting(true);
-  
-      try {
-        const payload = buildInspectionPayload();
-        // console.log(payload, "my payload");
-        // return;
-  
-        const response = await POST_REQUEST(URLS.BASE + URLS.requestInspection, payload);
-  
-        if (response.success) {
-          // Check if payment authorization URL is provided
-          if (response.data?.transaction?.authorization_url) {
-            toast.success("🎉 Inspection request submitted successfully! Redirecting to payment...");
-            setIsRedirectingToPayment(true);
+    setIsSubmitting(true);
 
-            // Redirect to payment after short delay
-            setTimeout(() => {
-              window.location.href = response.data.transaction.authorization_url;
-            }, 2000);
-          } else {
-            toast.success("🎉 Inspection request submitted successfully!");
-            setTimeout(() => {
-              onComplete();
-            }, 1000);
-          }
-        }else{
-          toast.error("Failed to submit request. Please try again.");
+    try {
+      const payload = buildInspectionPayload();
+
+      const response = await POST_REQUEST(
+        URLS.BASE + URLS.requestInspection,
+        payload,
+      );
+
+      if (response.success) {
+        if (response.data?.transaction?.authorization_url) {
+          toast.success(
+            "🎉 Inspection request submitted successfully! Redirecting to payment...",
+          );
+          setIsRedirectingToPayment(true);
+
+          setTimeout(() => {
+            window.location.href = response.data.transaction.authorization_url;
+          }, 2000);
+        } else {
+          toast.success("🎉 Inspection request submitted successfully!");
+          setTimeout(() => {
+            onComplete();
+          }, 1000);
         }
-        
-      } catch (error) {
-        console.error("Submission error:", error);
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Failed to submit request. Please try again.",
-        );
-      } finally {
-        setIsSubmitting(false);
+      } else {
+        toast.error("Failed to submit request. Please try again.");
       }
-    };
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit request. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const firstPropertyId = selectedProperties[0]?.propertyId;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-
-      {/* Loading Overlay */}
       {(isSubmitting || isRedirectingToPayment) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 text-center">
@@ -292,7 +374,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         </div>
       )}
 
-      {/* Inspection Summary */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">
           Inspection Summary
@@ -313,47 +394,113 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             </span>
           </div>
 
-          <div className="border-t pt-3">
-            <div className="text-sm text-[#5A5D63] mb-2">Properties:</div>
-            {selectedProperties.map((item, index) => (
-              <div
-                key={item.propertyId}
-                className="text-sm text-[#24272C] mb-1"
-              >
-                {index + 1}. {item.property?.propertyType || "Property"} -{" "}
-                {item.property?.location?.area},{" "}
-                {item.property?.location?.localGovernment}
-              </div>
-            ))}
+          <div className="border-t pt-3 space-y-2">
+            <div className="text-sm text-[#5A5D63]">Schedules:</div>
+            {selectedProperties.map((item, index) => {
+              const schedule = propertySchedules[item.propertyId];
+              return (
+                <div
+                  key={item.propertyId}
+                  className="text-sm text-[#24272C] flex flex-col"
+                >
+                  <span>
+                    {index + 1}. {item.property?.propertyType || "Property"} – {" "}
+                    {item.property?.location?.area}, {" "}
+                    {item.property?.location?.localGovernment}
+                  </span>
+                  {schedule && (
+                    <span className="text-xs text-[#5A5D63]">
+                      {schedule.date} • {schedule.time}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Date Selection */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-          Select Inspection Date
-        </h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {availableDates.map((date) => (
-            <button
-              key={date}
-              onClick={() => setSelectedDate(date)}
-              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                selectedDate === date
-                  ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C]"
-                  : "border-gray-200 hover:border-[#8DDB90] text-[#24272C]"
-              }`}
+      <div className="space-y-6">
+        {selectedProperties.map((property, index) => {
+          const schedule = propertySchedules[property.propertyId];
+          const propertyLabel = `Property ${index + 1}`;
+          return (
+            <div
+              key={property.propertyId}
+              className="bg-white rounded-lg border border-gray-200 p-6 space-y-5"
             >
-              {date}
-            </button>
-          ))}
-        </div>
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-[#5A5D63]">
+                    {propertyLabel}
+                  </p>
+                  <h4 className="text-base font-semibold text-[#09391C]">
+                    {property.property?.propertyType || "Selected Property"}
+                  </h4>
+                  <p className="text-sm text-[#5A5D63]">
+                    {property.property?.location?.area}, {" "}
+                    {property.property?.location?.localGovernment}
+                  </p>
+                </div>
+                {index > 0 && firstPropertyId && property.propertyId !== firstPropertyId && (
+                  <button
+                    onClick={() => copyScheduleFrom(firstPropertyId, property.propertyId)}
+                    className="self-start text-sm font-medium text-[#8DDB90] hover:text-[#76c77a]"
+                  >
+                    Match Property 1 schedule
+                  </button>
+                )}
+              </div>
 
-        {/* Show More Dates Button */}
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <h5 className="text-sm font-semibold text-[#09391C] mb-3">
+                    Select Date
+                  </h5>
+                  <div className="grid grid-cols-2 gap-3">
+                    {availableDates.map((date) => (
+                      <button
+                        key={`${property.propertyId}-${date}`}
+                        onClick={() => handleScheduleChange(property.propertyId, "date", date)}
+                        className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                          schedule?.date === date
+                            ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C]"
+                            : "border-gray-200 hover:border-[#8DDB90] text-[#24272C]"
+                        }`}
+                      >
+                        {date}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h5 className="text-sm font-semibold text-[#09391C] mb-3">
+                    Select Time
+                  </h5>
+                  <div className="grid grid-cols-2 gap-3">
+                    {INSPECTION_TIMES.map((time) => (
+                      <button
+                        key={`${property.propertyId}-${time}`}
+                        onClick={() => handleScheduleChange(property.propertyId, "time", time)}
+                        className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
+                          schedule?.time === time
+                            ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C]"
+                            : "border-gray-200 hover:border-[#8DDB90] text-[#24272C]"
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
         {!showMoreDates && (
-          <div className="text-center mt-4">
+          <div className="text-center">
             <button
               onClick={() => setShowMoreDates(true)}
               className="text-[#8DDB90] hover:text-[#76c77a] font-medium text-sm"
@@ -364,30 +511,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         )}
       </div>
 
-      {/* Time Selection */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-[#09391C] mb-4">
-          Select Inspection Time
-        </h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {availableTimes.map((time) => (
-            <button
-              key={time}
-              onClick={() => setSelectedTime(time)}
-              className={`p-3 rounded-lg border-2 transition-colors text-sm font-medium ${
-                selectedTime === time
-                  ? "border-[#8DDB90] bg-[#E4EFE7] text-[#09391C]"
-                  : "border-gray-200 hover:border-[#8DDB90] text-[#24272C]"
-              }`}
-            >
-              {time}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Inspection Mode Selection */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">
           Select Inspection Mode
@@ -427,23 +550,19 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
               </div>
             </div>
           </button>
-
         </div>
       </div>
 
-      {/* Buyer Information Form */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-[#09391C] mb-4">
           Buyer Information <span className="text-red-500">*</span>
         </h3>
         <p className="text-sm text-[#5A5D63] mb-6">
-          Please provide your contact information for the inspection
-          appointment.
+          Please provide your contact information for the inspection appointment.
         </p>
 
         <div className="space-y-4">
           <div className="w-full flex flex-col gap-4 md:flex-row">
-            {/* Full Name */}
             <div className="w-full">
               <label className="block text-sm font-medium text-[#24272C] mb-2">
                 Full Name <span className="text-red-500">*</span>
@@ -451,16 +570,13 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
               <input
                 type="text"
                 value={buyerInfo.fullName}
-                onChange={(e) =>
-                  handleBuyerInfoChange("fullName", e.target.value)
-                }
+                onChange={(e) => handleBuyerInfoChange("fullName", e.target.value)}
                 placeholder="Enter your full name"
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                 required
               />
             </div>
 
-            {/* Phone Number */}
             <div className="w-full">
               <label className="block text-sm font-medium text-[#24272C] mb-2">
                 Phone Number <span className="text-red-500">*</span>
@@ -468,9 +584,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
               <input
                 type="tel"
                 value={buyerInfo.phoneNumber}
-                onChange={(e) =>
-                  handleBuyerInfoChange("phoneNumber", e.target.value)
-                }
+                onChange={(e) => handleBuyerInfoChange("phoneNumber", e.target.value)}
                 placeholder="Enter your phone number"
                 className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
                 required
@@ -478,7 +592,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             </div>
           </div>
 
-          {/* Email Address */}
           <div>
             <label className="block text-sm font-medium text-[#24272C] mb-2">
               Email Address <span className="text-red-500">*</span>
@@ -495,13 +608,10 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         </div>
       </div>
 
-      {/* Important Notes */}
       <div className="bg-[#FFF3E0] border border-[#FFB74D] rounded-lg p-4">
         <h4 className="font-semibold text-[#E65100] mb-2">Important Notes:</h4>
         <ul className="text-sm text-[#E65100] space-y-1">
-          <li>
-            • Inspections are available Monday to Saturday (excluding Sundays)
-          </li>
+          <li>• Inspections are available Monday to Saturday (excluding Sundays)</li>
           <li>• Please arrive 15 minutes before your scheduled time</li>
           <li>• Bring a valid form of identification</li>
           <li>• Payment confirmation is required before inspection</li>
@@ -509,7 +619,6 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         </ul>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4">
         <button
           onClick={onBack}
@@ -522,8 +631,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
           onClick={handleSubmitInspectionRequest}
           value="Submit to Payment"
           isDisabled={
-            !selectedDate ||
-            !selectedTime ||
+            !hasCompleteSchedules ||
             !buyerInfo.fullName.trim() ||
             !buyerInfo.phoneNumber.trim() ||
             !buyerInfo.email.trim()
