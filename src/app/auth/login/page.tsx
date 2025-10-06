@@ -231,10 +231,10 @@ const Login: FC = () => {
 
                     const userPayload = result.data.user;
 
-                    const redirectUrl = fromParam || sessionStorage.getItem('redirectAfterLogin');
+                    const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
                     if (redirectUrl) {
                       try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
-                      router.push(redirectUrl.startsWith('/') ? redirectUrl : decodeURIComponent(redirectUrl));
+                      router.push(redirectUrl);
                       return;
                     }
 
