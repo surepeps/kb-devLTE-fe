@@ -377,7 +377,7 @@ const ReferralPage = () => {
               <Wallet className="w-6 h-6 text-white" />
             </div>
             <h4 className="font-semibold text-[#09391C] mb-2">3. Earn Rewards</h4>
-            <p className="text-sm text-gray-600">Get ₦5,000 - ₦10,000 per successful referral</p>
+            <p className="text-sm text-gray-600">Get ₦500 - ₦1,000 per successful referral</p>
           </div>
         </div>
       </motion.div>

@@ -6,7 +6,7 @@ import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
 import { Shield, CreditCard, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-
+ 
 interface CombinedAuthGuardProps {
   children: ReactNode;
   requireAuth?: boolean;
@@ -120,9 +120,9 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
   if (requireKycApproved && isAgent && !kycApproved) {
     return (
       <Block
-        title="KYC Required"
+        title="KYC Verification Required"
         message={
-          "Complete your KYC verification to access this page and premium agent features."
+          "You must complete your onboarding and be approved before you can post properties."
         }
         actionHref="/agent-kyc"
         actionLabel="Submit KYC"

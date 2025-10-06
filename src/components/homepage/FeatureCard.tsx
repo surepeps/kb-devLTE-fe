@@ -15,6 +15,7 @@ interface FeatureCardProps {
     link: string;
     icon: React.ReactNode;
     color: string;
+    btnCTA: string;
   };
   index: number;
   loading: boolean;
@@ -222,7 +223,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ feature, index, loading }) =>
 
             {/* Link/Button */}
             <div className="flex items-center gap-2 text-[#8DDB90] group-hover:text-[#7BC87F] transition-colors duration-300 mt-auto">
-            <span className="font-medium">Learn More</span>
+            <span className="font-medium">{feature.btnCTA}</span>
             <svg
               className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
               fill="currentColor"

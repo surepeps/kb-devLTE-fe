@@ -238,7 +238,7 @@ const SocialProofSection = () => {
             Trusted by Thousands
           </h2>
           <p className='text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8 sm:mb-10 md:mb-12 px-4 sm:px-0'>
-            Join the growing community of satisfied customers who&apos;ve found their perfect properties through Khabiteq.
+            Join the growing community of satisfied customers who have found their perfect properties through Khabiteq.
           </p>
 
           {/* Stats Grid */}
