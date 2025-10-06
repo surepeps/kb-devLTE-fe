@@ -134,7 +134,7 @@ const PlanCard: React.FC<{ plan: ApiPlan }> = ({ plan }) => {
         </div>
       )}
 
-      <Link href="/agent-subscriptions">
+      <Link href="/agent-subscriptions?tab=plans">
         <button className="w-full bg-[#8DDB90] hover:bg-[#7BC87F] text-white py-3 px-4 sm:px-6 rounded-full font-bold transition-colors duration-300 text-sm sm:text-base flex items-center justify-center min-h-[48px]">
           <span className="whitespace-nowrap">Subscribe Now</span>
         </button>

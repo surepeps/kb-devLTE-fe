@@ -86,19 +86,6 @@ const Login: FC = () => {
 
       router.push("/dashboard");
 
-      // Default redirect logic
-      // if (userPayload.userType === "Agent") {
-      //   if (!userPayload.agentData?.agentType) {
-      //     router.push("/agent-onboard");
-      //   } else if (userPayload.accountApproved === false) {
-      //     router.push("/agent-under-review");
-      //   } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
-      //     router.push("/dashboard");
-      //   }
-      // } else {
-      //   router.push("/dashboard");
-      // }
-
       setOverlayVisible(false);
     }, 1500);
   }, [router, setUser, fromParam]);

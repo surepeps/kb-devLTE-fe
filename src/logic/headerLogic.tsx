@@ -10,14 +10,15 @@ const HeaderLogic = ({ isComingSoon }: { isComingSoon?: boolean }) => {
 	const pathname = usePathname();
 	return (
 		<Fragment>
-			{(pathname?.includes("agent") && pathname?.includes("briefs")) ||
+			<Header isComingSoon={isComingSoon} />
+			{/* {(pathname?.includes("agent") && pathname?.includes("briefs")) ||
 			(pathname?.includes("onboard") && pathname?.includes("agent")) ||
 			(pathname?.includes("under-review") &&
 				pathname?.includes("under-review")) ? (
 				<AgentHeader /> 
 			) : (
-				<Header isComingSoon={isComingSoon} />
-			)}
+				
+			)} */}
 		</Fragment>
 	);
 };

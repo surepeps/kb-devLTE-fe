@@ -11,14 +11,14 @@ import RentTab from "./tabs/RentTab";
 import ShortletTab from "./tabs/ShortletTab";
 
 import StandardPreloader from "./StandardPreloader";
- 
+  
 const NewMarketPlace = () => {
   const router = useRouter();
   const {
     activeTab,
     setActiveTab,
   } = useNewMarketplace();
-
+ 
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const urlTab = (searchParams.get('tab') || undefined) as ("buy" | "jv" | "rent" | "shortlet") | undefined;
 
