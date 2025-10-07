@@ -15,6 +15,8 @@ import {
   getCommissionText,
   briefTypeConfig,
 } from "@/data/comprehensive-post-property-config";
+import { useAppSelector } from "@/store/hooks";
+import { selectShowCommissionFee } from "@/store/subscriptionFeaturesSlice";
 import "react-phone-number-input/style.css";
 import "@/styles/phone-input.css";
 import { StepProps } from "@/types/post-property.types";
