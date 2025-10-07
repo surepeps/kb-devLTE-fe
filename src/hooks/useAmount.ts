@@ -28,6 +28,8 @@ export default function useAmount(
 
   const subtotal = Math.max(0, base - discountAmount); // nightly charges only
   const total = subtotal + clean + secDep; // add fixed fees
+  const serviceCharge = Math.round(total * 0.08); // 8% service charge on total
+  const payable = total + serviceCharge;
 
   return {
     nights,
@@ -37,6 +39,8 @@ export default function useAmount(
     discountAmount,
     subtotal,
     total,
+    serviceCharge,
+    payable,
     cleaningFee: clean,
     securityDeposit: secDep,
   };
