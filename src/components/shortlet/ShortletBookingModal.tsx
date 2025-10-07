@@ -307,6 +307,8 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   );
 
   const total = amountInfo.total;
+  const serviceCharge = amountInfo.serviceCharge || 0;
+  const payable = amountInfo.payable || total;
 
   const proceedNext = async () => {
     try {
