@@ -651,6 +651,14 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                       <p className="text-sm text-gray-600">Estimated Total</p>
                       <p className="text-base font-bold text-emerald-700">{formatCurrency(total)}</p>
                     </div>
+                    <div className="flex items-center justify-between mt-2">
+                      <p className="text-sm text-gray-600">Service Charge (8%)</p>
+                      <p className="text-sm font-semibold">{formatCurrency(serviceCharge)}</p>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-sm text-gray-600">Total Payable</p>
+                      <p className="text-base font-bold text-emerald-700">{formatCurrency(payable)}</p>
+                    </div>
                   </div>
                 </div>
               ) : (
