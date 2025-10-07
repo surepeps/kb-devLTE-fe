@@ -205,7 +205,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
       return {
         title: "COMMISSION AGREEMENT - Shortlet",
         details: [
-          "• Khabiteq earns 5% of the total value generated from this transaction as commission when the deal is closed",
+          "• Khabiteq earns 7% of the total value generated from this transaction as commission when the deal is closed",
         ],
       };
     }
