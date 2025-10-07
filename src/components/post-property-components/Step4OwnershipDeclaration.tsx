@@ -359,10 +359,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               <span className="font-medium">Legal Owner:</span>{" "}
               {propertyData.isLegalOwner ? "Yes" : "Authorized Representative"}
             </p>
-            <p>
-              <span className="font-medium">Commission Rate:</span>{" "}
-              {getCommissionRate()}%
-            </p>
+            {commissionRate !== null && (
+              <p>
+                <span className="font-medium">Commission Rate:</span>{" "}
+                {commissionRate}%
+              </p>
+            )}
             <p>
               <span className="font-medium">Contact:</span>{" "}
               {propertyData.contactInfo.firstName &&
