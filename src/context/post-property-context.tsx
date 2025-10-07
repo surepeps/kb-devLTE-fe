@@ -392,8 +392,12 @@ export function PostPropertyProvider({ children }: { children: ReactNode }) {
   };
 
   const getUserCommissionRate = (): number => {
-    // Import moved to top of file to avoid require() in component
-    return 50; // Default commission rate - should be imported from config
+    const userType = getUserType();
+    const briefType = propertyData.propertyType as keyof typeof briefTypeConfig;
+    const config = (briefType && (briefTypeConfig as any)[briefType]) || null;
+    if (briefType === 'shortlet') return 7;
+    if (!config) return userType === 'agent' ? 50 : 10;
+    return userType === 'agent' ? config.commission.agent : config.commission.landowner;
   };
 
   const contextValue: PostPropertyContextType = {
