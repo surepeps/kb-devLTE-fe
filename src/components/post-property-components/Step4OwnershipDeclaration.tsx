@@ -15,6 +15,8 @@ import {
   getCommissionText,
   briefTypeConfig,
 } from "@/data/comprehensive-post-property-config";
+import { useAppSelector } from "@/store/hooks";
+import { selectShowCommissionFee } from "@/store/subscriptionFeaturesSlice";
 import "react-phone-number-input/style.css";
 import "@/styles/phone-input.css";
 import { StepProps } from "@/types/post-property.types";
@@ -84,13 +86,19 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     return user?.userType === "Agent" ? "agent" : "landowner";
   };
 
-  const getCommissionRate = () => {
+  const showCommissionFee = useAppSelector(selectShowCommissionFee);
+
+  const getCommissionRate = (): number | null => {
     const userType = getUserType();
-    const config =
-      briefTypeConfig[
-        propertyData.propertyType as keyof typeof briefTypeConfig
-      ];
-    if (!config) return 10;
+    const briefType = propertyData.propertyType as keyof typeof briefTypeConfig;
+    const config = briefTypeConfig[briefType];
+    // Shortlet: enforce 7% for both agents and landowners
+    if (briefType === "shortlet") return 7;
+    if (!config) return userType === "agent" ? 50 : 10;
+
+    // For agents on non-shortlet briefs, hide commission if subscription removes commission
+    if (userType === "agent" && !showCommissionFee) return null;
+
     return userType === "agent"
       ? config.commission.agent
       : config.commission.landowner;
@@ -132,7 +140,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     }
 
     if (briefType === "shortlet") {
-      return `I, ${userName}, agree that Khabiteq realty shall earn 5% of the total value generated from this transaction as commission when the deal is closed.`;
+      return `I, ${userName}, agree that Khabiteq realty shall earn 7% of the total value generated from this transaction as commission when the deal is closed.`;
     }
 
     return "";
@@ -197,7 +205,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
       return {
         title: "COMMISSION AGREEMENT - Shortlet",
         details: [
-          "• Khabiteq earns 5% of the total value generated from this transaction as commission when the deal is closed",
+          "• Khabiteq earns 7% of the total value generated from this transaction as commission when the deal is closed",
         ],
       };
     }
@@ -206,6 +214,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   };
 
   const commissionInfo = getCommissionDetails();
+  const commissionRate = getCommissionRate();
 
   return (
     <motion.div
@@ -279,7 +288,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
         </div>
 
         {/* Commission Agreement */}
-        {propertyData.propertyType && (
+        {propertyData.propertyType && commissionRate !== null && (
           <div className="border border-[#E5E7EB] rounded-lg p-6">
             <h3 className="text-xl font-semibold text-[#09391C] mb-4">
               {commissionInfo.title}
@@ -350,10 +359,12 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
               <span className="font-medium">Legal Owner:</span>{" "}
               {propertyData.isLegalOwner ? "Yes" : "Authorized Representative"}
             </p>
-            <p>
-              <span className="font-medium">Commission Rate:</span>{" "}
-              {getCommissionRate()}%
-            </p>
+            {commissionRate !== null && (
+              <p>
+                <span className="font-medium">Commission Rate:</span>{" "}
+                {commissionRate}%
+              </p>
+            )}
             <p>
               <span className="font-medium">Contact:</span>{" "}
               {propertyData.contactInfo.firstName &&

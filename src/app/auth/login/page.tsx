@@ -69,10 +69,10 @@ const Login: FC = () => {
   });
 
   useEffect(() => {
-    if (fromParam) {
-      try { sessionStorage.setItem('redirectAfterLogin', decodeURIComponent(fromParam)); } catch {}
+    if (resolvedRedirectTarget) {
+      try { sessionStorage.setItem('redirectAfterLogin', resolvedRedirectTarget); } catch {}
     }
-  }, [fromParam]);
+  }, [resolvedRedirectTarget]);
 
   const handleAuthSuccess = useCallback((response: any) => {
     const userPayload = response.data.user;
@@ -83,10 +83,10 @@ const Login: FC = () => {
     setOverlayVisible(true);
 
     setTimeout(() => {
-      const redirectUrl = fromParam || sessionStorage.getItem('redirectAfterLogin');
+      const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
       if (redirectUrl) {
         try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
-        router.push(redirectUrl.startsWith('/') ? redirectUrl : decodeURIComponent(redirectUrl));
+        router.push(redirectUrl);
         setOverlayVisible(false);
         return;
       }
@@ -95,7 +95,7 @@ const Login: FC = () => {
 
       setOverlayVisible(false);
     }, 1500);
-  }, [router, setUser, fromParam]);
+  }, [router, setUser, resolvedRedirectTarget]);
  
   const formik = useFormik({
     initialValues: {
@@ -144,10 +144,10 @@ const Login: FC = () => {
 
           const userPayload = response.data.user;
 
-          const redirectUrl = fromParam || sessionStorage.getItem('redirectAfterLogin');
+          const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
           if (redirectUrl) {
             try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
-            router.push(redirectUrl.startsWith('/') ? redirectUrl : decodeURIComponent(redirectUrl));
+            router.push(redirectUrl);
             return;
           }
 
@@ -231,10 +231,10 @@ const Login: FC = () => {
 
                     const userPayload = result.data.user;
 
-                    const redirectUrl = fromParam || sessionStorage.getItem('redirectAfterLogin');
+                    const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
                     if (redirectUrl) {
                       try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
-                      router.push(redirectUrl.startsWith('/') ? redirectUrl : decodeURIComponent(redirectUrl));
+                      router.push(redirectUrl);
                       return;
                     }
 
@@ -329,7 +329,7 @@ const Login: FC = () => {
             Don&apos;t have an account?{" "}
             <Link
               className="font-semibold text-[#09391C]"
-              href={fromParam ? `/auth/register?from=${encodeURIComponent(fromParam)}` : "/auth/register"}
+              href={encodedRedirectTarget ? `/auth/register?from=${encodedRedirectTarget}` : "/auth/register"}
             >
               Sign Up
             </Link>

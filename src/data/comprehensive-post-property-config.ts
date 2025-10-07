@@ -66,8 +66,8 @@ export const briefTypeConfig = {
     icon: "📅",
     propertyCategories: [PROPERTY_CATEGORIES.RESIDENTIAL],
     commission: {
-      landowner: 5,
-      agent: 50,
+      landowner: 7,
+      agent: 7,
     },
   },
 };
