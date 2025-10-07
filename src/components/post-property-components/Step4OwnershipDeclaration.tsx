@@ -288,7 +288,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
         </div>
 
         {/* Commission Agreement */}
-        {propertyData.propertyType && (
+        {propertyData.propertyType && commissionRate !== null && (
           <div className="border border-[#E5E7EB] rounded-lg p-6">
             <h3 className="text-xl font-semibold text-[#09391C] mb-4">
               {commissionInfo.title}
