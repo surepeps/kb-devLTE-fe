@@ -214,7 +214,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: async (values) => {
-      const { total: computedTotal } = useAmount(
+      const { payable: computedPayable } = useAmount(
         nightly,
         cleaningFee,
         values.checkIn?.toISOString(),
@@ -223,7 +223,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
         monthlyDiscountPercent,
         securityDeposit
       );
-      const total = computedTotal;
+      const totalPayable = computedPayable;
 
       const apiPayload: any = {
         bookedBy: {
@@ -240,7 +240,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
           ...(values.note.trim() ? { note: values.note.trim() } : {}),
         },
         paymentDetails: {
-          amountToBePaid: total,
+          amountToBePaid: totalPayable,
         },
         bookingMode: mode,
       };
