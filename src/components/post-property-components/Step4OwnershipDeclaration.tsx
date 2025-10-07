@@ -214,6 +214,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
   };
 
   const commissionInfo = getCommissionDetails();
+  const commissionRate = getCommissionRate();
 
   return (
     <motion.div
