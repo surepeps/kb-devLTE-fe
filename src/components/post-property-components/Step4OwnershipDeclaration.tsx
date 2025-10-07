@@ -86,13 +86,19 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     return user?.userType === "Agent" ? "agent" : "landowner";
   };
 
-  const getCommissionRate = () => {
+  const showCommissionFee = useAppSelector(selectShowCommissionFee);
+
+  const getCommissionRate = (): number | null => {
     const userType = getUserType();
-    const config =
-      briefTypeConfig[
-        propertyData.propertyType as keyof typeof briefTypeConfig
-      ];
-    if (!config) return 10;
+    const briefType = propertyData.propertyType as keyof typeof briefTypeConfig;
+    const config = briefTypeConfig[briefType];
+    // Shortlet: enforce 7% for both agents and landowners
+    if (briefType === "shortlet") return 7;
+    if (!config) return userType === "agent" ? 50 : 10;
+
+    // For agents on non-shortlet briefs, hide commission if subscription removes commission
+    if (userType === "agent" && !showCommissionFee) return null;
+
     return userType === "agent"
       ? config.commission.agent
       : config.commission.landowner;
