@@ -140,7 +140,7 @@ const Step4OwnershipDeclaration: React.FC<StepProps> = () => {
     }
 
     if (briefType === "shortlet") {
-      return `I, ${userName}, agree that Khabiteq realty shall earn 5% of the total value generated from this transaction as commission when the deal is closed.`;
+      return `I, ${userName}, agree that Khabiteq realty shall earn 7% of the total value generated from this transaction as commission when the deal is closed.`;
     }
 
     return "";
