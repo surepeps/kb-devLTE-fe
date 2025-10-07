@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from "react";
+import { briefTypeConfig } from "@/data/comprehensive-post-property-config";
 
 interface PropertyImage {
   file: File | null;
