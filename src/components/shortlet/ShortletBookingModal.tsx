@@ -348,7 +348,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   };
 
   const footerButtonText = step === 1 ? "Next" : mode === "instant" ? "Proceed to Payment" : "Submit Request";
-  const canProceedStep1 = total > 0 && nights > 0;
+  const canProceedStep1 = payable > 0 && nights > 0;
   const canSubmitStep2 = (
     typeof formik.values.fullName === "string" && formik.values.fullName.trim().length > 0 &&
     typeof formik.values.email === "string" && formik.values.email.trim().length > 0 &&
@@ -459,7 +459,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                     <li>Select preferred check-in/out dates and times. Add guests and an optional note.</li>
                     <li>Enter your contact information (used to contact you about approval).</li>
                     <li>Submit your request. The host has a limited time window to accept.</li>
-                    <li>If accepted, you’ll be prompted to complete payment to confirm the booking. If declined/expired, you’ll be notified.</li>
+                    <li>If accepted, you��ll be prompted to complete payment to confirm the booking. If declined/expired, you’ll be notified.</li>
                   </ul>
                 )}
               </div>
