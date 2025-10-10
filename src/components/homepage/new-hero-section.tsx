@@ -228,54 +228,76 @@ const NewHeroSection = () => {
     };
   }, [emblaApi, onSelect, isPlayPending]);
 
-  // Add event listeners to videos to ensure mutual exclusion and state sync
+  // Attach play/pause listeners to ALL video elements inside the embla container (including clones)
   useEffect(() => {
-    const entries = videoRefs.current
-      .map((video, index) => ({ video, index }))
-      .filter((entry): entry is { video: HTMLVideoElement; index: number } => Boolean(entry.video));
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    const allVideos: HTMLVideoElement[] = Array.from(container.querySelectorAll('video'));
 
-    entries.forEach(({ video, index }) => {
+    allVideos.forEach((video) => {
       const playHandler = () => {
-        videoRefs.current.forEach((otherVideo, otherIndex) => {
-          if (otherVideo && otherIndex !== index && !otherVideo.paused) {
-            otherVideo.pause();
-          }
-        });
-        setPlayingIndex(index);
+        // Pause all other videos in container
+        const others = Array.from(container.querySelectorAll('video')) as HTMLVideoElement[];
+        others.forEach((v) => { if (v !== video && !v.paused) try { v.pause(); } catch (e) {} });
+
+        // Determine logical index
+        const idxAttr = video.getAttribute('data-embla-index');
+        const idx = idxAttr ? Number(idxAttr) : null;
+        if (typeof idx === 'number') setPlayingIndex(idx);
         setIsMuted(video.muted);
       };
 
       const pauseHandler = () => {
-        setPlayingIndex(prev => (prev === index ? null : prev));
-        if (index === currentVideoIndex) {
+        const idxAttr = video.getAttribute('data-embla-index');
+        const idx = idxAttr ? Number(idxAttr) : null;
+        if (typeof idx === 'number') setPlayingIndex(prev => (prev === idx ? null : prev));
+        if (typeof idx === 'number' && idx === currentVideoIndex) {
           setIsMuted(video.muted);
         }
       };
 
+      // store handlers for cleanup
+      (video as any).__hero_play = playHandler;
+      (video as any).__hero_pause = pauseHandler;
       video.addEventListener('play', playHandler);
       video.addEventListener('pause', pauseHandler);
-
-      (video as any).__playHandler = playHandler;
-      (video as any).__pauseHandler = pauseHandler;
     });
 
     return () => {
-      entries.forEach(({ video }) => {
-        const playHandler = (video as any).__playHandler;
-        const pauseHandler = (video as any).__pauseHandler;
-
-        if (playHandler) {
-          video.removeEventListener('play', playHandler);
-          delete (video as any).__playHandler;
-        }
-
-        if (pauseHandler) {
-          video.removeEventListener('pause', pauseHandler);
-          delete (video as any).__pauseHandler;
-        }
+      allVideos.forEach((video) => {
+        const ph = (video as any).__hero_play;
+        const pah = (video as any).__hero_pause;
+        if (ph) video.removeEventListener('play', ph);
+        if (pah) video.removeEventListener('pause', pah);
+        delete (video as any).__hero_play;
+        delete (video as any).__hero_pause;
       });
     };
-  }, [heroVideos.length, currentVideoIndex]);
+  }, [heroVideos.length, containerRef.current, currentVideoIndex]);
+
+  // Helper: choose the most visible video element for a logical index (useful with embla clones)
+  const getVisibleVideoForIndex = (index: number) : HTMLVideoElement | null => {
+    if (!containerRef.current) return null;
+    const slides = Array.from(containerRef.current.querySelectorAll('.embla__slide')) as HTMLElement[];
+    const containerRect = containerRef.current.getBoundingClientRect();
+
+    let best: { el: HTMLVideoElement | null; score: number } = { el: null, score: -Infinity };
+
+    slides.forEach((slide) => {
+      const video = slide.querySelector('video[data-embla-index]') as HTMLVideoElement | null;
+      if (!video) return;
+      const idxAttr = video.getAttribute('data-embla-index');
+      const idx = idxAttr ? Number(idxAttr) : null;
+      if (idx !== index) return;
+      const r = slide.getBoundingClientRect();
+      // compute horizontal overlap area as score
+      const overlap = Math.max(0, Math.min(r.right, containerRect.right) - Math.max(r.left, containerRect.left));
+      const score = overlap * (r.height || 1);
+      if (score > best.score) best = { el: video, score };
+    });
+
+    return best.el;
+  };
 
   // Track readiness of each video (can play) to show skeletons until video thumbnails/content are ready
   const [videoReady, setVideoReady] = useState<boolean[]>([]);
