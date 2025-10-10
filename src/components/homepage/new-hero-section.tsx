@@ -126,15 +126,45 @@ const NewHeroSection = () => {
 
     if (!targetVideo || isPlayPending) return;
 
+    const ensurePlayableAndPlay = async (video: HTMLVideoElement) => {
+      try {
+        // Prefer explicit muted property assignment to satisfy autoplay rules
+        video.muted = isMuted;
+      } catch (e) {}
+
+      // If not enough data, try to load
+      try {
+        if (video.readyState < 2) {
+          // eslint-disable-next-line no-console
+          console.debug('[HeroVideo] video not ready, calling load()', { index: indexToControl, readyState: video.readyState });
+          try { video.load(); } catch (e) {}
+        }
+      } catch (e) {}
+
+      // Attempt play, if not allowed - try muting and retry
+      try {
+        return await video.play();
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('[HeroVideo] initial play() failed, retrying with muted=true', err);
+        try {
+          video.muted = true;
+          return await video.play();
+        } catch (err2) {
+          // eslint-disable-next-line no-console
+          console.error('[HeroVideo] retry play failed', err2);
+          throw err2;
+        }
+      }
+    };
+
     try {
       if (targetVideo.paused) {
-        // ensure muted state before attempting play (prevents autoplay rejection in some browsers)
-        try { targetVideo.muted = isMuted; } catch (e) {}
         // diagnostic
         // eslint-disable-next-line no-console
-        console.debug('[HeroVideo] play requested', { index: indexToControl, muted: targetVideo.muted, readyState: targetVideo.readyState });
+        console.debug('[HeroVideo] play requested', { index: indexToControl, muted: targetVideo.muted, readyState: targetVideo.readyState, src: targetVideo.currentSrc || targetVideo.src });
         setIsPlayPending(true);
-        await targetVideo.play();
+        await ensurePlayableAndPlay(targetVideo);
         setPlayingIndex(indexToControl);
         // Pause other videos after current starts to avoid flicker
         pauseOtherVideosExcept(targetVideo);
@@ -152,11 +182,7 @@ const NewHeroSection = () => {
         for (const candidate of candidates) {
           if (candidate === targetVideo) continue;
           try {
-            // ensure muted before attempting
-            candidate.muted = isMuted;
-            // eslint-disable-next-line no-console
-            console.debug('[HeroVideo] trying fallback play on candidate', { index: indexToControl, candidate });
-            await candidate.play();
+            await ensurePlayableAndPlay(candidate);
             setPlayingIndex(indexToControl);
             pauseOtherVideosExcept(candidate);
             setIsPlayPending(false);
