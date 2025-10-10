@@ -62,11 +62,12 @@ const NewHeroSection = () => {
   };
 
   const pauseAllVideos = () => {
-    videoRefs.current.forEach(video => {
-      if (video && !video.paused) {
-        video.pause();
-      }
-    });
+    if (containerRef.current) {
+      const allVideos = Array.from(containerRef.current.querySelectorAll<HTMLVideoElement>('video'));
+      allVideos.forEach(v => { try { if (!v.paused) v.pause(); } catch (e) {} });
+    } else {
+      videoRefs.current.forEach(video => { if (video && !video.paused) video.pause(); });
+    }
     setPlayingIndex(null);
   };
 
