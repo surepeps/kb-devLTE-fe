@@ -165,7 +165,7 @@ const NewHeroSection = () => {
       handlePlayPause(e, index, clickedVideo);
     } else if (action === 'mute') {
       const clickedVideo = actionEl.closest('video') as HTMLVideoElement | null;
-      handleMuteToggle(e, clickedVideo ? index : undefined);
+      handleMuteToggle(e, index, clickedVideo);
     } else if (action === 'fullscreen') {
       // reserved for future fullscreen handling
     }
