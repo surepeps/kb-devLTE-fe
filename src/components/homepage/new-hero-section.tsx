@@ -68,7 +68,7 @@ const NewHeroSection = () => {
     } else {
       videoRefs.current.forEach(video => { if (video && !video.paused) video.pause(); });
     }
-    setPlayingIndex(null);
+    /* playingIndex removed; UI reads actual element state */
   };
 
   const pauseVideoAtIndex = (index: number) => {
@@ -87,7 +87,7 @@ const NewHeroSection = () => {
       setIsPlayPending(true);
       try { currentVideo.muted = isMuted; } catch (e) {}
       await currentVideo.play();
-      setPlayingIndex(currentVideoIndex);
+      /* playingIndex removed; UI reads actual element state */
       // independent playback: do not auto-pause other videos
       initialAutoplayDone.current = true;
       setIsPlayPending(false);
@@ -164,12 +164,12 @@ const NewHeroSection = () => {
         console.debug('[HeroVideo] play requested', { index: indexToControl, muted: targetVideo.muted, readyState: targetVideo.readyState, src: targetVideo.currentSrc || targetVideo.src });
         setIsPlayPending(true);
         await ensurePlayableAndPlay(targetVideo);
-        setPlayingIndex(indexToControl);
+        /* playingIndex removed; UI reads actual element state */
         // independent playback: do not auto-pause other videos
         setIsPlayPending(false);
       } else {
         targetVideo.pause();
-        setPlayingIndex(prev => (prev === indexToControl ? null : prev));
+        /* playingIndex removed; UI reads actual element state */
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -181,7 +181,7 @@ const NewHeroSection = () => {
           if (candidate === targetVideo) continue;
           try {
             await ensurePlayableAndPlay(candidate);
-            setPlayingIndex(indexToControl);
+            /* playingIndex removed; UI reads actual element state */
             // independent playback: do not auto-pause other videos
             setIsPlayPending(false);
             return;
@@ -293,7 +293,7 @@ const NewHeroSection = () => {
         // Determine logical index
         const idxAttr = video.getAttribute('data-embla-index');
         const idx = idxAttr ? Number(idxAttr) : null;
-        if (typeof idx === 'number') setPlayingIndex(idx);
+        /* playingIndex removed; UI reads actual element state */
         setIsMuted(video.muted);
       };
 
@@ -365,7 +365,7 @@ const NewHeroSection = () => {
 
   useEffect(() => {
     setVideoReady(Array(heroVideos.length).fill(false));
-    setPlayingIndex(null);
+    /* playingIndex removed; UI reads actual element state */
   }, [heroVideos.length]);
 
   // Auto-play functionality - videos auto-play on load and slide change
@@ -380,7 +380,7 @@ const NewHeroSection = () => {
       if (!videoElement) return;
 
       if (!videoElement.paused) {
-        setPlayingIndex(0);
+        /* playingIndex removed; UI reads actual element state */
         initialAutoplayDone.current = true;
         return;
       }
@@ -388,7 +388,7 @@ const NewHeroSection = () => {
       try { videoElement.muted = isMuted; } catch (e) {}
       videoElement.play()
         .then(() => {
-          setPlayingIndex(0);
+          /* playingIndex removed; UI reads actual element state */
           // independent autoplay: do not auto-pause other videos
           initialAutoplayDone.current = true;
         })
