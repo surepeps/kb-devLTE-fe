@@ -18,11 +18,13 @@ const NewHeroSection = () => {
 
   // Video refs for each video in slider
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
-  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+  // each video will be read directly from the DOM for its playing state (no shared playingIndex)
   const [isMuted, setIsMuted] = useState(true);
   const [isPlayPending, setIsPlayPending] = useState(false);
+  const initialAutoplayDone = useRef(false);
 
   // Get hero video URLs from settings with fallbacks
   const heroVideos = [
@@ -42,29 +44,38 @@ const NewHeroSection = () => {
   // Video control functions
   const getCurrentVideo = () => videoRefs.current[currentVideoIndex];
 
-  const pauseOtherVideos = (currentIndex: number) => {
-    videoRefs.current.forEach((video, index) => {
-      if (video && index !== currentIndex && !video.paused) {
-        video.pause();
+  const pauseOtherVideosExcept = (exceptVideo: HTMLVideoElement | null) => {
+    if (!containerRef.current) {
+      // fallback: use refs array
+      videoRefs.current.forEach((video) => {
+        if (video && video !== exceptVideo && !video.paused) video.pause();
+      });
+      return;
+    }
+
+    const allVideos = Array.from(containerRef.current.querySelectorAll<HTMLVideoElement>('video'));
+    allVideos.forEach((video) => {
+      if (video !== exceptVideo && !video.paused) {
+        try { video.pause(); } catch (e) { /* ignore */ }
       }
     });
   };
 
   const pauseAllVideos = () => {
-    videoRefs.current.forEach(video => {
-      if (video && !video.paused) {
-        video.pause();
-      }
-    });
-    setPlayingIndex(null);
+    if (containerRef.current) {
+      const allVideos = Array.from(containerRef.current.querySelectorAll<HTMLVideoElement>('video'));
+      allVideos.forEach(v => { try { if (!v.paused) v.pause(); } catch (e) {} });
+    } else {
+      videoRefs.current.forEach(video => { if (video && !video.paused) video.pause(); });
+    }
+    /* playingIndex removed; UI reads actual element state */
   };
 
   const pauseVideoAtIndex = (index: number) => {
     const video = videoRefs.current[index];
     if (video && !video.paused) {
-      video.pause();
+      try { video.pause(); } catch (e) {}
     }
-    setPlayingIndex(prev => (prev === index ? null : prev));
   };
 
   const playCurrentVideo = async () => {
@@ -73,11 +84,11 @@ const NewHeroSection = () => {
 
     try {
       setIsPlayPending(true);
-      // Start playing current video first
+      try { currentVideo.muted = isMuted; } catch (e) {}
       await currentVideo.play();
-      setPlayingIndex(currentVideoIndex);
-      // Only pause others after current video starts playing
-      pauseOtherVideos(currentVideoIndex);
+      /* playingIndex removed; UI reads actual element state */
+      // independent playback: do not auto-pause other videos
+      initialAutoplayDone.current = true;
       setIsPlayPending(false);
     } catch (error) {
       console.log('Video play failed:', error);
@@ -93,41 +104,132 @@ const NewHeroSection = () => {
     // State will be updated by event listener
   };
 
-  const handlePlayPause = async (e: React.MouseEvent, targetIndex?: number) => {
+  const handlePlayPause = async (e: React.MouseEvent, targetIndex?: number, videoElement?: HTMLVideoElement | null) => {
     e.preventDefault();
     e.stopPropagation();
 
     const indexToControl = typeof targetIndex === 'number' ? targetIndex : currentVideoIndex;
-    const targetVideo = videoRefs.current[indexToControl];
+    // prefer the provided video element (useful when interacting with cloned slides)
+    let targetVideo: HTMLVideoElement | null = videoElement ?? null;
+
+    // If no explicit video passed, pick the most visible video for this logical index (handles clones)
+    if (!targetVideo) {
+      targetVideo = getVisibleVideoForIndex(indexToControl) ?? videoRefs.current[indexToControl] ?? null;
+    }
+
+    // fallback: first matching video in container
+    if (!targetVideo && containerRef.current) {
+      targetVideo = containerRef.current.querySelector(`video[data-embla-index="${indexToControl}"]`);
+    }
+
     if (!targetVideo || isPlayPending) return;
+
+    const ensurePlayableAndPlay = async (video: HTMLVideoElement) => {
+      try {
+        // Prefer explicit muted property assignment to satisfy autoplay rules
+        video.muted = isMuted;
+      } catch (e) {}
+
+      // If not enough data, try to load
+      try {
+        if (video.readyState < 2) {
+          // eslint-disable-next-line no-console
+          console.debug('[HeroVideo] video not ready, calling load()', { index: indexToControl, readyState: video.readyState });
+          try { video.load(); } catch (e) {}
+        }
+      } catch (e) {}
+
+      // Attempt play, if not allowed - try muting and retry
+      try {
+        return await video.play();
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('[HeroVideo] initial play() failed, retrying with muted=true', err);
+        try {
+          video.muted = true;
+          return await video.play();
+        } catch (err2) {
+          // eslint-disable-next-line no-console
+          console.error('[HeroVideo] retry play failed', err2);
+          throw err2;
+        }
+      }
+    };
 
     try {
       if (targetVideo.paused) {
+        // diagnostic
+        // eslint-disable-next-line no-console
+        console.debug('[HeroVideo] play requested', { index: indexToControl, muted: targetVideo.muted, readyState: targetVideo.readyState, src: targetVideo.currentSrc || targetVideo.src });
         setIsPlayPending(true);
-        await targetVideo.play();
-        setPlayingIndex(indexToControl);
-        // Only pause others after current video starts playing to avoid flicker
-        pauseOtherVideos(indexToControl);
+        await ensurePlayableAndPlay(targetVideo);
+        /* playingIndex removed; UI reads actual element state */
+        // independent playback: do not auto-pause other videos
         setIsPlayPending(false);
       } else {
         targetVideo.pause();
-        setPlayingIndex(prev => (prev === indexToControl ? null : prev));
+        /* playingIndex removed; UI reads actual element state */
       }
     } catch (error) {
-      console.log('Video control failed:', error);
+      // eslint-disable-next-line no-console
+      console.error('[HeroVideo] Video control failed for index', indexToControl, error);
+      // Try fallback: attempt to play any matching video elements with same data-embla-index (handles cloned slides)
+      if (containerRef.current) {
+        const candidates = Array.from(containerRef.current.querySelectorAll(`video[data-embla-index="${indexToControl}"]`)) as HTMLVideoElement[];
+        for (const candidate of candidates) {
+          if (candidate === targetVideo) continue;
+          try {
+            await ensurePlayableAndPlay(candidate);
+            /* playingIndex removed; UI reads actual element state */
+            // independent playback: do not auto-pause other videos
+            setIsPlayPending(false);
+            return;
+          } catch (err2) {
+            // eslint-disable-next-line no-console
+            console.error('[HeroVideo] fallback play failed for candidate', err2);
+          }
+        }
+      }
+
       setIsPlayPending(false);
     }
   };
 
-  const handleMuteToggle = (e: React.MouseEvent) => {
+  const handleMuteToggle = (e: React.MouseEvent, index?: number, videoElement?: HTMLVideoElement | null) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const currentVideo = getCurrentVideo();
-    if (!currentVideo) return;
+    let video = videoElement ?? (typeof index === 'number' ? videoRefs.current[index] : getCurrentVideo());
+    if (!video && containerRef.current && typeof index === 'number') {
+      video = containerRef.current.querySelector(`video[data-embla-index="${index}"]`);
+    }
+    if (!video) return;
 
-    currentVideo.muted = !isMuted;
-    setIsMuted(!isMuted);
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
+  const handleEmblaContainerClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const actionEl = target.closest('[data-embla-action]') as HTMLElement | null;
+    if (!actionEl) return;
+
+    const action = actionEl.getAttribute('data-embla-action');
+    const idxEl = actionEl.closest('[data-embla-index]') as HTMLElement | null;
+    const idxAttr = idxEl?.getAttribute('data-embla-index') ?? actionEl.getAttribute('data-embla-index');
+    const index = idxAttr ? Number(idxAttr) : currentVideoIndex;
+
+    if (action === 'toggle') {
+      const slideEl = actionEl.closest('.embla__slide') as HTMLElement | null;
+      const clickedVideo = slideEl ? slideEl.querySelector('video') as HTMLVideoElement | null : null;
+      handlePlayPause(e, index, clickedVideo);
+    } else if (action === 'mute') {
+      const slideEl = actionEl.closest('.embla__slide') as HTMLElement | null;
+      const clickedVideo = slideEl ? slideEl.querySelector('video') as HTMLVideoElement | null : null;
+      handleMuteToggle(e, index, clickedVideo);
+    } else if (action === 'fullscreen') {
+      // reserved for future fullscreen handling
+    }
   };
 
   const handleVideoEnded = () => {
@@ -143,8 +245,8 @@ const NewHeroSection = () => {
     setPreviousVideoIndex(currentVideoIndex);
     setCurrentVideoIndex(selectedIndex);
 
-    // Pause all videos on slide change to prevent overlap
-    pauseAllVideos();
+    // Keep per-video playback state on slide change; do not auto-pause videos
+    // pauseAllVideos();
 
     // IMPORTANT: Do NOT auto-play the newly selected slide except for the very first slide (index 0).
     // Auto-play on slide change is intentionally disabled to ensure videos don't auto-play when navigating.
@@ -160,7 +262,8 @@ const NewHeroSection = () => {
     const handleSettle = () => {
       if (!isPlayPending) {
         const idx = emblaApi.selectedScrollSnap?.();
-        if (typeof idx === 'number' && idx === 0) {
+        if (typeof idx === 'number' && idx === 0 && !initialAutoplayDone.current) {
+          // Only auto-play the first slide on initial load
           playCurrentVideo();
         }
       }
@@ -176,54 +279,89 @@ const NewHeroSection = () => {
     };
   }, [emblaApi, onSelect, isPlayPending]);
 
-  // Add event listeners to videos to ensure mutual exclusion and state sync
+  // Attach play/pause listeners to ALL video elements inside the embla container (including clones)
   useEffect(() => {
-    const entries = videoRefs.current
-      .map((video, index) => ({ video, index }))
-      .filter((entry): entry is { video: HTMLVideoElement; index: number } => Boolean(entry.video));
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    const allVideos: HTMLVideoElement[] = Array.from(container.querySelectorAll('video'));
 
-    entries.forEach(({ video, index }) => {
+    allVideos.forEach((video) => {
       const playHandler = () => {
-        videoRefs.current.forEach((otherVideo, otherIndex) => {
-          if (otherVideo && otherIndex !== index && !otherVideo.paused) {
-            otherVideo.pause();
-          }
-        });
-        setPlayingIndex(index);
+        // independent playback: do not auto-pause other videos
+
+        // Determine logical index
+        const idxAttr = video.getAttribute('data-embla-index');
+        const idx = idxAttr ? Number(idxAttr) : null;
+        /* playingIndex removed; UI reads actual element state */
         setIsMuted(video.muted);
       };
 
       const pauseHandler = () => {
-        setPlayingIndex(prev => (prev === index ? null : prev));
-        if (index === currentVideoIndex) {
-          setIsMuted(video.muted);
+        // When a video pauses, we don't update any shared playing state.
+        // Keep mute sync for the currently visible video.
+        try {
+          const idxAttr = video.getAttribute('data-embla-index');
+          const idx = idxAttr ? Number(idxAttr) : null;
+          if (typeof idx === 'number' && idx === currentVideoIndex) {
+            setIsMuted(video.muted);
+          }
+        } catch (e) {
+          // ignore
         }
       };
 
+      // store handlers for cleanup
+      (video as any).__hero_play = playHandler;
+      (video as any).__hero_pause = pauseHandler;
       video.addEventListener('play', playHandler);
       video.addEventListener('pause', pauseHandler);
-
-      (video as any).__playHandler = playHandler;
-      (video as any).__pauseHandler = pauseHandler;
     });
 
     return () => {
-      entries.forEach(({ video }) => {
-        const playHandler = (video as any).__playHandler;
-        const pauseHandler = (video as any).__pauseHandler;
-
-        if (playHandler) {
-          video.removeEventListener('play', playHandler);
-          delete (video as any).__playHandler;
-        }
-
-        if (pauseHandler) {
-          video.removeEventListener('pause', pauseHandler);
-          delete (video as any).__pauseHandler;
-        }
+      allVideos.forEach((video) => {
+        const ph = (video as any).__hero_play;
+        const pah = (video as any).__hero_pause;
+        if (ph) video.removeEventListener('play', ph);
+        if (pah) video.removeEventListener('pause', pah);
+        delete (video as any).__hero_play;
+        delete (video as any).__hero_pause;
       });
     };
-  }, [heroVideos.length, currentVideoIndex]);
+  }, [heroVideos.length, containerRef.current, currentVideoIndex]);
+
+  // Helper: choose the most visible video element for a logical index (useful with embla clones)
+  const getVisibleVideoForIndex = (index: number) : HTMLVideoElement | null => {
+    if (!containerRef.current) return null;
+    const slides = Array.from(containerRef.current.querySelectorAll('.embla__slide')) as HTMLElement[];
+    const containerRect = containerRef.current.getBoundingClientRect();
+
+    let best: { el: HTMLVideoElement | null; score: number } = { el: null, score: -Infinity };
+
+    slides.forEach((slide) => {
+      const video = slide.querySelector('video[data-embla-index]') as HTMLVideoElement | null;
+      if (!video) return;
+      const idxAttr = video.getAttribute('data-embla-index');
+      const idx = idxAttr ? Number(idxAttr) : null;
+      if (idx !== index) return;
+      const r = slide.getBoundingClientRect();
+      // compute horizontal overlap area as score
+      const overlap = Math.max(0, Math.min(r.right, containerRect.right) - Math.max(r.left, containerRect.left));
+      const score = overlap * (r.height || 1);
+      if (score > best.score) best = { el: video, score };
+    });
+
+    return best.el;
+  };
+
+  // Helper to determine if logical index is currently playing (prefers visible element's state)
+  const isIndexPlaying = (index: number) => {
+    try {
+      const v = getVisibleVideoForIndex(index) ?? videoRefs.current[index];
+      return !!v && !v.paused;
+    } catch (e) {
+      return false;
+    }
+  };
 
   // Track readiness of each video (can play) to show skeletons until video thumbnails/content are ready
   const [videoReady, setVideoReady] = useState<boolean[]>([]);
@@ -231,7 +369,7 @@ const NewHeroSection = () => {
 
   useEffect(() => {
     setVideoReady(Array(heroVideos.length).fill(false));
-    setPlayingIndex(null);
+    /* playingIndex removed; UI reads actual element state */
   }, [heroVideos.length]);
 
   // Auto-play functionality - videos auto-play on load and slide change
@@ -246,21 +384,21 @@ const NewHeroSection = () => {
       if (!videoElement) return;
 
       if (!videoElement.paused) {
-        setPlayingIndex(0);
+        /* playingIndex removed; UI reads actual element state */
+        initialAutoplayDone.current = true;
         return;
       }
 
+      try { videoElement.muted = isMuted; } catch (e) {}
       videoElement.play()
         .then(() => {
-          setPlayingIndex(0);
-          videoRefs.current.forEach((otherVideo, otherIndex) => {
-            if (otherVideo && otherIndex !== 0 && !otherVideo.paused) {
-              otherVideo.pause();
-            }
-          });
+          /* playingIndex removed; UI reads actual element state */
+          // independent autoplay: do not auto-pause other videos
+          initialAutoplayDone.current = true;
         })
         .catch((error) => {
-          console.log('Initial auto-play failed:', error);
+          // eslint-disable-next-line no-console
+          console.error('Initial auto-play failed:', error);
         });
     };
 
@@ -307,7 +445,8 @@ const NewHeroSection = () => {
     };
   }, [heroVideos]);
 
-  return (
+  try {
+    return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
       <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
@@ -375,10 +514,10 @@ const NewHeroSection = () => {
               <div className='bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
 
                 {/* Video Slider Container */}
-                <div className="embla relative" ref={emblaRef}>
+                <div className="embla relative" ref={(el) => { emblaRef(el); containerRef.current = el; }} onClick={handleEmblaContainerClick}>
                   <div className="embla__container flex">
                     {heroVideos.map((videoUrl, index) => (
-                      <div key={index} className="embla__slide flex-[0_0_100%] min-w-0">
+                      <div key={index} className="embla__slide flex-[0_0_100%] min-w-0" data-embla-index={index}>
                         <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden group'>
                           {/* Show skeleton until this video's media is ready */}
                           {!videoReady[index] && (
@@ -400,7 +539,8 @@ const NewHeroSection = () => {
                             playsInline
                             preload="metadata"
                             poster="/placeholder-property.svg"
-                            onClick={(event) => handlePlayPause(event, index)}
+                            data-embla-action="toggle" data-embla-index={index}
+                            onClick={(e) => handlePlayPause(e, index, e.currentTarget as HTMLVideoElement)}
                             onEnded={handleVideoEnded}
                             // mark ready when canplay/loadeddata fire on the element
                             onCanPlay={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
@@ -426,9 +566,9 @@ const NewHeroSection = () => {
                             {/* Main play/pause button */}
                             <div
                               className='absolute inset-0 flex items-center justify-center cursor-pointer pointer-events-auto'
-                              onClick={(event) => handlePlayPause(event, index)}>
+                              data-embla-action="toggle" data-embla-index={index}>
                               <div className='w-16 h-16 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
-                                {playingIndex === index && currentVideoIndex === index ? (
+                                {isIndexPlaying(index) ? (
                                   // Pause icon
                                   <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 002 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -446,10 +586,10 @@ const NewHeroSection = () => {
                             <div className='absolute bottom-4 right-4 flex gap-2 pointer-events-auto'>
                               {/* Play/Pause button */}
                               <button
-                                onClick={(event) => handlePlayPause(event, index)}
+                                data-embla-action="toggle" data-embla-index={index}
                                 className='w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 bg-black/50 hover:bg-black/70'
-                                title={playingIndex === index ? 'Pause video' : 'Play video'}>
-                                {playingIndex === index ? (
+                                title={isIndexPlaying(index) ? 'Pause video' : 'Play video'}>
+                                {isIndexPlaying(index) ? (
                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 011 1v4a1 1 0 11-2 0V8a1 1 0 011-1zm4-1a1 1 0 00-1 1v4a1 1 0 002 0V7a1 1 0 00-1-1z" clipRule="evenodd" />
                                   </svg>
@@ -462,7 +602,7 @@ const NewHeroSection = () => {
 
                               {/* Mute/Unmute button */}
                               <button
-                                onClick={handleMuteToggle}
+                                data-embla-action="mute" data-embla-index={index}
                                 className='w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
                                 {isMuted ? (
                                   // Muted icon
@@ -481,7 +621,7 @@ const NewHeroSection = () => {
 
                           {/* Status indicator */}
                           <div className='absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                            {(playingIndex === index && currentVideoIndex === index) ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
+                            {isIndexPlaying(index) ? 'Playing' : 'Paused'} • Video {index + 1} of {heroVideos.length}
                           </div>
                         </div>
                       </div>
@@ -555,6 +695,18 @@ const NewHeroSection = () => {
       </div>
     </section>
   );
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('NewHeroSection render error', err);
+    return (
+      <div className="w-full min-h-[600px] bg-[#0B423D] flex items-center justify-center">
+        <div className="text-center text-white">
+          <h1 className="text-4xl font-bold mb-4">Find the Perfect Property</h1>
+          <p className="text-xl">Unable to load hero section: see console for details.</p>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default NewHeroSection;
