@@ -24,6 +24,7 @@ const NewHeroSection = () => {
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlayPending, setIsPlayPending] = useState(false);
+  const initialAutoplayDone = useRef(false);
 
   // Get hero video URLs from settings with fallbacks
   const heroVideos = [
@@ -43,10 +44,19 @@ const NewHeroSection = () => {
   // Video control functions
   const getCurrentVideo = () => videoRefs.current[currentVideoIndex];
 
-  const pauseOtherVideos = (currentIndex: number) => {
-    videoRefs.current.forEach((video, index) => {
-      if (video && index !== currentIndex && !video.paused) {
-        video.pause();
+  const pauseOtherVideosExcept = (exceptVideo: HTMLVideoElement | null) => {
+    if (!containerRef.current) {
+      // fallback: use refs array
+      videoRefs.current.forEach((video) => {
+        if (video && video !== exceptVideo && !video.paused) video.pause();
+      });
+      return;
+    }
+
+    const allVideos = Array.from(containerRef.current.querySelectorAll<HTMLVideoElement>('video'));
+    allVideos.forEach((video) => {
+      if (video !== exceptVideo && !video.paused) {
+        try { video.pause(); } catch (e) { /* ignore */ }
       }
     });
   };
@@ -74,11 +84,11 @@ const NewHeroSection = () => {
 
     try {
       setIsPlayPending(true);
-      // Start playing current video first
       await currentVideo.play();
       setPlayingIndex(currentVideoIndex);
       // Only pause others after current video starts playing
-      pauseOtherVideos(currentVideoIndex);
+      pauseOtherVideosExcept(currentVideo);
+      initialAutoplayDone.current = true;
       setIsPlayPending(false);
     } catch (error) {
       console.log('Video play failed:', error);
@@ -94,12 +104,18 @@ const NewHeroSection = () => {
     // State will be updated by event listener
   };
 
-  const handlePlayPause = async (e: React.MouseEvent, targetIndex?: number) => {
+  const handlePlayPause = async (e: React.MouseEvent, targetIndex?: number, videoElement?: HTMLVideoElement | null) => {
     e.preventDefault();
     e.stopPropagation();
 
     const indexToControl = typeof targetIndex === 'number' ? targetIndex : currentVideoIndex;
-    const targetVideo = videoRefs.current[indexToControl];
+    // prefer the provided video element (useful when interacting with cloned slides)
+    let targetVideo: HTMLVideoElement | null = videoElement ?? videoRefs.current[indexToControl] ?? null;
+
+    if (!targetVideo && containerRef.current) {
+      targetVideo = containerRef.current.querySelector(`video[data-embla-index="${indexToControl}"]`);
+    }
+
     if (!targetVideo || isPlayPending) return;
 
     try {
@@ -107,8 +123,8 @@ const NewHeroSection = () => {
         setIsPlayPending(true);
         await targetVideo.play();
         setPlayingIndex(indexToControl);
-        // Only pause others after current video starts playing to avoid flicker
-        pauseOtherVideos(indexToControl);
+        // Pause other videos after current starts to avoid flicker
+        pauseOtherVideosExcept(targetVideo);
         setIsPlayPending(false);
       } else {
         targetVideo.pause();
@@ -142,9 +158,11 @@ const NewHeroSection = () => {
     const index = idxAttr ? Number(idxAttr) : currentVideoIndex;
 
     if (action === 'toggle') {
-      handlePlayPause(e, index);
+      const clickedVideo = actionEl.closest('video') as HTMLVideoElement | null;
+      handlePlayPause(e, index, clickedVideo);
     } else if (action === 'mute') {
-      handleMuteToggle(e, index);
+      const clickedVideo = actionEl.closest('video') as HTMLVideoElement | null;
+      handleMuteToggle(e, clickedVideo ? index : undefined);
     } else if (action === 'fullscreen') {
       // reserved for future fullscreen handling
     }
@@ -180,7 +198,8 @@ const NewHeroSection = () => {
     const handleSettle = () => {
       if (!isPlayPending) {
         const idx = emblaApi.selectedScrollSnap?.();
-        if (typeof idx === 'number' && idx === 0) {
+        if (typeof idx === 'number' && idx === 0 && !initialAutoplayDone.current) {
+          // Only auto-play the first slide on initial load
           playCurrentVideo();
         }
       }
@@ -267,17 +286,15 @@ const NewHeroSection = () => {
 
       if (!videoElement.paused) {
         setPlayingIndex(0);
+        initialAutoplayDone.current = true;
         return;
       }
 
       videoElement.play()
         .then(() => {
           setPlayingIndex(0);
-          videoRefs.current.forEach((otherVideo, otherIndex) => {
-            if (otherVideo && otherIndex !== 0 && !otherVideo.paused) {
-              otherVideo.pause();
-            }
-          });
+          pauseOtherVideosExcept(videoElement);
+          initialAutoplayDone.current = true;
         })
         .catch((error) => {
           console.log('Initial auto-play failed:', error);
