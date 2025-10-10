@@ -112,8 +112,14 @@ const NewHeroSection = () => {
 
     const indexToControl = typeof targetIndex === 'number' ? targetIndex : currentVideoIndex;
     // prefer the provided video element (useful when interacting with cloned slides)
-    let targetVideo: HTMLVideoElement | null = videoElement ?? videoRefs.current[indexToControl] ?? null;
+    let targetVideo: HTMLVideoElement | null = videoElement ?? null;
 
+    // If no explicit video passed, pick the most visible video for this logical index (handles clones)
+    if (!targetVideo) {
+      targetVideo = getVisibleVideoForIndex(indexToControl) ?? videoRefs.current[indexToControl] ?? null;
+    }
+
+    // fallback: first matching video in container
     if (!targetVideo && containerRef.current) {
       targetVideo = containerRef.current.querySelector(`video[data-embla-index="${indexToControl}"]`);
     }
