@@ -182,7 +182,7 @@ const NewHeroSection = () => {
           try {
             await ensurePlayableAndPlay(candidate);
             setPlayingIndex(indexToControl);
-            pauseOtherVideosExcept(candidate);
+            // independent playback: do not auto-pause other videos
             setIsPlayPending(false);
             return;
           } catch (err2) {
