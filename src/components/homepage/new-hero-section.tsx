@@ -165,8 +165,7 @@ const NewHeroSection = () => {
         setIsPlayPending(true);
         await ensurePlayableAndPlay(targetVideo);
         setPlayingIndex(indexToControl);
-        // Pause other videos after current starts to avoid flicker
-        pauseOtherVideosExcept(targetVideo);
+        // independent playback: do not auto-pause other videos
         setIsPlayPending(false);
       } else {
         targetVideo.pause();
