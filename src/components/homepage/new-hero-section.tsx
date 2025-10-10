@@ -440,7 +440,8 @@ const NewHeroSection = () => {
     };
   }, [heroVideos]);
 
-  return (
+  try {
+    return (
     <section className='w-full min-h-[100vh] bg-gradient-to-br from-[#0B423D] via-[#093B6D] to-[#0A3E72] flex items-center justify-center overflow-hidden relative'>
       {/* Background decorative elements */}
       <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
@@ -689,6 +690,18 @@ const NewHeroSection = () => {
       </div>
     </section>
   );
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('NewHeroSection render error', err);
+    return (
+      <div className="w-full min-h-[600px] bg-[#0B423D] flex items-center justify-center">
+        <div className="text-center text-white">
+          <h1 className="text-4xl font-bold mb-4">Find the Perfect Property</h1>
+          <p className="text-xl">Unable to load hero section: see console for details.</p>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default NewHeroSection;
