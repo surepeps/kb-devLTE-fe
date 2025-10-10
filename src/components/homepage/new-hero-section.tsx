@@ -121,6 +121,11 @@ const NewHeroSection = () => {
 
     try {
       if (targetVideo.paused) {
+        // ensure muted state before attempting play (prevents autoplay rejection in some browsers)
+        try { targetVideo.muted = isMuted; } catch (e) {}
+        // diagnostic
+        // eslint-disable-next-line no-console
+        console.debug('[HeroVideo] play requested', { index: indexToControl, muted: targetVideo.muted, readyState: targetVideo.readyState });
         setIsPlayPending(true);
         await targetVideo.play();
         setPlayingIndex(indexToControl);
@@ -132,7 +137,8 @@ const NewHeroSection = () => {
         setPlayingIndex(prev => (prev === indexToControl ? null : prev));
       }
     } catch (error) {
-      console.log('Video control failed:', error);
+      // eslint-disable-next-line no-console
+      console.error('[HeroVideo] Video control failed for index', indexToControl, error);
       setIsPlayPending(false);
     }
   };
