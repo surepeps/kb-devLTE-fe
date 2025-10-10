@@ -297,11 +297,16 @@ const NewHeroSection = () => {
       };
 
       const pauseHandler = () => {
-        const idxAttr = video.getAttribute('data-embla-index');
-        const idx = idxAttr ? Number(idxAttr) : null;
-        if (typeof idx === 'number') setPlayingIndex(prev => (prev === idx ? null : prev));
-        if (typeof idx === 'number' && idx === currentVideoIndex) {
-          setIsMuted(video.muted);
+        // When a video pauses, we don't update any shared playing state.
+        // Keep mute sync for the currently visible video.
+        try {
+          const idxAttr = video.getAttribute('data-embla-index');
+          const idx = idxAttr ? Number(idxAttr) : null;
+          if (typeof idx === 'number' && idx === currentVideoIndex) {
+            setIsMuted(video.muted);
+          }
+        } catch (e) {
+          // ignore
         }
       };
 
