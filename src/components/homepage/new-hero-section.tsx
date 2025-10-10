@@ -354,7 +354,7 @@ const NewHeroSection = () => {
       const v = getVisibleVideoForIndex(index) ?? videoRefs.current[index];
       return !!v && !v.paused;
     } catch (e) {
-      return playingIndex === index;
+      return false;
     }
   };
 
