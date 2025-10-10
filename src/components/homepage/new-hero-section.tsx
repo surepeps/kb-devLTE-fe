@@ -85,6 +85,7 @@ const NewHeroSection = () => {
 
     try {
       setIsPlayPending(true);
+      try { currentVideo.muted = isMuted; } catch (e) {}
       await currentVideo.play();
       setPlayingIndex(currentVideoIndex);
       // Only pause others after current video starts playing
