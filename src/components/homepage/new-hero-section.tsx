@@ -74,9 +74,8 @@ const NewHeroSection = () => {
   const pauseVideoAtIndex = (index: number) => {
     const video = videoRefs.current[index];
     if (video && !video.paused) {
-      video.pause();
+      try { video.pause(); } catch (e) {}
     }
-    setPlayingIndex(prev => (prev === index ? null : prev));
   };
 
   const playCurrentVideo = async () => {
