@@ -246,8 +246,8 @@ const NewHeroSection = () => {
     setPreviousVideoIndex(currentVideoIndex);
     setCurrentVideoIndex(selectedIndex);
 
-    // Pause all videos on slide change to prevent overlap
-    pauseAllVideos();
+    // Keep per-video playback state on slide change; do not auto-pause videos
+    // pauseAllVideos();
 
     // IMPORTANT: Do NOT auto-play the newly selected slide except for the very first slide (index 0).
     // Auto-play on slide change is intentionally disabled to ensure videos don't auto-play when navigating.
