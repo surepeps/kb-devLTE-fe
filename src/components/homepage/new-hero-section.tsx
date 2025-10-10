@@ -303,6 +303,7 @@ const NewHeroSection = () => {
         return;
       }
 
+      try { videoElement.muted = isMuted; } catch (e) {}
       videoElement.play()
         .then(() => {
           setPlayingIndex(0);
@@ -310,7 +311,8 @@ const NewHeroSection = () => {
           initialAutoplayDone.current = true;
         })
         .catch((error) => {
-          console.log('Initial auto-play failed:', error);
+          // eslint-disable-next-line no-console
+          console.error('Initial auto-play failed:', error);
         });
     };
 
