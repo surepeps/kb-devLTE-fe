@@ -582,7 +582,7 @@ const NewHeroSection = () => {
                               <button
                                 data-embla-action="toggle" data-embla-index={index}
                                 className='w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 bg-black/50 hover:bg-black/70'
-                                title={playingIndex === index ? 'Pause video' : 'Play video'}>
+                                title={isIndexPlaying(index) ? 'Pause video' : 'Play video'}>
                                 {isIndexPlaying(index) ? (
                                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 011 1v4a1 1 0 11-2 0V8a1 1 0 011-1zm4-1a1 1 0 00-1 1v4a1 1 0 002 0V7a1 1 0 00-1-1z" clipRule="evenodd" />
