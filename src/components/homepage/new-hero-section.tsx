@@ -539,6 +539,7 @@ const NewHeroSection = () => {
                             preload="metadata"
                             poster="/placeholder-property.svg"
                             data-embla-action="toggle" data-embla-index={index}
+                            onClick={(e) => handlePlayPause(e, index, e.currentTarget as HTMLVideoElement)}
                             onEnded={handleVideoEnded}
                             // mark ready when canplay/loadeddata fire on the element
                             onCanPlay={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
