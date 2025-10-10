@@ -136,11 +136,14 @@ const NewHeroSection = () => {
     }
   };
 
-  const handleMuteToggle = (e: React.MouseEvent, index?: number) => {
+  const handleMuteToggle = (e: React.MouseEvent, index?: number, videoElement?: HTMLVideoElement | null) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const video = typeof index === 'number' ? videoRefs.current[index] : getCurrentVideo();
+    let video = videoElement ?? (typeof index === 'number' ? videoRefs.current[index] : getCurrentVideo());
+    if (!video && containerRef.current && typeof index === 'number') {
+      video = containerRef.current.querySelector(`video[data-embla-index="${index}"]`);
+    }
     if (!video) return;
 
     video.muted = !video.muted;
