@@ -146,6 +146,28 @@ const NewHeroSection = () => {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('[HeroVideo] Video control failed for index', indexToControl, error);
+      // Try fallback: attempt to play any matching video elements with same data-embla-index (handles cloned slides)
+      if (containerRef.current) {
+        const candidates = Array.from(containerRef.current.querySelectorAll(`video[data-embla-index="${indexToControl}"]`)) as HTMLVideoElement[];
+        for (const candidate of candidates) {
+          if (candidate === targetVideo) continue;
+          try {
+            // ensure muted before attempting
+            candidate.muted = isMuted;
+            // eslint-disable-next-line no-console
+            console.debug('[HeroVideo] trying fallback play on candidate', { index: indexToControl, candidate });
+            await candidate.play();
+            setPlayingIndex(indexToControl);
+            pauseOtherVideosExcept(candidate);
+            setIsPlayPending(false);
+            return;
+          } catch (err2) {
+            // eslint-disable-next-line no-console
+            console.error('[HeroVideo] fallback play failed for candidate', err2);
+          }
+        }
+      }
+
       setIsPlayPending(false);
     }
   };
