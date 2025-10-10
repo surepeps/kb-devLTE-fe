@@ -18,6 +18,7 @@ const NewHeroSection = () => {
 
   // Video refs for each video in slider
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
@@ -119,15 +120,34 @@ const NewHeroSection = () => {
     }
   };
 
-  const handleMuteToggle = (e: React.MouseEvent) => {
+  const handleMuteToggle = (e: React.MouseEvent, index?: number) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const currentVideo = getCurrentVideo();
-    if (!currentVideo) return;
+    const video = typeof index === 'number' ? videoRefs.current[index] : getCurrentVideo();
+    if (!video) return;
 
-    currentVideo.muted = !isMuted;
-    setIsMuted(!isMuted);
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
+  const handleEmblaContainerClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const actionEl = target.closest('[data-embla-action]') as HTMLElement | null;
+    if (!actionEl) return;
+
+    const action = actionEl.getAttribute('data-embla-action');
+    const idxEl = actionEl.closest('[data-embla-index]') as HTMLElement | null;
+    const idxAttr = idxEl?.getAttribute('data-embla-index') ?? actionEl.getAttribute('data-embla-index');
+    const index = idxAttr ? Number(idxAttr) : currentVideoIndex;
+
+    if (action === 'toggle') {
+      handlePlayPause(e, index);
+    } else if (action === 'mute') {
+      handleMuteToggle(e, index);
+    } else if (action === 'fullscreen') {
+      // reserved for future fullscreen handling
+    }
   };
 
   const handleVideoEnded = () => {
@@ -375,10 +395,10 @@ const NewHeroSection = () => {
               <div className='bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mx-auto border border-white/20'>
 
                 {/* Video Slider Container */}
-                <div className="embla relative" ref={emblaRef}>
+                <div className="embla relative" ref={(el) => { emblaRef(el); containerRef.current = el; }} onClick={handleEmblaContainerClick}>
                   <div className="embla__container flex">
                     {heroVideos.map((videoUrl, index) => (
-                      <div key={index} className="embla__slide flex-[0_0_100%] min-w-0">
+                      <div key={index} className="embla__slide flex-[0_0_100%] min-w-0" data-embla-index={index}>
                         <div className='aspect-video bg-gradient-to-br from-white/20 to-white/5 rounded-lg sm:rounded-xl relative overflow-hidden group'>
                           {/* Show skeleton until this video's media is ready */}
                           {!videoReady[index] && (
@@ -400,7 +420,7 @@ const NewHeroSection = () => {
                             playsInline
                             preload="metadata"
                             poster="/placeholder-property.svg"
-                            onClick={(event) => handlePlayPause(event, index)}
+                            data-embla-action="toggle" data-embla-index={index}
                             onEnded={handleVideoEnded}
                             // mark ready when canplay/loadeddata fire on the element
                             onCanPlay={() => setVideoReady(prev => { const copy = [...prev]; copy[index] = true; return copy; })}
@@ -426,7 +446,7 @@ const NewHeroSection = () => {
                             {/* Main play/pause button */}
                             <div
                               className='absolute inset-0 flex items-center justify-center cursor-pointer pointer-events-auto'
-                              onClick={(event) => handlePlayPause(event, index)}>
+                              data-embla-action="toggle" data-embla-index={index}>
                               <div className='w-16 h-16 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
                                 {playingIndex === index && currentVideoIndex === index ? (
                                   // Pause icon
@@ -446,7 +466,7 @@ const NewHeroSection = () => {
                             <div className='absolute bottom-4 right-4 flex gap-2 pointer-events-auto'>
                               {/* Play/Pause button */}
                               <button
-                                onClick={(event) => handlePlayPause(event, index)}
+                                data-embla-action="toggle" data-embla-index={index}
                                 className='w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors duration-200 bg-black/50 hover:bg-black/70'
                                 title={playingIndex === index ? 'Pause video' : 'Play video'}>
                                 {playingIndex === index ? (
@@ -462,7 +482,7 @@ const NewHeroSection = () => {
 
                               {/* Mute/Unmute button */}
                               <button
-                                onClick={handleMuteToggle}
+                                data-embla-action="mute" data-embla-index={index}
                                 className='w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors duration-200'>
                                 {isMuted ? (
                                   // Muted icon
