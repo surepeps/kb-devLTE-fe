@@ -21,7 +21,7 @@ const NewHeroSection = () => {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [previousVideoIndex, setPreviousVideoIndex] = useState(-1);
-  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+  // each video will be read directly from the DOM for its playing state (no shared playingIndex)
   const [isMuted, setIsMuted] = useState(true);
   const [isPlayPending, setIsPlayPending] = useState(false);
   const initialAutoplayDone = useRef(false);
