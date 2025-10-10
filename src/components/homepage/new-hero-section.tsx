@@ -288,9 +288,7 @@ const NewHeroSection = () => {
 
     allVideos.forEach((video) => {
       const playHandler = () => {
-        // Pause all other videos in container
-        const others = Array.from(container.querySelectorAll('video')) as HTMLVideoElement[];
-        others.forEach((v) => { if (v !== video && !v.paused) try { v.pause(); } catch (e) {} });
+        // independent playback: do not auto-pause other videos
 
         // Determine logical index
         const idxAttr = video.getAttribute('data-embla-index');
