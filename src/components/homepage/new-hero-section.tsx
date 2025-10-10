@@ -162,10 +162,12 @@ const NewHeroSection = () => {
     const index = idxAttr ? Number(idxAttr) : currentVideoIndex;
 
     if (action === 'toggle') {
-      const clickedVideo = actionEl.closest('video') as HTMLVideoElement | null;
+      const slideEl = actionEl.closest('.embla__slide') as HTMLElement | null;
+      const clickedVideo = slideEl ? slideEl.querySelector('video') as HTMLVideoElement | null : null;
       handlePlayPause(e, index, clickedVideo);
     } else if (action === 'mute') {
-      const clickedVideo = actionEl.closest('video') as HTMLVideoElement | null;
+      const slideEl = actionEl.closest('.embla__slide') as HTMLElement | null;
+      const clickedVideo = slideEl ? slideEl.querySelector('video') as HTMLVideoElement | null : null;
       handleMuteToggle(e, index, clickedVideo);
     } else if (action === 'fullscreen') {
       // reserved for future fullscreen handling
