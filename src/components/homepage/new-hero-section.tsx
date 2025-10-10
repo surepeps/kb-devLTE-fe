@@ -391,7 +391,7 @@ const NewHeroSection = () => {
       videoElement.play()
         .then(() => {
           setPlayingIndex(0);
-          pauseOtherVideosExcept(videoElement);
+          // independent autoplay: do not auto-pause other videos
           initialAutoplayDone.current = true;
         })
         .catch((error) => {
