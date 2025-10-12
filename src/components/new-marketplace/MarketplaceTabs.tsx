@@ -56,7 +56,7 @@ const MarketplaceTabs = () => {
     setActiveTab(tabId);
     setIsDropdownOpen(false);
   };
-
+ 
   return (
     <>
       {/* Desktop Tabs */}

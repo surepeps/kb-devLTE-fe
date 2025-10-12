@@ -132,6 +132,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     fullName: "",
     phoneNumber: "",
     email: "",
+    whatsAppNumber: "",
   });
   const [showMoreDates, setShowMoreDates] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -579,6 +580,23 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
             <div className="w-full">
               <label className="block text-sm font-medium text-[#24272C] mb-2">
+                Email Address <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                value={buyerInfo.email}
+                onChange={(e) => handleBuyerInfoChange("email", e.target.value)}
+                placeholder="Enter your email address"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+                required
+              />
+            </div>
+
+          </div>
+
+          <div className="w-full flex flex-col gap-4 md:flex-row">
+            <div className="w-full">
+              <label className="block text-sm font-medium text-[#24272C] mb-2">
                 Phone Number <span className="text-red-500">*</span>
               </label>
               <input
@@ -590,20 +608,19 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                 required
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-[#24272C] mb-2">
-              Email Address <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              value={buyerInfo.email}
-              onChange={(e) => handleBuyerInfoChange("email", e.target.value)}
-              placeholder="Enter your email address"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
-              required
-            />
+            <div className="w-full">
+              <label className="block text-sm font-medium text-[#24272C] mb-2">
+                WhatsApp Number
+              </label>
+              <input
+                type="text"
+                value={buyerInfo.whatsAppNumber}
+                onChange={(e) => handleBuyerInfoChange("whatsAppNumber", e.target.value)}
+                placeholder="Enter your whatsApp Number"
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent"
+              />
+            </div>
           </div>
         </div>
       </div>

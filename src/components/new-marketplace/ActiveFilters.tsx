@@ -154,15 +154,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
       {/* Header with Submit Preference Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-3">
-          {onSubmitPreference && (
-            <button
-              onClick={onSubmitPreference}
-              className="bg-[#09391C] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0B423D] transition-colors whitespace-nowrap"
-            >
-              Submit Your Preference
-            </button>
-          )}
-          <h3 className="text-sm font-medium text-[#09391C]">Active Filters</h3>
+          <h3 className="text-sm font-medium text-[#09391C]">Active Filters:</h3>
         </div>
         <button
           onClick={onClearAll}
