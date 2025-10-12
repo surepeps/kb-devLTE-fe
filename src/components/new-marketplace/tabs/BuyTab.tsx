@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
 import BuyPropertySearch from "../search/BuyPropertySearch";
 import PropertyGrid from "../PropertyGrid";
@@ -12,9 +12,7 @@ const BuyTab = () => {
     fetchTabData,
     activeTab,
   } = useNewMarketplace();
-
-  // Note: Modal states removed as per requirements
-
+ 
   // Fetch initial data when tab becomes active
   useEffect(() => {
     if (
@@ -31,9 +29,6 @@ const BuyTab = () => {
     const propertyId = property._id;
     window.open(`/property/buy/${propertyId}`, "_blank");
   };
-
-  // Note: Inspection and negotiation handlers removed as per requirements
-
 
 
   return (

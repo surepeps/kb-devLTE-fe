@@ -22,7 +22,6 @@ const NewMarketPlace = () => {
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const urlTab = (searchParams.get('tab') || undefined) as ("buy" | "jv" | "rent" | "shortlet") | undefined;
 
-  const [hasError, setHasError] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // Apply URL tab if provided
@@ -81,7 +80,7 @@ const NewMarketPlace = () => {
           <span className="mx-2">›</span>
           <span className="text-[#09391C] font-medium">New Marketplace</span>
         </nav>
-
+ 
         {/* Header */}
         <div className="text-center mb-6 md:mb-8 lg:mb-12 px-2">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#09391C] font-display mb-3 md:mb-4 leading-tight px-2">

@@ -10,7 +10,7 @@ import {
 import SearchFilters from "./SearchFilters";
 import { IsMobile } from "@/hooks/isMobile";
 import { BuyPropertyFilters, FilterUpdateFunction } from "@/types/search.types";
-
+ 
 const BuyPropertySearch = () => {
   const {
     buyTab,
@@ -121,7 +121,7 @@ const BuyPropertySearch = () => {
         searchParams.homeCondition = filters.homeCondition.trim();
       }
 
-      console.log("Search params:", searchParams); // Debug log
+      // console.log("Search params:", searchParams); // Debug log
 
       // Perform search
       await searchTabProperties("buy", searchParams);
