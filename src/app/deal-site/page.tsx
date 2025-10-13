@@ -283,6 +283,8 @@ export default function DealSitePage() {
     publicPage: { heroTitle: "Hi, I'm your trusted agent", heroSubtitle: "Browse my verified listings and book inspections easily.", ctaText: "Browse Listings", ctaLink: "/market-place", heroImageUrl: "" },
     footer: { shortDescription: "", copyrightText: "" },
     paymentDetails: { businessName: "", accountNumber: "", sortCode: "", primaryContactEmail: "", primaryContactName: "", primaryContactPhone: "" },
+    about: { title: "", subTitle: "", heroImageUrl: "", ctaButtons: [], mission: "", vision: "", howItWorks: "", ourValues: [] },
+    contactUs: { officeHours: "", faqs: [] },
   });
 
   const previewUrl = useMemo(() => {
