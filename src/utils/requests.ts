@@ -2,12 +2,12 @@
 
 import Cookies from 'js-cookie';
 
-interface ApiResponse<T = any> {
+interface ApiResponse<T = any, P = any> {
   success: boolean;
   message?: string;
   data?: T | null;
   error?: string;
-  pagination?: T | null
+  pagination?: P | null;
 }
 
 const isAuthExpiredMessage = (msg?: string) => {
@@ -30,11 +30,11 @@ const handleAuthExpirySideEffects = () => {
   } catch {}
 };
 
-export const GET_REQUEST = async <T = any>(
+export const GET_REQUEST = async <T = any, P = any>(
   url: string,
   token?: string,
   retryCount = 0,
-): Promise<ApiResponse<T>> => {
+): Promise<ApiResponse<T, P>> => {
   try {
     // Check if URL is valid
     if (!url || url.includes("undefined")) {
@@ -128,7 +128,7 @@ export const GET_REQUEST = async <T = any>(
   }
 };
 
-export const DELETE_REQUEST = async <T = any>(url: string, data?: unknown, token?: string): Promise<ApiResponse<T>> => {
+export const DELETE_REQUEST = async <T = any>(url: string, data?: unknown, token?: string): Promise<ApiResponse<T, any>> => {
   try {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -218,7 +218,7 @@ export const POST_REQUEST_FILE_UPLOAD = async <T = any>(
   url: string,
   data: FormData,
   token?: string,
-): Promise<ApiResponse<T>> => {
+): Promise<ApiResponse<T, any>> => {
   try {
     const request = await fetch(url, {
       method: "POST",
@@ -250,7 +250,7 @@ export const PUT_REQUEST = async <T = any>(
   data: unknown,
   token?: string,
   customHeaders?: Record<string, string>,
-): Promise<ApiResponse<T>> => {
+): Promise<ApiResponse<T, any>> => {
   try {
     const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
@@ -289,7 +289,7 @@ export const PATCH_REQUEST = async <T = any>(
   data: unknown,
   token?: string,
   customHeaders?: Record<string, string>,
-): Promise<ApiResponse<T>> => {
+): Promise<ApiResponse<T, any>> => {
   try {
     const headers: Record<string, string> = customHeaders || {
       "Content-Type": "application/json",
