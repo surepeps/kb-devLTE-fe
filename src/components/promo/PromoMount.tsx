@@ -16,6 +16,12 @@ const PromoMount: React.FC<Props> = ({ slot, targetId, className, height }) => {
 
   useEffect(() => {
     const el = document.getElementById(id);
+    if (el) {
+      // Remove server-rendered placeholder children to prevent stacking and overflow clipping
+      while (el.firstChild) {
+        el.removeChild(el.firstChild);
+      }
+    }
     setContainer(el);
   }, [id]);
 
