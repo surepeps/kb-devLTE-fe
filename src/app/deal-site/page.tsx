@@ -1191,6 +1191,97 @@ export default function DealSitePage() {
     }
   };
 
+  const cleanLogText = (value?: string) => (value ? value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() : "");
+
+  const formatActorName = (log: DealSiteLog) => {
+    if (!log.actor) {
+      return "System";
+    }
+
+    const name = [log.actor.firstName, log.actor.lastName].filter(Boolean).join(" ").trim();
+    if (name) {
+      return name;
+    }
+
+    return log.actor.email || "Unknown actor";
+  };
+
+  const formatDateTime = (value?: string) => {
+    if (!value) {
+      return "";
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleString();
+  };
+
+  const fetchOverviewLogs = async () => {
+    if (!form.publicSlug) {
+      return;
+    }
+
+    setOverviewLogsLoading(true);
+    const token = Cookies.get("token");
+    try {
+      const qs = buildQuery({ page: 1, limit: 5 });
+      const response = await GET_REQUEST<{ data?: DealSiteLog[] }>(`${URLS.BASE}/dealSite/${form.publicSlug}/logs?${qs}`, token);
+      if (response?.success && Array.isArray(response.data)) {
+        setOverviewLogs(response.data.slice(0, 5));
+      } else {
+        setOverviewLogs([]);
+      }
+    } finally {
+      setOverviewLogsLoading(false);
+    }
+  };
+
+  const fetchServiceLogs = async (page: number) => {
+    if (!form.publicSlug) {
+      return;
+    }
+
+    setServiceLogsLoading(true);
+    const token = Cookies.get("token");
+    try {
+      const qs = buildQuery({ page, limit: SERVICE_LOGS_LIMIT });
+      const response = await GET_REQUEST<{ data?: DealSiteLog[]; pagination?: { page?: number; totalPages?: number; total?: number; limit?: number } }>(
+        `${URLS.BASE}/dealSite/${form.publicSlug}/logs?${qs}`,
+        token,
+      );
+
+      if (response?.success && Array.isArray(response.data)) {
+        setServiceLogs(response.data);
+        const pagination = response.pagination || {};
+        setServiceLogsPagination({
+          page: pagination.page ?? page,
+          totalPages: pagination.totalPages ?? Math.max(page, 1),
+          total: pagination.total ?? response.data.length,
+          limit: pagination.limit ?? SERVICE_LOGS_LIMIT,
+        });
+      } else {
+        setServiceLogs([]);
+        setServiceLogsPagination((prev) => ({ ...prev, page, total: 0, totalPages: Math.max(page, 1) }));
+      }
+    } finally {
+      setServiceLogsLoading(false);
+    }
+  };
+
+  const goToPreviousLogsPage = () => {
+    setServiceLogsPage((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
+  const goToNextLogsPage = () => {
+    setServiceLogsPage((prev) => {
+      const maxPage = Math.max(serviceLogsPagination.totalPages, 1);
+      return prev < maxPage ? prev + 1 : prev;
+    });
+  };
+
   const renderFeaturedListings = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Featured Listings</h2>
