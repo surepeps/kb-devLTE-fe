@@ -87,6 +87,24 @@ interface InspectionDesignSettings {
   negotiationEnabled?: boolean;
 }
 
+interface CtaButton { text: string; url: string; color?: string }
+
+interface AboutSection {
+  title: string;
+  subTitle: string;
+  heroImageUrl?: string;
+  ctaButtons: CtaButton[];
+  mission?: string;
+  vision?: string;
+  howItWorks?: string;
+  ourValues?: { title: string; subTitle: string }[];
+}
+
+interface ContactUsSection {
+  officeHours?: string;
+  faqs?: { question: string; answer: string }[];
+}
+
 interface FooterDetails {
   shortDescription: string;
   copyrightText: string;
