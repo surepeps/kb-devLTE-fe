@@ -1274,6 +1274,10 @@ export default function DealSitePage() {
           return [{ path: "socialLinks", body: { socialLinks: form.socialLinks } }];
         case "payment":
           return [{ path: "paymentDetails", body: { paymentDetails: form.paymentDetails } }];
+        case "about":
+          return [{ path: "about", body: { about: form.about } }];
+        case "contact-us":
+          return [{ path: "contactUs", body: { contactUs: form.contactUs } }];
         case "featured":
           return [{ path: "featureSelection", body: { featureSelection: form.featureSelection } }];
         case "listings": {
