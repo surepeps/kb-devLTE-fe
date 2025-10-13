@@ -1404,7 +1404,7 @@ export default function DealSitePage() {
     const token = Cookies.get("token");
     try {
       const qs = buildQuery({ page: 1, limit: 5 });
-      const response = await GET_REQUEST<{ data?: DealSiteLog[] }>(`${URLS.BASE}/account/dealSite/${form.publicSlug}/logs?${qs}`, token);
+      const response = await GET_REQUEST<DealSiteLog[]>(`${URLS.BASE}/account/dealSite/${form.publicSlug}/logs?${qs}`, token);
       if (response?.success && Array.isArray(response.data)) {
         setOverviewLogs(response.data.slice(0, 5));
       } else {
