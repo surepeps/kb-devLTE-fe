@@ -196,6 +196,7 @@ const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
 
 const isUpdatableTab = (tab: ManageTabId): tab is UpdatableSectionId => updatableTabSet.has(tab as UpdatableSectionId);
 
+const SERVICE_LOGS_LIMIT = 10;
 const STORAGE_KEY = "deal_site_settings";
 const SLUG_LOCK_KEY = "deal_site_slug_locked";
 
