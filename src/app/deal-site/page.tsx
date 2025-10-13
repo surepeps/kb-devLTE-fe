@@ -1411,6 +1411,67 @@ export default function DealSitePage() {
     </div>
   );
 
+  const renderServiceLogger = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <h2 className="text-lg font-semibold text-[#09391C] flex items-center gap-2"><History size={18} /> Service Logger</h2>
+        <div className="text-xs text-[#5A5D63]">Total activities: {serviceLogsPagination.total}</div>
+      </div>
+      {serviceLogsLoading ? (
+        <div className="py-6 text-sm text-gray-500">Loading activities...</div>
+      ) : serviceLogs.length === 0 ? (
+        <div className="py-6 text-sm text-gray-500">No activities recorded yet.</div>
+      ) : (
+        <div className="space-y-4">
+          {serviceLogs.map((log) => (
+            <div key={log._id} className="border border-gray-200 rounded-lg p-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-[#09391C]">{cleanLogText(log.action) || cleanLogText(log.category) || "Activity"}</p>
+                  {cleanLogText(log.description) ? <p className="text-xs text-[#5A5D63] mt-1">{cleanLogText(log.description)}</p> : null}
+                </div>
+                <span className="text-xs text-[#5A5D63] whitespace-nowrap">{formatDateTime(log.createdAt)}</span>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[#5A5D63]">
+                <span>Actor: {formatActorName(log)}</span>
+                {log.actorModel ? (
+                  <span className="uppercase tracking-wide text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">{log.actorModel}</span>
+                ) : null}
+                {log.ipAddress ? <span>IP: {log.ipAddress}</span> : null}
+              </div>
+              {log.userAgent ? <p className="mt-2 text-[11px] text-gray-400 break-words">{log.userAgent}</p> : null}
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button
+          type="button"
+          onClick={goToPreviousLogsPage}
+          disabled={serviceLogsLoading || serviceLogsPagination.page <= 1}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="text-xs text-[#5A5D63]">
+          Page {serviceLogsPagination.page} of {Math.max(serviceLogsPagination.totalPages, 1)}
+        </span>
+        <button
+          type="button"
+          onClick={goToNextLogsPage}
+          disabled={
+            serviceLogsLoading ||
+            serviceLogsPagination.page >= Math.max(serviceLogsPagination.totalPages, 1) ||
+            serviceLogs.length === 0
+          }
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+
   const renderInspectionSettings = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Inspection Settings</h2>
