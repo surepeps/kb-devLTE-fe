@@ -1676,6 +1676,7 @@ export default function DealSitePage() {
                   { id: "payment", label: "Payment" },
                   { id: "featured", label: "Featured Listings" },
                   { id: "listings", label: "Listings" },
+                  { id: "service-logger", label: "Service Logger", icon: <History size={16} /> },
                   { id: "security", label: "Security Settings", icon: <Shield size={14} /> },
                 ]}
               />
