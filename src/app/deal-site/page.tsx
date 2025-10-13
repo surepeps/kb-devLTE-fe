@@ -1395,7 +1395,7 @@ export default function DealSitePage() {
     }
   }
 
-  const fetchServiceLogs = async (page: number) => {
+  async function fetchServiceLogs(page: number) {
     if (!form.publicSlug) {
       return;
     }
@@ -1430,7 +1430,7 @@ export default function DealSitePage() {
     } finally {
       setServiceLogsLoading(false);
     }
-  };
+  }
 
   const goToPreviousLogsPage = () => {
     setServiceLogsPage((prev) => (prev > 1 ? prev - 1 : prev));
