@@ -1432,11 +1432,10 @@ export default function DealSitePage() {
       if (response?.success && Array.isArray(response.data)) {
         setServiceLogs(response.data);
 
-        const pagination = response.pagination ?? {};
-        const resolvedPage = pagination.page ?? page;
-        const resolvedTotalPages = pagination.totalPages ?? Math.max(page, 1);
-        const resolvedTotal = pagination.total ?? response.data.length;
-        const resolvedLimit = pagination.limit ?? SERVICE_LOGS_LIMIT;
+        const resolvedPage = response.pagination?.page ?? page;
+        const resolvedTotalPages = response.pagination?.totalPages ?? Math.max(page, 1);
+        const resolvedTotal = response.pagination?.total ?? response.data.length;
+        const resolvedLimit = response.pagination?.limit ?? SERVICE_LOGS_LIMIT;
 
         setServiceLogsPagination({
           page: resolvedPage,
@@ -2316,7 +2315,7 @@ export default function DealSitePage() {
 
               <Tabs
                 active={activeTab}
-                onChange={setActiveTab}
+                onChange={(id) => setActiveTab(id as ManageTabId)}
                 tabs={[
                   { id: "overview", label: "Overview", icon: <BarChart2 size={16} /> },
                   { id: "branding", label: "Branding & SEO" },
