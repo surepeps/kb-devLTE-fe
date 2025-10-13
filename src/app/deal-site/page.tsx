@@ -475,6 +475,28 @@ export default function DealSitePage() {
     fetchAnalytics();
   }, [activeView]);
 
+  useEffect(() => {
+    if (activeView !== "manage" || activeTab !== "overview" || !form.publicSlug) {
+      return;
+    }
+
+    fetchOverviewLogs();
+  }, [activeView, activeTab, form.publicSlug]);
+
+  useEffect(() => {
+    if (activeView !== "manage" || activeTab !== "service-logger" || !form.publicSlug) {
+      return;
+    }
+
+    fetchServiceLogs(serviceLogsPage);
+  }, [activeView, activeTab, form.publicSlug, serviceLogsPage]);
+
+  useEffect(() => {
+    setServiceLogsPage(1);
+    setServiceLogs([]);
+    setServiceLogsPagination({ page: 1, totalPages: 1, total: 0, limit: SERVICE_LOGS_LIMIT });
+  }, [form.publicSlug]);
+
   // Fetch agent properties for Featured Listings
   const buildQuery = (obj: Record<string, any>) =>
     Object.entries(obj)
