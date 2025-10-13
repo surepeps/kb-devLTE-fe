@@ -87,6 +87,24 @@ interface InspectionDesignSettings {
   negotiationEnabled?: boolean;
 }
 
+interface CtaButton { text: string; url: string; color?: string }
+
+interface AboutSection {
+  title: string;
+  subTitle: string;
+  heroImageUrl?: string;
+  ctaButtons: CtaButton[];
+  mission?: string;
+  vision?: string;
+  howItWorks?: string;
+  ourValues?: { title: string; subTitle: string }[];
+}
+
+interface ContactUsSection {
+  officeHours?: string;
+  faqs?: { question: string; answer: string }[];
+}
+
 interface FooterDetails {
   shortDescription: string;
   copyrightText: string;
@@ -116,6 +134,8 @@ interface DealSiteSettings {
   marketplaceDefaults: MarketplaceDefaults;
   publicPage: PublicPageDesign;
   footer?: FooterDetails;
+  about?: AboutSection;
+  contactUs?: ContactUsSection;
   paymentDetails?: BankDetails;
 }
 
@@ -160,6 +180,8 @@ type ManageTabId =
   | "inspection"
   | "contact"
   | "social"
+  | "about"
+  | "contact-us"
   | "payment"
   | "featured"
   | "listings"
@@ -176,6 +198,8 @@ const updatableTabSet = new Set<UpdatableSectionId>([
   "inspection",
   "contact",
   "social",
+  "about",
+  "contact-us",
   "payment",
   "featured",
   "listings",
@@ -189,6 +213,8 @@ const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
   inspection: "Inspection Settings",
   contact: "Contact",
   social: "Social Links",
+  about: "About Us",
+  "contact-us": "Contact Us",
   payment: "Payment",
   featured: "Featured Listings",
   listings: "Listings",
@@ -263,6 +289,8 @@ export default function DealSitePage() {
     publicPage: { heroTitle: "Hi, I'm your trusted agent", heroSubtitle: "Browse my verified listings and book inspections easily.", ctaText: "Browse Listings", ctaLink: "/market-place", heroImageUrl: "" },
     footer: { shortDescription: "", copyrightText: "" },
     paymentDetails: { businessName: "", accountNumber: "", sortCode: "", primaryContactEmail: "", primaryContactName: "", primaryContactPhone: "" },
+    about: { title: "", subTitle: "", heroImageUrl: "", ctaButtons: [], mission: "", vision: "", howItWorks: "", ourValues: [] },
+    contactUs: { officeHours: "", faqs: [] },
   });
 
   const previewUrl = useMemo(() => {
@@ -368,6 +396,8 @@ export default function DealSitePage() {
             publicPage: s.publicPage || prev.publicPage,
             footer: s.footer || prev.footer,
             paymentDetails: (s as any).paymentDetails || prev.paymentDetails,
+            about: (s as any).about || prev.about,
+            contactUs: (s as any).contactUs || prev.contactUs,
           }));
           if (typeof s.paused === "boolean") setIsPaused(s.paused);
           if (s.publicSlug) setSlugLocked(true);
@@ -418,6 +448,8 @@ export default function DealSitePage() {
         copyrightText: ds.footerSection?.copyRight || prev.footer?.copyrightText || "",
       },
       paymentDetails: (ds as any).paymentDetails || prev.paymentDetails,
+      about: (ds as any).about || prev.about,
+      contactUs: (ds as any).contactUs || prev.contactUs,
     }));
 
     if (ds.publicSlug && !slugLocked) {
@@ -888,6 +920,23 @@ export default function DealSitePage() {
     </div>
   );
 
+  const handleUploadAboutHero = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("for", "public-about-hero");
+    const token = Cookies.get("token");
+
+    showPreloader("Uploading about hero...");
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), heroImageUrl: (res.data as any).url } }));
+      toast.success("Image uploaded");
+    } else {
+      toast.error(res?.message || "Upload failed");
+    }
+  };
+
   const renderTheme = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Theme</h2>
@@ -1197,16 +1246,100 @@ export default function DealSitePage() {
       return;
     }
 
+    // Map UI tabs to backend section endpoints and payloads
+    const getSectionUpdates = (tab: UpdatableSectionId): { path: string; body: any }[] => {
+      switch (tab) {
+        case "branding": {
+          return [
+            {
+              path: "brandingSeo",
+              body: {
+                brandingSeo: {
+                  title: form.title,
+                  keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+                  description: form.description,
+                  logoUrl: form.logoUrl,
+                  listingsLimit: form.listingsLimit,
+                },
+              },
+            },
+          ];
+        }
+        case "design": {
+          return [
+            { path: "publicPage", body: { publicPage: form.publicPage } },
+            {
+              path: "footerSection",
+              body: {
+                footerSection: {
+                  shortDesc: form.footer?.shortDescription || "",
+                  copyRight: form.footer?.copyrightText || "",
+                },
+              },
+            },
+          ];
+        }
+        case "theme":
+          return [{ path: "theme", body: { theme: form.theme } }];
+        case "marketplace":
+          return [{ path: "marketplaceDefaults", body: { marketplaceDefaults: form.marketplaceDefaults } }];
+        case "inspection":
+          return [{ path: "inspectionSettings", body: { inspectionSettings: form.inspectionSettings } }];
+        case "contact":
+          return [{ path: "contactVisibility", body: { contactVisibility: form.contactVisibility } }];
+        case "social":
+          return [{ path: "socialLinks", body: { socialLinks: form.socialLinks } }];
+        case "payment":
+          return [{ path: "paymentDetails", body: { paymentDetails: form.paymentDetails } }];
+        case "about":
+          return [{ path: "about", body: { about: form.about } }];
+        case "contact-us":
+          return [{ path: "contactUs", body: { contactUs: form.contactUs } }];
+        case "featured":
+          return [{ path: "featureSelection", body: { featureSelection: form.featureSelection } }];
+        case "listings": {
+          // listingsLimit belongs to brandingSeo on the backend
+          return [
+            {
+              path: "brandingSeo",
+              body: {
+                brandingSeo: {
+                  title: form.title,
+                  keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+                  description: form.description,
+                  logoUrl: form.logoUrl,
+                  listingsLimit: form.listingsLimit,
+                },
+              },
+            },
+          ];
+        }
+        default:
+          return [];
+      }
+    };
+
     setSaving(true);
     showPreloader(`Saving ${SECTION_FRIENDLY_LABELS[section]}...`);
     const token = Cookies.get("token");
+
     try {
-      const response = await PUT_REQUEST(`${URLS.BASE}/dealSite/${form.publicSlug}/${section}/update`, buildSectionPayload(section), token);
-      if (response?.success) {
-        toast.success(`${SECTION_FRIENDLY_LABELS[section]} updated`);
-      } else {
-        toast.error(response?.message || `Failed to update ${SECTION_FRIENDLY_LABELS[section]}`);
+      const updates = getSectionUpdates(section);
+      if (!updates.length) {
+        toast.error("Unsupported section");
+        return;
       }
+
+      for (const u of updates) {
+        const res = await PUT_REQUEST(`${URLS.BASE}/dealSite/${form.publicSlug}/${u.path}/update`, u.body, token);
+        if (!res?.success) {
+          throw new Error(res?.message || `Failed to update ${u.path}`);
+        }
+      }
+
+      toast.success(`${SECTION_FRIENDLY_LABELS[section]} updated`);
+    } catch (e: any) {
+      toast.error(e?.message || `Failed to update ${SECTION_FRIENDLY_LABELS[section]}`);
     } finally {
       setSaving(false);
       hidePreloader();
@@ -1412,6 +1545,153 @@ export default function DealSitePage() {
           onChange={(e) => setForm({ ...form, listingsLimit: Math.max(0, Math.min(50, Number(e.target.value || 0))) })}
           className={`${inputBase} w-32`}
         />
+      </div>
+    </div>
+  );
+
+  const renderAboutUs = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+      <h2 className="text-lg font-semibold text-[#09391C]">About Us</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Title</label>
+          <input type="text" value={form.about?.title || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { subTitle: "", ctaButtons: [], ourValues: [] }), title: e.target.value } }))} className={inputBase} />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+          <input type="text" value={form.about?.subTitle || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", ctaButtons: [], ourValues: [] }), subTitle: e.target.value } }))} className={inputBase} />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm text-gray-700 mb-2">Hero Image</label>
+        {form.about?.heroImageUrl ? (
+          <div className="flex items-center gap-3">
+            <img src={form.about.heroImageUrl} alt="About Hero" className="h-20 w-36 rounded border object-cover bg-white" />
+            <button type="button" onClick={() => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), heroImageUrl: "" } }))} className="px-3 py-2 text-sm border rounded-lg inline-flex items-center gap-2">
+              <Trash2 size={16} /> Remove
+            </button>
+          </div>
+        ) : (
+          <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+            <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHero(e.target.files[0])} />
+            <ImageIcon size={16} /> <span className="text-gray-600">Drag & drop or click to upload</span>
+          </label>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Mission</label>
+          <textarea value={form.about?.mission || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), mission: e.target.value } }))} className={`${inputBase} min-h-[80px]`} />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Vision</label>
+          <textarea value={form.about?.vision || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), vision: e.target.value } }))} className={`${inputBase} min-h-[80px]`} />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm text-gray-700 mb-1">How It Works</label>
+        <textarea value={form.about?.howItWorks || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), howItWorks: e.target.value } }))} className={`${inputBase} min-h-[80px]`} />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-[#09391C]">CTA Buttons</h3>
+          <button type="button" onClick={() => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: [ ...(prev.about?.ctaButtons || []), { text: "", url: "", color: "#0B572B" } ] } }))} className="text-xs px-2 py-1 border rounded-lg">Add</button>
+        </div>
+        <div className="space-y-3">
+          {(form.about?.ctaButtons || []).map((b, idx) => (
+            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+              <input className={`md:col-span-4 ${inputBase}`} placeholder="Text" value={b.text} onChange={(e) => setForm((prev) => {
+                const list = [ ...(prev.about?.ctaButtons || []) ];
+                list[idx] = { ...list[idx], text: e.target.value };
+                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
+              })} />
+              <input className={`md:col-span-6 ${inputBase}`} placeholder="URL" value={b.url} onChange={(e) => setForm((prev) => {
+                const list = [ ...(prev.about?.ctaButtons || []) ];
+                list[idx] = { ...list[idx], url: e.target.value };
+                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
+              })} />
+              <input type="color" className="md:col-span-1 h-9 w-full border rounded" value={b.color || "#0B572B"} onChange={(e) => setForm((prev) => {
+                const list = [ ...(prev.about?.ctaButtons || []) ];
+                list[idx] = { ...list[idx], color: e.target.value };
+                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
+              })} />
+              <button type="button" onClick={() => setForm((prev) => {
+                const list = [ ...(prev.about?.ctaButtons || []) ];
+                list.splice(idx, 1);
+                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
+              })} className="md:col-span-1 text-xs px-2 py-1 border rounded-lg">Remove</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-[#09391C]">Our Values</h3>
+          <button type="button" onClick={() => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: [ ...(prev.about?.ourValues || []), { title: "", subTitle: "" } ] } }))} className="text-xs px-2 py-1 border rounded-lg">Add</button>
+        </div>
+        <div className="space-y-3">
+          {(form.about?.ourValues || []).map((v, idx) => (
+            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
+              <input className={`md:col-span-5 ${inputBase}`} placeholder="Title" value={v.title} onChange={(e) => setForm((prev) => {
+                const list = [ ...(prev.about?.ourValues || []) ];
+                list[idx] = { ...list[idx], title: e.target.value };
+                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: list } };
+              })} />
+              <input className={`md:col-span-6 ${inputBase}`} placeholder="Subtitle" value={v.subTitle} onChange={(e) => setForm((prev) => {
+                const list = [ ...(prev.about?.ourValues || []) ];
+                list[idx] = { ...list[idx], subTitle: e.target.value };
+                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: list } };
+              })} />
+              <button type="button" onClick={() => setForm((prev) => {
+                const list = [ ...(prev.about?.ourValues || []) ];
+                list.splice(idx, 1);
+                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: list } };
+              })} className="md:col-span-1 text-xs px-2 py-1 border rounded-lg">Remove</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContactUs = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+      <h2 className="text-lg font-semibold text-[#09391C]">Contact Us</h2>
+      <div>
+        <label className="block text-sm text-gray-700 mb-1">Office Hours</label>
+        <input type="text" value={form.contactUs?.officeHours || ""} onChange={(e) => setForm((prev) => ({ ...prev, contactUs: { ...(prev.contactUs || { faqs: [] }), officeHours: e.target.value } }))} className={inputBase} placeholder="Mon-Fri, 9am - 5pm" />
+      </div>
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-[#09391C]">FAQs</h3>
+          <button type="button" onClick={() => setForm((prev) => ({ ...prev, contactUs: { ...(prev.contactUs || { officeHours: "" }), faqs: [ ...(prev.contactUs?.faqs || []), { question: "", answer: "" } ] } }))} className="text-xs px-2 py-1 border rounded-lg">Add</button>
+        </div>
+        <div className="space-y-3">
+          {(form.contactUs?.faqs || []).map((f, idx) => (
+            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
+              <input className={`md:col-span-5 ${inputBase}`} placeholder="Question" value={f.question} onChange={(e) => setForm((prev) => {
+                const list = [ ...(prev.contactUs?.faqs || []) ];
+                list[idx] = { ...list[idx], question: e.target.value };
+                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
+              })} />
+              <textarea className={`md:col-span-6 ${inputBase} min-h-[60px]`} placeholder="Answer" value={f.answer} onChange={(e) => setForm((prev) => {
+                const list = [ ...(prev.contactUs?.faqs || []) ];
+                list[idx] = { ...list[idx], answer: e.target.value };
+                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
+              })} />
+              <button type="button" onClick={() => setForm((prev) => {
+                const list = [ ...(prev.contactUs?.faqs || []) ];
+                list.splice(idx, 1);
+                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
+              })} className="md:col-span-1 text-xs px-2 py-1 border rounded-lg">Remove</button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -1920,6 +2200,8 @@ export default function DealSitePage() {
                   { id: "inspection", label: "Inspection Settings" },
                   { id: "contact", label: "Contact" },
                   { id: "social", label: "Social Links" },
+                  { id: "about", label: "About Us" },
+                  { id: "contact-us", label: "Contact Us" },
                   { id: "payment", label: "Payment" },
                   { id: "featured", label: "Featured Listings" },
                   { id: "listings", label: "Listings" },
@@ -1942,6 +2224,8 @@ export default function DealSitePage() {
                 {activeTab === "inspection" && renderInspectionSettings}
                 {activeTab === "contact" && renderContactVisibility}
                 {activeTab === "social" && renderSocialLinks}
+                {activeTab === "about" && renderAboutUs}
+                {activeTab === "contact-us" && renderContactUs}
                 {activeTab === "payment" && renderBankDetails}
                 {activeTab === "featured" && renderFeaturedListings}
                 {activeTab === "listings" && renderListingsLimit}
