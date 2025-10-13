@@ -1197,16 +1197,96 @@ export default function DealSitePage() {
       return;
     }
 
+    // Map UI tabs to backend section endpoints and payloads
+    const getSectionUpdates = (tab: UpdatableSectionId): { path: string; body: any }[] => {
+      switch (tab) {
+        case "branding": {
+          return [
+            {
+              path: "brandingSeo",
+              body: {
+                brandingSeo: {
+                  title: form.title,
+                  keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+                  description: form.description,
+                  logoUrl: form.logoUrl,
+                  listingsLimit: form.listingsLimit,
+                },
+              },
+            },
+          ];
+        }
+        case "design": {
+          return [
+            { path: "publicPage", body: { publicPage: form.publicPage } },
+            {
+              path: "footerSection",
+              body: {
+                footerSection: {
+                  shortDesc: form.footer?.shortDescription || "",
+                  copyRight: form.footer?.copyrightText || "",
+                },
+              },
+            },
+          ];
+        }
+        case "theme":
+          return [{ path: "theme", body: { theme: form.theme } }];
+        case "marketplace":
+          return [{ path: "marketplaceDefaults", body: { marketplaceDefaults: form.marketplaceDefaults } }];
+        case "inspection":
+          return [{ path: "inspectionSettings", body: { inspectionSettings: form.inspectionSettings } }];
+        case "contact":
+          return [{ path: "contactVisibility", body: { contactVisibility: form.contactVisibility } }];
+        case "social":
+          return [{ path: "socialLinks", body: { socialLinks: form.socialLinks } }];
+        case "payment":
+          return [{ path: "paymentDetails", body: { paymentDetails: form.paymentDetails } }];
+        case "featured":
+          return [{ path: "featureSelection", body: { featureSelection: form.featureSelection } }];
+        case "listings": {
+          // listingsLimit belongs to brandingSeo on the backend
+          return [
+            {
+              path: "brandingSeo",
+              body: {
+                brandingSeo: {
+                  title: form.title,
+                  keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+                  description: form.description,
+                  logoUrl: form.logoUrl,
+                  listingsLimit: form.listingsLimit,
+                },
+              },
+            },
+          ];
+        }
+        default:
+          return [];
+      }
+    };
+
     setSaving(true);
     showPreloader(`Saving ${SECTION_FRIENDLY_LABELS[section]}...`);
     const token = Cookies.get("token");
+
     try {
-      const response = await PUT_REQUEST(`${URLS.BASE}/dealSite/${form.publicSlug}/${section}/update`, buildSectionPayload(section), token);
-      if (response?.success) {
-        toast.success(`${SECTION_FRIENDLY_LABELS[section]} updated`);
-      } else {
-        toast.error(response?.message || `Failed to update ${SECTION_FRIENDLY_LABELS[section]}`);
+      const updates = getSectionUpdates(section);
+      if (!updates.length) {
+        toast.error("Unsupported section");
+        return;
       }
+
+      for (const u of updates) {
+        const res = await PUT_REQUEST(`${URLS.BASE}/dealSite/${form.publicSlug}/${u.path}/update`, u.body, token);
+        if (!res?.success) {
+          throw new Error(res?.message || `Failed to update ${u.path}`);
+        }
+      }
+
+      toast.success(`${SECTION_FRIENDLY_LABELS[section]} updated`);
+    } catch (e: any) {
+      toast.error(e?.message || `Failed to update ${SECTION_FRIENDLY_LABELS[section]}`);
     } finally {
       setSaving(false);
       hidePreloader();
