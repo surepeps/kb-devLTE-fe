@@ -1375,7 +1375,7 @@ export default function DealSitePage() {
     return iso.replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
   };
 
-  const fetchOverviewLogs = async () => {
+  async function fetchOverviewLogs() {
     if (!form.publicSlug) {
       return;
     }
@@ -1393,7 +1393,7 @@ export default function DealSitePage() {
     } finally {
       setOverviewLogsLoading(false);
     }
-  };
+  }
 
   const fetchServiceLogs = async (page: number) => {
     if (!form.publicSlug) {
