@@ -920,6 +920,23 @@ export default function DealSitePage() {
     </div>
   );
 
+  const handleUploadAboutHero = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("for", "public-about-hero");
+    const token = Cookies.get("token");
+
+    showPreloader("Uploading about hero...");
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), heroImageUrl: (res.data as any).url } }));
+      toast.success("Image uploaded");
+    } else {
+      toast.error(res?.message || "Upload failed");
+    }
+  };
+
   const renderTheme = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Theme</h2>
