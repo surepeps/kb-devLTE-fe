@@ -390,6 +390,8 @@ export default function DealSitePage() {
             publicPage: s.publicPage || prev.publicPage,
             footer: s.footer || prev.footer,
             paymentDetails: (s as any).paymentDetails || prev.paymentDetails,
+            about: (s as any).about || prev.about,
+            contactUs: (s as any).contactUs || prev.contactUs,
           }));
           if (typeof s.paused === "boolean") setIsPaused(s.paused);
           if (s.publicSlug) setSlugLocked(true);
