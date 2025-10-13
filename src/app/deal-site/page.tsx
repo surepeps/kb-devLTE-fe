@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   AlertCircle,
   BarChart2,
+  History,
   ExternalLink,
   Copy,
   Pause,
