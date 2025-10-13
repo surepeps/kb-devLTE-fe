@@ -198,6 +198,8 @@ const updatableTabSet = new Set<UpdatableSectionId>([
   "inspection",
   "contact",
   "social",
+  "about",
+  "contact-us",
   "payment",
   "featured",
   "listings",
