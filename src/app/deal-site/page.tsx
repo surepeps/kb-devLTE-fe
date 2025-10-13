@@ -1278,12 +1278,17 @@ export default function DealSitePage() {
       if (response?.success && Array.isArray(response.data)) {
         setServiceLogs(response.data);
         const pagination = response.pagination || {};
+        const resolvedPage = pagination.page ?? page;
+        const resolvedTotalPages = pagination.totalPages ?? Math.max(page, 1);
         setServiceLogsPagination({
-          page: pagination.page ?? page,
-          totalPages: pagination.totalPages ?? Math.max(page, 1),
+          page: resolvedPage,
+          totalPages: resolvedTotalPages,
           total: pagination.total ?? response.data.length,
           limit: pagination.limit ?? SERVICE_LOGS_LIMIT,
         });
+        if (resolvedPage !== page) {
+          setServiceLogsPage(resolvedPage);
+        }
       } else {
         setServiceLogs([]);
         setServiceLogsPagination((prev) => ({ ...prev, page, total: 0, totalPages: Math.max(page, 1) }));
