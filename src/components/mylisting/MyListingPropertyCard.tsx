@@ -42,6 +42,53 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const actionBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const updatePos = () => {
+      const btn = actionBtnRef.current;
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const top = rect.bottom + window.scrollY + 6;
+      const left = rect.right + window.scrollX - 200; // align right; 200px approx width
+      setMenuPos({ top, left: Math.max(8, left) });
+    };
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+    };
+  }, [showDropdown]);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowDropdown(false);
+    };
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        actionBtnRef.current &&
+        (actionBtnRef.current === target || actionBtnRef.current.contains(target))
+      ) {
+        return;
+      }
+      // Close if clicking outside the portal menu
+      if (!document.getElementById("listing-action-menu")) return;
+      const menu = document.getElementById("listing-action-menu");
+      if (menu && !menu.contains(target)) setShowDropdown(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [showDropdown]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
