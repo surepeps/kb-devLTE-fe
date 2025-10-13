@@ -1371,7 +1371,8 @@ export default function DealSitePage() {
       return value;
     }
 
-    return date.toLocaleString();
+    const iso = date.toISOString();
+    return iso.replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
   };
 
   const fetchOverviewLogs = async () => {
@@ -1511,7 +1512,7 @@ export default function DealSitePage() {
                   <div className="mt-1 text-xs text-[#5A5D63] line-clamp-2">
                     {p.location?.area ? `${p.location.area}, ` : ""}{p.location?.localGovernment ? `${p.location.localGovernment}, ` : ""}{p.location?.state || ""}
                   </div>
-                  {p.price ? <div className="mt-1 text-sm text-[#0B572B]">₦{p.price.toLocaleString()}</div> : null}
+                  {p.price ? <div className="mt-1 text-sm text-[#0B572B]">₦{new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(p.price)}</div> : null}
                 </div>
               </label>
             ))}
