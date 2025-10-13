@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MapPin,
   Bed,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { Property } from "@/types/my-listings.types";
 
 interface MyListingPropertyCardProps {
@@ -41,6 +42,53 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const actionBtnRef = useRef<HTMLButtonElement | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const updatePos = () => {
+      const btn = actionBtnRef.current;
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const top = rect.bottom + window.scrollY + 6;
+      const left = rect.right + window.scrollX - 200; // align right; 200px approx width
+      setMenuPos({ top, left: Math.max(8, left) });
+    };
+    updatePos();
+    window.addEventListener("resize", updatePos);
+    window.addEventListener("scroll", updatePos, true);
+    return () => {
+      window.removeEventListener("resize", updatePos);
+      window.removeEventListener("scroll", updatePos, true);
+    };
+  }, [showDropdown]);
+
+  useEffect(() => {
+    if (!showDropdown) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowDropdown(false);
+    };
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        actionBtnRef.current &&
+        (actionBtnRef.current === target || actionBtnRef.current.contains(target))
+      ) {
+        return;
+      }
+      // Close if clicking outside the portal menu
+      if (!document.getElementById("listing-action-menu")) return;
+      const menu = document.getElementById("listing-action-menu");
+      if (menu && !menu.contains(target)) setShowDropdown(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [showDropdown]);
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -199,19 +247,22 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
         <div className="absolute top-3 right-3">
           <div className="relative">
             <button
-              onClick={() => setShowDropdown(!showDropdown)}
+              ref={actionBtnRef}
+              onClick={() => setShowDropdown((v) => !v)}
               className="bg-white/90 hover:bg-white p-2 rounded-full shadow-sm transition-colors"
             >
               <MoreVertical size={16} className="text-gray-600" />
             </button>
-            
+
             <AnimatePresence>
-              {showDropdown && (
+              {showDropdown && menuPos && createPortal(
                 <motion.div
+                  id="listing-action-menu"
                   initial={{ opacity: 0, scale: 0.95, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[150px]"
+                  className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-[180px]"
+                  style={{ position: "fixed", top: menuPos.top, left: menuPos.left, zIndex: 10000 }}
                 >
                   <div className="py-1">
                     <button
@@ -256,7 +307,8 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
                       Delete Property
                     </button>
                   </div>
-                </motion.div>
+                </motion.div>,
+                document.body
               )}
             </AnimatePresence>
           </div>
