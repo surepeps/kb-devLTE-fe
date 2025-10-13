@@ -1424,7 +1424,7 @@ export default function DealSitePage() {
     const token = Cookies.get("token");
     try {
       const qs = buildQuery({ page, limit: SERVICE_LOGS_LIMIT });
-      const response = await GET_REQUEST<{ data?: DealSiteLog[]; pagination?: { page?: number; totalPages?: number; total?: number; limit?: number } }>(
+      const response = await GET_REQUEST<DealSiteLog[], { page?: number; totalPages?: number; total?: number; limit?: number }>(
         `${URLS.BASE}/dealSite/${form.publicSlug}/logs?${qs}`,
         token,
       );
