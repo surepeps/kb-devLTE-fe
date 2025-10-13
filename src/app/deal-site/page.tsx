@@ -2224,6 +2224,8 @@ export default function DealSitePage() {
                 {activeTab === "inspection" && renderInspectionSettings}
                 {activeTab === "contact" && renderContactVisibility}
                 {activeTab === "social" && renderSocialLinks}
+                {activeTab === "about" && renderAboutUs}
+                {activeTab === "contact-us" && renderContactUs}
                 {activeTab === "payment" && renderBankDetails}
                 {activeTab === "featured" && renderFeaturedListings}
                 {activeTab === "listings" && renderListingsLimit}
