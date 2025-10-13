@@ -536,15 +536,15 @@ export default function AgentDashboard() {
               </Link>
 
               <Link
-                href="/deal-site"
+                href="/public-access-page"
                 className="w-full bg-white hover:bg-gray-50 text-[#09391C] border border-gray-200 p-4 rounded-lg font-medium flex items-center gap-3 transition-colors group"
               >
                 <div className="p-2 bg-emerald-500 bg-opacity-10 rounded-lg">
                   <LinkIcon size={20} className="text-emerald-600" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold">Deal Site</h3>
-                  <p className="text-sm text-[#5A5D63]">Set up and manage your deal site</p>
+                  <h3 className="font-semibold">Public Access Page</h3>
+                  <p className="text-sm text-[#5A5D63]">Set up and manage your public access page</p>
                 </div>
               </Link>
             </div>

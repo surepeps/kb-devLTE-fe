@@ -21,6 +21,7 @@ import {
   Play,
   Trash,
   Shield,
+  Check,
 } from "lucide-react";
 import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
@@ -169,6 +170,8 @@ type PropertyItem = {
   title?: string;
   status?: string;
   isApproved?: boolean;
+  additionalFeatures?: any;
+  briefType: string;
 };
 
 type ManageTabId =
@@ -324,7 +327,8 @@ export default function DealSitePage() {
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
-    status: "active" as string | undefined,
+    isAvailable: true as boolean | undefined,
+    // status: "active" as string | undefined,
     propertyType: undefined as string | undefined,
     propertyCategory: undefined as string | undefined,
     state: undefined as string | undefined,
@@ -366,7 +370,7 @@ export default function DealSitePage() {
           }
         } catch {}
         const token = Cookies.get("token");
-        showPreloader("Loading Deal Site...");
+        showPreloader("Loading Public Access Page...");
         const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/details`, token);
         hidePreloader();
         if (res?.success && res.data) {
@@ -675,12 +679,12 @@ export default function DealSitePage() {
   const pauseDealSite = async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
-    showPreloader("Pausing deal site...");
+    showPreloader("Pausing public access page...");
     const res = await PUT_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/pause`, {}, token);
     hidePreloader();
     if (res?.success) {
       setIsPaused(true);
-      toast.success("Deal Site paused");
+      toast.success("Public Access Page paused");
     } else {
       toast.error(res?.message || "Failed to pause");
     }
@@ -689,12 +693,12 @@ export default function DealSitePage() {
   const resumeDealSite = async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
-    showPreloader("Resuming deal site...");
+    showPreloader("Resuming public access page...");
     const res = await PUT_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/resume`, {}, token);
     hidePreloader();
     if (res?.success) {
       setIsPaused(false);
-      toast.success("Deal Site resumed");
+      toast.success("Public Access Page resumed");
     } else {
       toast.error(res?.message || "Failed to resume");
     }
@@ -704,11 +708,11 @@ export default function DealSitePage() {
   const deleteDealSite = async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
-    showPreloader("Deleting deal site...");
+    showPreloader("Deleting public access page...");
     const res = await DELETE_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/delete`, undefined, token);
     hidePreloader();
     if (res?.success) {
-      toast.success("Deal Site deleted");
+      toast.success("Public Access Page deleted");
       setSlugLocked(false);
       setForm((prev) => ({ ...prev, publicSlug: "" }));
       setActiveView("setup");
@@ -727,11 +731,22 @@ export default function DealSitePage() {
 
   if (!user || user?.userType !== "Agent") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h2>
-          <p className="text-gray-600">This page is only accessible to agents.</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-6">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4 animate-pulse" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Access Denied or Connection Issue
+          </h2>
+          <p className="text-gray-600 mb-6">
+            You either don’t have permission to access this page, or there’s a temporary internet issue.
+          </p>
+
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all"
+          >
+            Refresh Page
+          </button>
         </div>
       </div>
     );
@@ -760,10 +775,10 @@ export default function DealSitePage() {
   const SetupHeader = (
     <div className="mb-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#09391C]">Deal Site Setup</h1>
+        <h1 className="text-2xl font-bold text-[#09391C]">Public Access Page Setup</h1>
         {statusBadge}
       </div>
-      <p className="text-sm text-[#5A5D63] mt-1">Follow the steps to get your deal site live.</p>
+      <p className="text-sm text-[#5A5D63] mt-1">Follow the steps to get your public access page live.</p>
     </div>
   );
 
@@ -773,7 +788,7 @@ export default function DealSitePage() {
         <h1 className="text-2xl font-bold text-[#09391C]">Deal Site</h1>
         {statusBadge}
       </div>
-      <p className="text-sm text-[#5A5D63] mt-1">Your deal site settings and analytics.</p>
+      <p className="text-sm text-[#5A5D63] mt-1">Your public access page settings and analytics.</p>
     </div>
   );
 
@@ -1158,6 +1173,17 @@ export default function DealSitePage() {
     }));
   };
 
+  const getPropertyTitle = (property: any) => {
+    if (property.briefType === "Joint Venture") {
+      return `${property.landSize?.size || 1} ${property.landSize?.measurementType || "Plot"} - ${property.briefType}`;
+    }
+    const bedrooms = property.additionalFeatures?.noOfBedroom;
+    const building = property.typeOfBuilding || "Property";
+    return bedrooms > 0 
+      ? `${bedrooms} Bedroom ${building.charAt(0).toUpperCase() + building.slice(1)}`
+      : building.charAt(0).toUpperCase() + building.slice(1);
+  };
+
   const buildSectionPayload = (section: UpdatableSectionId) => {
     switch (section) {
       case "branding":
@@ -1254,13 +1280,11 @@ export default function DealSitePage() {
             {
               path: "brandingSeo",
               body: {
-                brandingSeo: {
-                  title: form.title,
-                  keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
-                  description: form.description,
-                  logoUrl: form.logoUrl,
-                  listingsLimit: form.listingsLimit,
-                },
+                title: form.title,
+                keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+                description: form.description,
+                logoUrl: form.logoUrl,
+                listingsLimit: form.listingsLimit,
               },
             },
           ];
@@ -1271,45 +1295,41 @@ export default function DealSitePage() {
             {
               path: "footerSection",
               body: {
-                footerSection: {
-                  shortDesc: form.footer?.shortDescription || "",
-                  copyRight: form.footer?.copyrightText || "",
-                },
+                shortDesc: form.footer?.shortDescription || "",
+                copyRight: form.footer?.copyrightText || "",
               },
             },
           ];
         }
         case "theme":
-          return [{ path: "theme", body: { theme: form.theme } }];
+          return [{ path: "theme", body: { ...form.theme } }];
         case "marketplace":
-          return [{ path: "marketplaceDefaults", body: { marketplaceDefaults: form.marketplaceDefaults } }];
+          return [{ path: "marketplaceDefaults", body: { ...form.marketplaceDefaults } }];
         case "inspection":
-          return [{ path: "inspectionSettings", body: { inspectionSettings: form.inspectionSettings } }];
+          return [{ path: "inspectionSettings", body: { ...form.inspectionSettings } }];
         case "contact":
-          return [{ path: "contactVisibility", body: { contactVisibility: form.contactVisibility } }];
+          return [{ path: "contactVisibility", body: { ...form.contactVisibility } }];
         case "social":
-          return [{ path: "socialLinks", body: { socialLinks: form.socialLinks } }];
+          return [{ path: "socialLinks", body: { ...form.socialLinks } }];
         case "payment":
-          return [{ path: "paymentDetails", body: { paymentDetails: form.paymentDetails } }];
+          return [{ path: "paymentDetails", body: { ...form.paymentDetails } }];
         case "about":
-          return [{ path: "about", body: { about: form.about } }];
+          return [{ path: "about", body: { ...form.about } }];
         case "contact-us":
-          return [{ path: "contactUs", body: { contactUs: form.contactUs } }];
+          return [{ path: "contactUs", body: { ...form.contactUs } }];
         case "featured":
-          return [{ path: "featureSelection", body: { featureSelection: form.featureSelection } }];
+          return [{ path: "featureSelection", body: { ...form.featureSelection } }];
         case "listings": {
           // listingsLimit belongs to brandingSeo on the backend
           return [
             {
               path: "brandingSeo",
               body: {
-                brandingSeo: {
-                  title: form.title,
-                  keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
-                  description: form.description,
-                  logoUrl: form.logoUrl,
-                  listingsLimit: form.listingsLimit,
-                },
+                title: form.title,
+                keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+                description: form.description,
+                logoUrl: form.logoUrl,
+                listingsLimit: form.listingsLimit,
               },
             },
           ];
@@ -1331,7 +1351,7 @@ export default function DealSitePage() {
       }
 
       for (const u of updates) {
-        const res = await PUT_REQUEST(`${URLS.BASE}/dealSite/${form.publicSlug}/${u.path}/update`, u.body, token);
+        const res = await PUT_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/${u.path}/update`, u.body, token);
         if (!res?.success) {
           throw new Error(res?.message || `Failed to update ${u.path}`);
         }
@@ -1384,7 +1404,7 @@ export default function DealSitePage() {
     const token = Cookies.get("token");
     try {
       const qs = buildQuery({ page: 1, limit: 5 });
-      const response = await GET_REQUEST<{ data?: DealSiteLog[] }>(`${URLS.BASE}/dealSite/${form.publicSlug}/logs?${qs}`, token);
+      const response = await GET_REQUEST<{ data?: DealSiteLog[] }>(`${URLS.BASE}/account/dealSite/${form.publicSlug}/logs?${qs}`, token);
       if (response?.success && Array.isArray(response.data)) {
         setOverviewLogs(response.data.slice(0, 5));
       } else {
@@ -1411,22 +1431,33 @@ export default function DealSitePage() {
 
       if (response?.success && Array.isArray(response.data)) {
         setServiceLogs(response.data);
-        const pagination = response.pagination || {};
+
+        const pagination = response.pagination ?? {};
         const resolvedPage = pagination.page ?? page;
         const resolvedTotalPages = pagination.totalPages ?? Math.max(page, 1);
+        const resolvedTotal = pagination.total ?? response.data.length;
+        const resolvedLimit = pagination.limit ?? SERVICE_LOGS_LIMIT;
+
         setServiceLogsPagination({
           page: resolvedPage,
           totalPages: resolvedTotalPages,
-          total: pagination.total ?? response.data.length,
-          limit: pagination.limit ?? SERVICE_LOGS_LIMIT,
+          total: resolvedTotal,
+          limit: resolvedLimit,
         });
+
         if (resolvedPage !== page) {
           setServiceLogsPage(resolvedPage);
         }
       } else {
         setServiceLogs([]);
-        setServiceLogsPagination((prev) => ({ ...prev, page, total: 0, totalPages: Math.max(page, 1) }));
+        setServiceLogsPagination((prev) => ({
+          ...prev,
+          page,
+          total: 0,
+          totalPages: Math.max(page, 1),
+        }));
       }
+
     } finally {
       setServiceLogsLoading(false);
     }
@@ -1479,11 +1510,6 @@ export default function DealSitePage() {
                 <option value="residential">Residential</option>
                 <option value="commercial">Commercial</option>
               </select>
-              <select className={selectBase} value={filters.status || ""} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value || undefined, page: 1 }))}>
-                <option value="">Any Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
               <input className={inputBase} type="number" placeholder="Min Price" value={filters.priceMin ?? ""} onChange={(e) => setFilters((f) => ({ ...f, priceMin: e.target.value ? Number(e.target.value) : undefined, page: 1 }))} />
               <input className={inputBase} type="number" placeholder="Max Price" value={filters.priceMax ?? ""} onChange={(e) => setFilters((f) => ({ ...f, priceMax: e.target.value ? Number(e.target.value) : undefined, page: 1 }))} />
               <label className="flex items-center gap-2 text-sm">
@@ -1496,26 +1522,125 @@ export default function DealSitePage() {
             {flLoading && (
               <div className="col-span-full flex justify-center py-8 text-sm text-gray-500">Loading...</div>
             )}
+
             {!flLoading && properties.length === 0 && (
               <div className="col-span-full text-sm text-gray-500">No listings found.</div>
             )}
-            {properties.map((p) => (
-              <label key={p._id} className={`border rounded-lg overflow-hidden bg-white cursor-pointer transition-shadow hover:shadow-md ${selectedIds.includes(p._id) ? "ring-2 ring-emerald-300" : ""}`}>
-                <div className="h-32 w-full bg-gray-100 overflow-hidden">
-                  {p.pictures?.[0] && <img src={p.pictures[0]} alt={p.title || p.description || "Property"} className="w-full h-full object-cover" />}
-                </div>
-                <div className="p-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="text-sm font-medium text-[#09391C] line-clamp-2">{p.title || p.description || "Property"}</div>
-                    <input className={checkboxBase} type="checkbox" checked={selectedIds.includes(p._id)} onChange={() => toggleSelect(p._id)} />
+
+            {properties.map((p) => {
+              const isSelected = selectedIds.includes(p._id);
+              
+              return (
+                <label
+                  key={p._id}
+                  className={`group relative bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-200 ${
+                    isSelected 
+                      ? 'ring-2 ring-emerald-500 shadow-lg scale-[1.02]' 
+                      : 'shadow hover:shadow-md hover:scale-[1.01]'
+                  }`}
+                >
+                  {/* Image Container */}
+                  <div className="relative h-48 w-full bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                    {p.pictures?.[0] ? (
+                      <img 
+                        src={p.pictures[0]} 
+                        alt={getPropertyTitle(p)}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                      </div>
+                    )}
+                    
+                    {/* Selection Checkbox Overlay */}
+                    <div className="absolute top-3 right-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                        isSelected 
+                          ? 'bg-emerald-500 scale-110' 
+                          : 'bg-white/90 backdrop-blur-sm group-hover:bg-white'
+                      }`}>
+                        {isSelected ? (
+                          <Check className="w-4 h-4 text-white" strokeWidth={3} />
+                        ) : (
+                          <div className="w-4 h-4 rounded-full border-2 border-gray-400" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Property Type Badge */}
+                    <div className="absolute top-3 left-3">
+                      <span className="px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700">
+                        {p.briefType}
+                      </span>
+                    </div>
                   </div>
-                  <div className="mt-1 text-xs text-[#5A5D63] line-clamp-2">
-                    {p.location?.area ? `${p.location.area}, ` : ""}{p.location?.localGovernment ? `${p.location.localGovernment}, ` : ""}{p.location?.state || ""}
+
+                  {/* Content */}
+                  <div className="p-4">
+                    {/* Title */}
+                    <h3 className="font-semibold text-gray-900 text-base mb-1 line-clamp-1">
+                      {getPropertyTitle(p)}
+                    </h3>
+
+                    {/* Location */}
+                    <div className="flex items-start gap-1 mb-3">
+                      <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                        {[p.location?.area, p.location?.localGovernment, p.location?.state]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </p>
+                    </div>
+
+                    {/* Price and Features */}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      {p.price && (
+                        <div className="text-lg font-bold text-emerald-700">
+                          ₦{p.price.toLocaleString()}
+                          {p.propertyType === 'shortlet' && (
+                            <span className="text-xs font-normal text-gray-500 ml-1">/night</span>
+                          )}
+                        </div>
+                      )}
+                      
+                      {p.additionalFeatures?.noOfBedroom > 0 && (
+                        <div className="flex items-center gap-3 text-xs text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            {p.additionalFeatures.noOfBedroom}
+                          </span>
+                          {p.additionalFeatures.noOfBathroom > 0 && (
+                            <span className="flex items-center gap-1">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                              </svg>
+                              {p.additionalFeatures.noOfBathroom}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  {p.price ? <div className="mt-1 text-sm text-[#0B572B]">₦{new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(p.price)}</div> : null}
-                </div>
-              </label>
-            ))}
+
+                  {/* Hidden checkbox for accessibility */}
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleSelect(p._id)}
+                    className="sr-only"
+                    aria-label={`Select ${getPropertyTitle(p)}`}
+                  />
+                </label>
+              );
+            })}
           </div>
 
           {selectedIds.length > 0 && (
@@ -1788,9 +1913,9 @@ export default function DealSitePage() {
   const renderSecuritySettings = (
     <div className="bg-white rounded-lg border border-red-200 p-6">
       <h2 className="text-lg font-semibold text-red-700 flex items-center gap-2 mb-2"><Shield size={18} /> Security Settings</h2>
-      <p className="text-sm text-[#5A5D63] mb-4">Delete your deal site. This action cannot be undone.</p>
+      <p className="text-sm text-[#5A5D63] mb-4">Delete your public access page. This action cannot be undone.</p>
       <button onClick={() => setShowDeleteConfirm(true)} className="inline-flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50">
-        <Trash size={16} /> Delete Deal Site
+        <Trash size={16} /> Delete Public Page
       </button>
     </div>
   );
@@ -1800,7 +1925,7 @@ export default function DealSitePage() {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-[#09391C]">Your deal site is {isPaused ? "paused" : slugLocked ? "live" : "in draft"}</h2>
+            <h2 className="text-lg font-semibold text-[#09391C]">Your public access page is {isPaused ? "paused" : slugLocked ? "live" : "in draft"}</h2>
             {previewUrl ? (
               <div className="mt-1 text-sm text-[#0B572B] flex items-center gap-2">
                 <a href={previewUrl} target="_blank" rel="noreferrer" className="underline inline-flex items-center gap-1">{previewUrl} <ExternalLink size={14} /></a>
@@ -1821,7 +1946,7 @@ export default function DealSitePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-base font-semibold text-[#09391C] flex items-center gap-2"><BarChart2 size={18} /> Views (last days)</h3>
@@ -1866,7 +1991,7 @@ export default function DealSitePage() {
             <div className="text-sm text-[#5A5D63]">No property view data yet.</div>
           )}
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
@@ -2181,7 +2306,7 @@ export default function DealSitePage() {
               {isPaused && slugLocked && (
                 <div className="mb-4 p-4 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800 flex items-center justify-between gap-3">
                   <div className="text-sm">
-                    <span className="font-semibold">Pending activation.</span> Your deal site setup is complete but paused by default. Click Resume to make it live.
+                    <span className="font-semibold">Pending activation.</span> Your public access page setup is complete but paused by default. Click Resume to make it live.
                   </div>
                   <button onClick={resumeDealSite} className="inline-flex items-center gap-2 px-3 py-2 border border-yellow-300 rounded-lg text-sm bg-white hover:bg-yellow-100">
                     <Play size={16} /> Resume now
@@ -2248,13 +2373,13 @@ export default function DealSitePage() {
 
       {/* Global Preloader */}
       <OverlayPreloader isVisible={preloader.visible} message={preloader.message} />
-
+ 
       {/* Delete confirmation modal */}
       <ModalWrapper isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="Confirm Deletion" size="sm">
         <div className="p-4">
           <ConfirmationModal
-            title="Delete Deal Site"
-            message="Are you sure you want to delete your deal site? This action cannot be undone."
+            title="Delete Public Access Page"
+            message="Are you sure you want to delete your public access page? This action cannot be undone."
             type="danger"
             confirmText="Delete"
             cancelText="Cancel"

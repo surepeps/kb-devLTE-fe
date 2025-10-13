@@ -48,7 +48,7 @@ const userProtectedRoutes = [
   "/transactions",
   "/agent-subscriptions",
   "/agent-kyc",
-  "/deal-site"
+  "/public-access-page"
 ];
 
 export function middleware(request: NextRequest) {
