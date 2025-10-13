@@ -2200,6 +2200,8 @@ export default function DealSitePage() {
                   { id: "inspection", label: "Inspection Settings" },
                   { id: "contact", label: "Contact" },
                   { id: "social", label: "Social Links" },
+                  { id: "about", label: "About Us" },
+                  { id: "contact-us", label: "Contact Us" },
                   { id: "payment", label: "Payment" },
                   { id: "featured", label: "Featured Listings" },
                   { id: "listings", label: "Listings" },
