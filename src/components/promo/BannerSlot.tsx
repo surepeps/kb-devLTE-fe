@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { usePromos } from "@/context/promo-context";
 import Link from "next/link";
+import { logPromotionClick, logPromotionViews } from "@/services/promotionService";
 
 interface Props {
   slot: string;
@@ -17,6 +18,7 @@ const BannerSlot: React.FC<Props> = ({ slot, className, height = "h-20", autoRot
   const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
   const promos = useMemo(() => getPromos(slot), [getPromos, slot, pathname]);
   const [index, setIndex] = useState(0);
+  const viewedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     setIndex(0);
@@ -28,15 +30,30 @@ const BannerSlot: React.FC<Props> = ({ slot, className, height = "h-20", autoRot
     return () => clearInterval(t);
   }, [autoRotate, promos.length, rotateIntervalMs]);
 
+  // Log views for promos in this slot, once per id per mount/session
+  useEffect(() => {
+    const unseen = promos.map((p) => p.id).filter((id) => !viewedRef.current.has(id));
+    if (unseen.length > 0) {
+      unseen.forEach((id) => viewedRef.current.add(id));
+      logPromotionViews(unseen);
+    }
+  }, [promos]);
+
   if (!promos || promos.length === 0) return null;
 
   const active = promos[index % promos.length];
+
+  const handleClick = () => {
+    if (active?.id) {
+      logPromotionClick(active.id);
+    }
+  };
 
   return (
     <div className={`w-full overflow-hidden bg-transparent ${className || ""}`}>
       <div className={`container mx-auto px-4 ${height}`}>
         {active.link ? (
-          <Link href={active.link} className="block w-full h-full">
+          <Link href={active.link} className="block w-full h-full" onClick={handleClick}>
             <img src={active.imageUrl} alt={`promo-${active.id}`} className="w-full h-full object-contain" />
           </Link>
         ) : (
