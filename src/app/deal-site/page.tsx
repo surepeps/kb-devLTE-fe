@@ -442,6 +442,8 @@ export default function DealSitePage() {
         copyrightText: ds.footerSection?.copyRight || prev.footer?.copyrightText || "",
       },
       paymentDetails: (ds as any).paymentDetails || prev.paymentDetails,
+      about: (ds as any).about || prev.about,
+      contactUs: (ds as any).contactUs || prev.contactUs,
     }));
 
     if (ds.publicSlug && !slugLocked) {
