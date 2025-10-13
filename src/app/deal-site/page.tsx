@@ -180,6 +180,8 @@ type ManageTabId =
   | "inspection"
   | "contact"
   | "social"
+  | "about"
+  | "contact-us"
   | "payment"
   | "featured"
   | "listings"
