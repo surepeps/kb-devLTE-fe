@@ -44,17 +44,24 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const actionBtnRef = useRef<HTMLButtonElement | null>(null);
   const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+  const MENU_WIDTH = 220; // px
+
+  const computeAndSetMenuPos = () => {
+    const btn = actionBtnRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const top = rect.bottom + window.scrollY + 6;
+    // Prefer right-aligned to the button, clamp within viewport
+    const desiredLeft = rect.right + window.scrollX - MENU_WIDTH;
+    const minLeft = 8 + window.scrollX;
+    const maxLeft = window.scrollX + window.innerWidth - MENU_WIDTH - 8;
+    const left = Math.max(minLeft, Math.min(maxLeft, desiredLeft));
+    setMenuPos({ top, left });
+  };
 
   useEffect(() => {
     if (!showDropdown) return;
-    const updatePos = () => {
-      const btn = actionBtnRef.current;
-      if (!btn) return;
-      const rect = btn.getBoundingClientRect();
-      const top = rect.bottom + window.scrollY + 6;
-      const left = rect.right + window.scrollX - 200; // align right; 200px approx width
-      setMenuPos({ top, left: Math.max(8, left) });
-    };
+    const updatePos = () => computeAndSetMenuPos();
     updatePos();
     window.addEventListener("resize", updatePos);
     window.addEventListener("scroll", updatePos, true);
@@ -248,69 +255,72 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
           <div className="relative">
             <button
               ref={actionBtnRef}
-              onClick={() => setShowDropdown((v) => !v)}
+              onClick={() => {
+                if (!showDropdown) computeAndSetMenuPos();
+                setShowDropdown((v) => !v);
+              }}
+              aria-haspopup="menu"
+              aria-expanded={showDropdown}
               className="bg-white/90 hover:bg-white p-2 rounded-full shadow-sm transition-colors"
             >
               <MoreVertical size={16} className="text-gray-600" />
             </button>
 
-            <AnimatePresence>
-              {showDropdown && menuPos && createPortal(
-                <motion.div
-                  id="listing-action-menu"
-                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-[180px]"
-                  style={{ position: "fixed", top: menuPos.top, left: menuPos.left, zIndex: 10000 }}
-                >
-                  <div className="py-1">
-                    <button
-                      onClick={() => {
-                        onView();
-                        setShowDropdown(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <Eye size={14} />
-                      View Listing
-                    </button>
-                    <button
-                      onClick={() => {
-                        onEdit();
-                        setShowDropdown(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      <Edit size={14} />
-                      Edit Property
-                    </button>
-                    <button
-                      onClick={() => {
-                        onChangeStatus();
-                        setShowDropdown(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                    >
-                      {property.isAvailable ? <ToggleLeft size={14} /> : <ToggleRight size={14} />}
-                      {property.isAvailable ? "Mark Unavailable" : "Mark Available"}
-                    </button>
-                    <hr className="my-1" />
-                    <button
-                      onClick={() => {
-                        onDelete();
-                        setShowDropdown(false);
-                      }}
-                      className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                    >
-                      <Trash2 size={14} />
-                      Delete Property
-                    </button>
-                  </div>
-                </motion.div>,
-                document.body
-              )}
-            </AnimatePresence>
+            {showDropdown && menuPos && createPortal(
+              <motion.div
+                id="listing-action-menu"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.12 }}
+                className="bg-white border border-gray-200 rounded-lg shadow-2xl"
+                style={{ position: "fixed", top: menuPos.top, left: menuPos.left, zIndex: 100000, width: MENU_WIDTH }}
+              >
+                <div className="py-1">
+                  <button
+                    onClick={() => {
+                      onView();
+                      setShowDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <Eye size={14} />
+                    View Listing
+                  </button>
+                  <button
+                    onClick={() => {
+                      onEdit();
+                      setShowDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <Edit size={14} />
+                    Edit Property
+                  </button>
+                  <button
+                    onClick={() => {
+                      onChangeStatus();
+                      setShowDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    {property.isAvailable ? <ToggleLeft size={14} /> : <ToggleRight size={14} />}
+                    {property.isAvailable ? "Mark Unavailable" : "Mark Available"}
+                  </button>
+                  <hr className="my-1" />
+                  <button
+                    onClick={() => {
+                      onDelete();
+                      setShowDropdown(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                  >
+                    <Trash2 size={14} />
+                    Delete Property
+                  </button>
+                </div>
+              </motion.div>,
+              document.body
+            )}
           </div>
         </div>
       </div>
