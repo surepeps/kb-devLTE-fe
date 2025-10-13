@@ -134,6 +134,8 @@ interface DealSiteSettings {
   marketplaceDefaults: MarketplaceDefaults;
   publicPage: PublicPageDesign;
   footer?: FooterDetails;
+  about?: AboutSection;
+  contactUs?: ContactUsSection;
   paymentDetails?: BankDetails;
 }
 
