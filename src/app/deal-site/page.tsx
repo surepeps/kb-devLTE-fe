@@ -1520,6 +1520,48 @@ export default function DealSitePage() {
           )}
         </div>
       </div>
+
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
+          <h3 className="text-base font-semibold text-[#09391C] flex items-center gap-2"><History size={18} /> Recent Activities</h3>
+          <button
+            type="button"
+            onClick={() => {
+              setServiceLogsPage(1);
+              setActiveTab("service-logger");
+            }}
+            className="inline-flex items-center gap-1 text-sm text-emerald-700 hover:text-emerald-800"
+          >
+            View all <ExternalLink size={14} />
+          </button>
+        </div>
+        {overviewLogsLoading ? (
+          <div className="py-6 text-sm text-gray-500">Loading activities...</div>
+        ) : overviewLogs.length === 0 ? (
+          <div className="py-6 text-sm text-gray-500">No activities recorded yet.</div>
+        ) : (
+          <div className="space-y-4">
+            {overviewLogs.map((log) => (
+              <div key={log._id} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-[#09391C]">{cleanLogText(log.action) || cleanLogText(log.category) || "Activity"}</p>
+                    {cleanLogText(log.description) ? <p className="text-xs text-[#5A5D63] mt-1">{cleanLogText(log.description)}</p> : null}
+                  </div>
+                  <span className="text-xs text-[#5A5D63] whitespace-nowrap">{formatDateTime(log.createdAt)}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[#5A5D63]">
+                  <span>By {formatActorName(log)}</span>
+                  {log.actorModel ? (
+                    <span className="uppercase tracking-wide text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">{log.actorModel}</span>
+                  ) : null}
+                  {log.ipAddress ? <span>IP: {log.ipAddress}</span> : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 
