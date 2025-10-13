@@ -213,6 +213,8 @@ const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
   inspection: "Inspection Settings",
   contact: "Contact",
   social: "Social Links",
+  about: "About Us",
+  "contact-us": "Contact Us",
   payment: "Payment",
   featured: "Featured Listings",
   listings: "Listings",
