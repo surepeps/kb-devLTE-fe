@@ -282,3 +282,42 @@ export const PUT_REQUEST = async <T = any>(
     };
   }
 };
+
+
+export const PATCH_REQUEST = async <T = any>(
+  url: string,
+  data: unknown,
+  token?: string,
+  customHeaders?: Record<string, string>,
+): Promise<ApiResponse<T>> => {
+  try {
+    const headers: Record<string, string> = customHeaders || {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const request = await fetch(url, {
+      method: "PATCH",
+      headers,
+      body: JSON.stringify(data),
+    });
+    if (!request.ok && request.status === 401) {
+      handleAuthExpirySideEffects();
+    }
+    const response = await request.json();
+    if (!response?.success && isAuthExpiredMessage(response?.message || response?.error)) {
+      handleAuthExpirySideEffects();
+    }
+    return response;
+  } catch (error: unknown) {
+    // Error occurred
+    return {
+      error: (error as Error).message || "Unknown error",
+      success: false,
+      message: "An error occurred, please try again.",
+    };
+  }
+};

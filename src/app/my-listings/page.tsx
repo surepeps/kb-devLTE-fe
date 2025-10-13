@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useUserContext } from "@/context/user-context";
 import { URLS } from "@/utils/URLS";
 import Cookies from "js-cookie";
-import { GET_REQUEST, PUT_REQUEST, DELETE_REQUEST } from "@/utils/requests";
+import { GET_REQUEST, PUT_REQUEST, DELETE_REQUEST, PATCH_REQUEST } from "@/utils/requests";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading-component/loading";
 import toast from "react-hot-toast";
@@ -200,7 +200,7 @@ const MyListingPage = () => {
         status: !property.isAvailable ? "available" : "unavailable",
         reason: "Status updated from my listings"
       };
-      const response = await PUT_REQUEST(
+      const response = await PATCH_REQUEST(
         url,
         payload,
         Cookies.get("token")
