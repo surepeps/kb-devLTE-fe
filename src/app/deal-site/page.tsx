@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   AlertCircle,
   BarChart2,
+  History,
   ExternalLink,
   Copy,
   Pause,
@@ -118,6 +119,25 @@ interface DealSiteSettings {
   paymentDetails?: BankDetails;
 }
 
+interface DealSiteLog {
+  _id: string;
+  dealSite?: string;
+  actor?: {
+    _id?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  actorModel?: string;
+  category?: string;
+  action?: string;
+  description?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 type PropertyItem = {
   _id: string;
   propertyType?: string;
@@ -131,6 +151,52 @@ type PropertyItem = {
   isApproved?: boolean;
 };
 
+type ManageTabId =
+  | "overview"
+  | "branding"
+  | "design"
+  | "theme"
+  | "marketplace"
+  | "inspection"
+  | "contact"
+  | "social"
+  | "payment"
+  | "featured"
+  | "listings"
+  | "security"
+  | "service-logger";
+
+type UpdatableSectionId = Exclude<ManageTabId, "overview" | "security" | "service-logger">;
+
+const updatableTabSet = new Set<UpdatableSectionId>([
+  "branding",
+  "design",
+  "theme",
+  "marketplace",
+  "inspection",
+  "contact",
+  "social",
+  "payment",
+  "featured",
+  "listings",
+]);
+
+const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
+  branding: "Branding & SEO",
+  design: "Public Page Design",
+  theme: "Theme",
+  marketplace: "Marketplace",
+  inspection: "Inspection Settings",
+  contact: "Contact",
+  social: "Social Links",
+  payment: "Payment",
+  featured: "Featured Listings",
+  listings: "Listings",
+};
+
+const isUpdatableTab = (tab: ManageTabId): tab is UpdatableSectionId => updatableTabSet.has(tab as UpdatableSectionId);
+
+const SERVICE_LOGS_LIMIT = 10;
 const STORAGE_KEY = "deal_site_settings";
 const SLUG_LOCK_KEY = "deal_site_slug_locked";
 
@@ -207,10 +273,16 @@ export default function DealSitePage() {
   // Analytics state
   const [viewsByDay, setViewsByDay] = useState<{ date: string; count: number }[]>([]);
   const [mostViewed, setMostViewed] = useState<{ id?: string; title?: string; views?: number; image?: string } | null>(null);
+  const [overviewLogsLoading, setOverviewLogsLoading] = useState(false);
+  const [overviewLogs, setOverviewLogs] = useState<DealSiteLog[]>([]);
+  const [serviceLogsLoading, setServiceLogsLoading] = useState(false);
+  const [serviceLogs, setServiceLogs] = useState<DealSiteLog[]>([]);
+  const [serviceLogsPagination, setServiceLogsPagination] = useState({ page: 1, totalPages: 1, total: 0, limit: SERVICE_LOGS_LIMIT });
+  const [serviceLogsPage, setServiceLogsPage] = useState(1);
 
   const isSetupComplete = slugLocked && !!form.publicSlug;
   const [activeView, setActiveView] = useState<"setup" | "manage">("setup");
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState<ManageTabId>("overview");
   const [setupStep, setSetupStep] = useState(0);
 
   // Global preloader state
@@ -402,6 +474,28 @@ export default function DealSitePage() {
     };
     fetchAnalytics();
   }, [activeView]);
+
+  useEffect(() => {
+    if (activeView !== "manage" || activeTab !== "overview" || !form.publicSlug) {
+      return;
+    }
+
+    fetchOverviewLogs();
+  }, [activeView, activeTab, form.publicSlug]);
+
+  useEffect(() => {
+    if (activeView !== "manage" || activeTab !== "service-logger" || !form.publicSlug) {
+      return;
+    }
+
+    fetchServiceLogs(serviceLogsPage);
+  }, [activeView, activeTab, form.publicSlug, serviceLogsPage]);
+
+  useEffect(() => {
+    setServiceLogsPage(1);
+    setServiceLogs([]);
+    setServiceLogsPagination({ page: 1, totalPages: 1, total: 0, limit: SERVICE_LOGS_LIMIT });
+  }, [form.publicSlug]);
 
   // Fetch agent properties for Featured Listings
   const buildQuery = (obj: Record<string, any>) =>
@@ -1015,6 +1109,206 @@ export default function DealSitePage() {
     }));
   };
 
+  const buildSectionPayload = (section: UpdatableSectionId) => {
+    switch (section) {
+      case "branding":
+        return {
+          title: form.title,
+          keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+          description: form.description,
+          logoUrl: form.logoUrl,
+        };
+      case "design":
+        return {
+          publicPage: form.publicPage,
+          footer: form.footer || { shortDescription: "", copyrightText: "" },
+        };
+      case "theme":
+        return { theme: form.theme };
+      case "marketplace":
+        return { marketplaceDefaults: form.marketplaceDefaults };
+      case "inspection":
+        return { inspectionSettings: form.inspectionSettings };
+      case "contact":
+        return {
+          contactVisibility: {
+            ...form.contactVisibility,
+            whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
+          },
+        };
+      case "social":
+        return { socialLinks: form.socialLinks };
+      case "payment":
+        return {
+          paymentDetails: {
+            businessName: form.paymentDetails?.businessName || "",
+            accountNumber: form.paymentDetails?.accountNumber || "",
+            sortCode: form.paymentDetails?.sortCode || "",
+            primaryContactEmail: form.paymentDetails?.primaryContactEmail || "",
+            primaryContactName: form.paymentDetails?.primaryContactName || "",
+            primaryContactPhone: form.paymentDetails?.primaryContactPhone || "",
+          },
+        };
+      case "featured": {
+        const normalizedPropertyIds = form.featureSelection.propertyIds
+          .split(",")
+          .map((id) => id.trim())
+          .filter(Boolean)
+          .join(",");
+        return {
+          featureSelection: {
+            ...form.featureSelection,
+            propertyIds: normalizedPropertyIds,
+          },
+          listingsLimit: form.listingsLimit,
+        };
+      }
+      case "listings":
+        return { listingsLimit: form.listingsLimit };
+      default:
+        return {};
+    }
+  };
+
+  const validateSection = (section: UpdatableSectionId): string | null => {
+    if (section === "payment") {
+      const payment = form.paymentDetails;
+      if (!payment?.businessName?.trim() || !payment?.accountNumber?.trim() || !payment?.sortCode?.trim()) {
+        return "Please complete Bank Details: business name, account number and bank.";
+      }
+    }
+
+    if (section === "contact" && form.contactVisibility.showWhatsAppButton && !form.contactVisibility.whatsappNumber?.trim()) {
+      return "Please provide a WhatsApp number or disable the WhatsApp button.";
+    }
+
+    return null;
+  };
+
+  const saveSection = async (section: UpdatableSectionId) => {
+    if (!form.publicSlug) {
+      toast.error("Set your public link before saving.");
+      return;
+    }
+
+    const validationError = validateSection(section);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    setSaving(true);
+    showPreloader(`Saving ${SECTION_FRIENDLY_LABELS[section]}...`);
+    const token = Cookies.get("token");
+    try {
+      const response = await PUT_REQUEST(`${URLS.BASE}/dealSite/${form.publicSlug}/${section}/update`, buildSectionPayload(section), token);
+      if (response?.success) {
+        toast.success(`${SECTION_FRIENDLY_LABELS[section]} updated`);
+      } else {
+        toast.error(response?.message || `Failed to update ${SECTION_FRIENDLY_LABELS[section]}`);
+      }
+    } finally {
+      setSaving(false);
+      hidePreloader();
+    }
+  };
+
+  const cleanLogText = (value?: string) => (value ? value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() : "");
+
+  const formatActorName = (log: DealSiteLog) => {
+    if (!log.actor) {
+      return "System";
+    }
+
+    const name = [log.actor.firstName, log.actor.lastName].filter(Boolean).join(" ").trim();
+    if (name) {
+      return name;
+    }
+
+    return log.actor.email || "Unknown actor";
+  };
+
+  const formatDateTime = (value?: string) => {
+    if (!value) {
+      return "";
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleString();
+  };
+
+  const fetchOverviewLogs = async () => {
+    if (!form.publicSlug) {
+      return;
+    }
+
+    setOverviewLogsLoading(true);
+    const token = Cookies.get("token");
+    try {
+      const qs = buildQuery({ page: 1, limit: 5 });
+      const response = await GET_REQUEST<{ data?: DealSiteLog[] }>(`${URLS.BASE}/dealSite/${form.publicSlug}/logs?${qs}`, token);
+      if (response?.success && Array.isArray(response.data)) {
+        setOverviewLogs(response.data.slice(0, 5));
+      } else {
+        setOverviewLogs([]);
+      }
+    } finally {
+      setOverviewLogsLoading(false);
+    }
+  };
+
+  const fetchServiceLogs = async (page: number) => {
+    if (!form.publicSlug) {
+      return;
+    }
+
+    setServiceLogsLoading(true);
+    const token = Cookies.get("token");
+    try {
+      const qs = buildQuery({ page, limit: SERVICE_LOGS_LIMIT });
+      const response = await GET_REQUEST<{ data?: DealSiteLog[]; pagination?: { page?: number; totalPages?: number; total?: number; limit?: number } }>(
+        `${URLS.BASE}/dealSite/${form.publicSlug}/logs?${qs}`,
+        token,
+      );
+
+      if (response?.success && Array.isArray(response.data)) {
+        setServiceLogs(response.data);
+        const pagination = response.pagination || {};
+        const resolvedPage = pagination.page ?? page;
+        const resolvedTotalPages = pagination.totalPages ?? Math.max(page, 1);
+        setServiceLogsPagination({
+          page: resolvedPage,
+          totalPages: resolvedTotalPages,
+          total: pagination.total ?? response.data.length,
+          limit: pagination.limit ?? SERVICE_LOGS_LIMIT,
+        });
+        if (resolvedPage !== page) {
+          setServiceLogsPage(resolvedPage);
+        }
+      } else {
+        setServiceLogs([]);
+        setServiceLogsPagination((prev) => ({ ...prev, page, total: 0, totalPages: Math.max(page, 1) }));
+      }
+    } finally {
+      setServiceLogsLoading(false);
+    }
+  };
+
+  const goToPreviousLogsPage = () => {
+    setServiceLogsPage((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
+  const goToNextLogsPage = () => {
+    setServiceLogsPage((prev) => {
+      const maxPage = Math.max(serviceLogsPagination.totalPages, 1);
+      return prev < maxPage ? prev + 1 : prev;
+    });
+  };
+
   const renderFeaturedListings = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Featured Listings</h2>
@@ -1118,6 +1412,67 @@ export default function DealSitePage() {
           onChange={(e) => setForm({ ...form, listingsLimit: Math.max(0, Math.min(50, Number(e.target.value || 0))) })}
           className={`${inputBase} w-32`}
         />
+      </div>
+    </div>
+  );
+
+  const renderServiceLogger = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <h2 className="text-lg font-semibold text-[#09391C] flex items-center gap-2"><History size={18} /> Service Logger</h2>
+        <div className="text-xs text-[#5A5D63]">Total activities: {serviceLogsPagination.total}</div>
+      </div>
+      {serviceLogsLoading ? (
+        <div className="py-6 text-sm text-gray-500">Loading activities...</div>
+      ) : serviceLogs.length === 0 ? (
+        <div className="py-6 text-sm text-gray-500">No activities recorded yet.</div>
+      ) : (
+        <div className="space-y-4">
+          {serviceLogs.map((log) => (
+            <div key={log._id} className="border border-gray-200 rounded-lg p-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-[#09391C]">{cleanLogText(log.action) || cleanLogText(log.category) || "Activity"}</p>
+                  {cleanLogText(log.description) ? <p className="text-xs text-[#5A5D63] mt-1">{cleanLogText(log.description)}</p> : null}
+                </div>
+                <span className="text-xs text-[#5A5D63] whitespace-nowrap">{formatDateTime(log.createdAt)}</span>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[#5A5D63]">
+                <span>Actor: {formatActorName(log)}</span>
+                {log.actorModel ? (
+                  <span className="uppercase tracking-wide text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">{log.actorModel}</span>
+                ) : null}
+                {log.ipAddress ? <span>IP: {log.ipAddress}</span> : null}
+              </div>
+              {log.userAgent ? <p className="mt-2 text-[11px] text-gray-400 break-words">{log.userAgent}</p> : null}
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button
+          type="button"
+          onClick={goToPreviousLogsPage}
+          disabled={serviceLogsLoading || serviceLogsPagination.page <= 1}
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="text-xs text-[#5A5D63]">
+          Page {serviceLogsPagination.page} of {Math.max(serviceLogsPagination.totalPages, 1)}
+        </span>
+        <button
+          type="button"
+          onClick={goToNextLogsPage}
+          disabled={
+            serviceLogsLoading ||
+            serviceLogsPagination.page >= Math.max(serviceLogsPagination.totalPages, 1) ||
+            serviceLogs.length === 0
+          }
+          className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
     </div>
   );
@@ -1230,6 +1585,48 @@ export default function DealSitePage() {
             <div className="text-sm text-[#5A5D63]">No property view data yet.</div>
           )}
         </div>
+      </div>
+
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
+          <h3 className="text-base font-semibold text-[#09391C] flex items-center gap-2"><History size={18} /> Recent Activities</h3>
+          <button
+            type="button"
+            onClick={() => {
+              setServiceLogsPage(1);
+              setActiveTab("service-logger");
+            }}
+            className="inline-flex items-center gap-1 text-sm text-emerald-700 hover:text-emerald-800"
+          >
+            View all <ExternalLink size={14} />
+          </button>
+        </div>
+        {overviewLogsLoading ? (
+          <div className="py-6 text-sm text-gray-500">Loading activities...</div>
+        ) : overviewLogs.length === 0 ? (
+          <div className="py-6 text-sm text-gray-500">No activities recorded yet.</div>
+        ) : (
+          <div className="space-y-4">
+            {overviewLogs.map((log) => (
+              <div key={log._id} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-[#09391C]">{cleanLogText(log.action) || cleanLogText(log.category) || "Activity"}</p>
+                    {cleanLogText(log.description) ? <p className="text-xs text-[#5A5D63] mt-1">{cleanLogText(log.description)}</p> : null}
+                  </div>
+                  <span className="text-xs text-[#5A5D63] whitespace-nowrap">{formatDateTime(log.createdAt)}</span>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-[#5A5D63]">
+                  <span>By {formatActorName(log)}</span>
+                  {log.actorModel ? (
+                    <span className="uppercase tracking-wide text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">{log.actorModel}</span>
+                  ) : null}
+                  {log.ipAddress ? <span>IP: {log.ipAddress}</span> : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1526,6 +1923,7 @@ export default function DealSitePage() {
                   { id: "payment", label: "Payment" },
                   { id: "featured", label: "Featured Listings" },
                   { id: "listings", label: "Listings" },
+                  { id: "service-logger", label: "Service Logger", icon: <History size={16} /> },
                   { id: "security", label: "Security Settings", icon: <Shield size={14} /> },
                 ]}
               />
@@ -1547,11 +1945,12 @@ export default function DealSitePage() {
                 {activeTab === "payment" && renderBankDetails}
                 {activeTab === "featured" && renderFeaturedListings}
                 {activeTab === "listings" && renderListingsLimit}
+                {activeTab === "service-logger" && renderServiceLogger}
                 {activeTab === "security" && renderSecuritySettings}
 
-                {activeTab !== "overview" && (
+                {isUpdatableTab(activeTab) && (
                   <div className="flex items-center gap-3">
-                    <button onClick={(e) => onSubmit(e as any)} disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60">
+                    <button onClick={() => saveSection(activeTab)} disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60">
                       <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
                     </button>
                   </div>
