@@ -273,6 +273,12 @@ export default function DealSitePage() {
   // Analytics state
   const [viewsByDay, setViewsByDay] = useState<{ date: string; count: number }[]>([]);
   const [mostViewed, setMostViewed] = useState<{ id?: string; title?: string; views?: number; image?: string } | null>(null);
+  const [overviewLogsLoading, setOverviewLogsLoading] = useState(false);
+  const [overviewLogs, setOverviewLogs] = useState<DealSiteLog[]>([]);
+  const [serviceLogsLoading, setServiceLogsLoading] = useState(false);
+  const [serviceLogs, setServiceLogs] = useState<DealSiteLog[]>([]);
+  const [serviceLogsPagination, setServiceLogsPagination] = useState({ page: 1, totalPages: 1, total: 0, limit: SERVICE_LOGS_LIMIT });
+  const [serviceLogsPage, setServiceLogsPage] = useState(1);
 
   const isSetupComplete = slugLocked && !!form.publicSlug;
   const [activeView, setActiveView] = useState<"setup" | "manage">("setup");
