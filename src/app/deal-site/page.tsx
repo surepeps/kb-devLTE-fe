@@ -1061,6 +1061,110 @@ export default function DealSitePage() {
     }));
   };
 
+  const buildSectionPayload = (section: UpdatableSectionId) => {
+    switch (section) {
+      case "branding":
+        return {
+          title: form.title,
+          keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
+          description: form.description,
+          logoUrl: form.logoUrl,
+        };
+      case "design":
+        return {
+          publicPage: form.publicPage,
+          footer: form.footer || { shortDescription: "", copyrightText: "" },
+        };
+      case "theme":
+        return { theme: form.theme };
+      case "marketplace":
+        return { marketplaceDefaults: form.marketplaceDefaults };
+      case "inspection":
+        return { inspectionSettings: form.inspectionSettings };
+      case "contact":
+        return {
+          contactVisibility: {
+            ...form.contactVisibility,
+            whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
+          },
+        };
+      case "social":
+        return { socialLinks: form.socialLinks };
+      case "payment":
+        return {
+          paymentDetails: {
+            businessName: form.paymentDetails?.businessName || "",
+            accountNumber: form.paymentDetails?.accountNumber || "",
+            sortCode: form.paymentDetails?.sortCode || "",
+            primaryContactEmail: form.paymentDetails?.primaryContactEmail || "",
+            primaryContactName: form.paymentDetails?.primaryContactName || "",
+            primaryContactPhone: form.paymentDetails?.primaryContactPhone || "",
+          },
+        };
+      case "featured": {
+        const normalizedPropertyIds = form.featureSelection.propertyIds
+          .split(",")
+          .map((id) => id.trim())
+          .filter(Boolean)
+          .join(",");
+        return {
+          featureSelection: {
+            ...form.featureSelection,
+            propertyIds: normalizedPropertyIds,
+          },
+          listingsLimit: form.listingsLimit,
+        };
+      }
+      case "listings":
+        return { listingsLimit: form.listingsLimit };
+      default:
+        return {};
+    }
+  };
+
+  const validateSection = (section: UpdatableSectionId): string | null => {
+    if (section === "payment") {
+      const payment = form.paymentDetails;
+      if (!payment?.businessName?.trim() || !payment?.accountNumber?.trim() || !payment?.sortCode?.trim()) {
+        return "Please complete Bank Details: business name, account number and bank.";
+      }
+    }
+
+    if (section === "contact" && form.contactVisibility.showWhatsAppButton && !form.contactVisibility.whatsappNumber?.trim()) {
+      return "Please provide a WhatsApp number or disable the WhatsApp button.";
+    }
+
+    return null;
+  };
+
+  const saveSection = async (section: UpdatableSectionId) => {
+    if (!form.publicSlug) {
+      toast.error("Set your public link before saving.");
+      return;
+    }
+
+    const validationError = validateSection(section);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    setSaving(true);
+    showPreloader(`Saving ${SECTION_FRIENDLY_LABELS[section]}...`);
+    const token = Cookies.get("token");
+    try {
+      const response = await PUT_REQUEST(`${URLS.BASE}/dealSite/${form.publicSlug}/${section}/update`, buildSectionPayload(section), token);
+      if (response?.success) {
+        toast.success(`${SECTION_FRIENDLY_LABELS[section]} updated`);
+      } else {
+        toast.error(response?.message || `Failed to update ${SECTION_FRIENDLY_LABELS[section]}`);
+      }
+    } finally {
+      setSaving(false);
+      hidePreloader();
+    }
+  };
+
   const renderFeaturedListings = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Featured Listings</h2>
