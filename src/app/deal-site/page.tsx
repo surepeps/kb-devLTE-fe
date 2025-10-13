@@ -256,7 +256,7 @@ export default function DealSitePage() {
 
   const isSetupComplete = slugLocked && !!form.publicSlug;
   const [activeView, setActiveView] = useState<"setup" | "manage">("setup");
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState<ManageTabId>("overview");
   const [setupStep, setSetupStep] = useState(0);
 
   // Global preloader state
