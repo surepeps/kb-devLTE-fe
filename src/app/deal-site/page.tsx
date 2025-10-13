@@ -1940,6 +1940,7 @@ export default function DealSitePage() {
                 {activeTab === "payment" && renderBankDetails}
                 {activeTab === "featured" && renderFeaturedListings}
                 {activeTab === "listings" && renderListingsLimit}
+                {activeTab === "service-logger" && renderServiceLogger}
                 {activeTab === "security" && renderSecuritySettings}
 
                 {isUpdatableTab(activeTab) && (
