@@ -53,7 +53,7 @@ export default function RootLayout({
           <PageContextProvider>
             <CreateBriefProvider>
               <SelectedBriefsProvider>
-                <html lang="en">
+                <html lang="en" suppressHydrationWarning>
                   <body
                     className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                   >
@@ -86,7 +86,7 @@ export default function RootLayout({
                     <GlobalPropertyActionsProvider>
                       <NegotiationContextWrapper>
                         <PromoProvider>
-                          <html lang="en">
+                          <html lang="en" suppressHydrationWarning>
                             <body
                               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                             >
