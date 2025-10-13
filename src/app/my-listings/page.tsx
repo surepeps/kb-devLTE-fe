@@ -225,7 +225,7 @@ const MyListingPage = () => {
 
     try {
       const url = `${URLS.BASE}/account/properties/${selectedProperty._id}/delete`;
-      const response = await DELETE_REQUEST(url, Cookies.get("token"));
+      const response = await DELETE_REQUEST(url, null, Cookies.get("token"));
 
       if (response?.success) {
         toast.success("Property deleted successfully!");

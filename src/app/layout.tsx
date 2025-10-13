@@ -81,7 +81,7 @@ export default function RootLayout({
             <ModalProvider>
               <PageContextProvider>
                 <CreateBriefProvider>
-                                  <SelectedBriefsProvider>
+                  <SelectedBriefsProvider>
                   <NewMarketplaceProvider>
                     <GlobalPropertyActionsProvider>
                       <NegotiationContextWrapper>

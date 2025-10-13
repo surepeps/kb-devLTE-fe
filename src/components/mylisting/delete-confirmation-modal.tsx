@@ -74,6 +74,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 
     setIsDeleting(true);
     try {
+      
       const response = await DELETE_REQUEST(
         `${URLS.BASE}/user/briefs/${brief._id}`,
         Cookies.get("token"),
@@ -236,7 +237,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                 Cancel
               </button>
               <button
-                onClick={handleDelete}
+                onClick={onConfirm}
                 disabled={isDeleting || confirmText !== expectedConfirmText}
                 className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
