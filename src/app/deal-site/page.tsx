@@ -132,6 +132,51 @@ type PropertyItem = {
   isApproved?: boolean;
 };
 
+type ManageTabId =
+  | "overview"
+  | "branding"
+  | "design"
+  | "theme"
+  | "marketplace"
+  | "inspection"
+  | "contact"
+  | "social"
+  | "payment"
+  | "featured"
+  | "listings"
+  | "security"
+  | "service-logger";
+
+type UpdatableSectionId = Exclude<ManageTabId, "overview" | "security" | "service-logger">;
+
+const updatableTabSet = new Set<UpdatableSectionId>([
+  "branding",
+  "design",
+  "theme",
+  "marketplace",
+  "inspection",
+  "contact",
+  "social",
+  "payment",
+  "featured",
+  "listings",
+]);
+
+const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
+  branding: "Branding & SEO",
+  design: "Public Page Design",
+  theme: "Theme",
+  marketplace: "Marketplace",
+  inspection: "Inspection Settings",
+  contact: "Contact",
+  social: "Social Links",
+  payment: "Payment",
+  featured: "Featured Listings",
+  listings: "Listings",
+};
+
+const isUpdatableTab = (tab: ManageTabId): tab is UpdatableSectionId => updatableTabSet.has(tab as UpdatableSectionId);
+
 const STORAGE_KEY = "deal_site_settings";
 const SLUG_LOCK_KEY = "deal_site_slug_locked";
 
