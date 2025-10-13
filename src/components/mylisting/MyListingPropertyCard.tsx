@@ -247,19 +247,22 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
         <div className="absolute top-3 right-3">
           <div className="relative">
             <button
-              onClick={() => setShowDropdown(!showDropdown)}
+              ref={actionBtnRef}
+              onClick={() => setShowDropdown((v) => !v)}
               className="bg-white/90 hover:bg-white p-2 rounded-full shadow-sm transition-colors"
             >
               <MoreVertical size={16} className="text-gray-600" />
             </button>
-            
+
             <AnimatePresence>
-              {showDropdown && (
+              {showDropdown && menuPos && createPortal(
                 <motion.div
+                  id="listing-action-menu"
                   initial={{ opacity: 0, scale: 0.95, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[150px]"
+                  className="bg-white border border-gray-200 rounded-lg shadow-xl min-w-[180px]"
+                  style={{ position: "fixed", top: menuPos.top, left: menuPos.left, zIndex: 10000 }}
                 >
                   <div className="py-1">
                     <button
@@ -304,7 +307,8 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
                       Delete Property
                     </button>
                   </div>
-                </motion.div>
+                </motion.div>,
+                document.body
               )}
             </AnimatePresence>
           </div>
