@@ -1,7 +1,7 @@
 /** @format */
 
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MapPin,
   Bed,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { Property } from "@/types/my-listings.types";
 
 interface MyListingPropertyCardProps {
