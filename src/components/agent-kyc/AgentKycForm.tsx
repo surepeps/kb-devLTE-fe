@@ -665,7 +665,7 @@ const AgentKycForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered *</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${hasError("servicesOffered") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${shouldShowRedBorder("servicesOffered") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {SERVICE_OPTIONS.map((option) => {
                       const selected = formik.values.servicesOffered.includes(option.value);
                       return (
