@@ -177,7 +177,12 @@ const AgentKycForm: React.FC = () => {
     if (currentStep === 0) {
       const hasIdErrors = !!errors.meansOfId;
       if (hasIdErrors) {
-        setAllTouched(["meansOfId"]);
+        const fields: string[] = [];
+        (formik.values.meansOfId || []).forEach((_, i) => {
+          fields.push(`meansOfId[${i}].name`);
+          fields.push(`meansOfId[${i}].docImg`);
+        });
+        setAllTouched(["meansOfId", ...fields]);
         return false;
       }
     }
