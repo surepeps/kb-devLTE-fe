@@ -727,7 +727,7 @@ const AgentKycForm: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area *</label>
                     <Select
-                      styles={makeSelectStyles(hasError("address.localGovtArea"))}
+                      styles={makeSelectStyles("address.localGovtArea")}
                       isDisabled={!selectedState}
                       options={lgaOptions.map((l) => ({ value: l, label: l }))}
                       value={
