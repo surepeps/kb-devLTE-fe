@@ -35,8 +35,15 @@ import Preloader from "@/components/general-components/preloader";
 import PendingKycReview from "@/components/agent-kyc/PendingKycReview";
 
 const kycValidationSchema = Yup.object({
+  meansOfId: Yup.array().of(
+    Yup.object({
+      name: Yup.string().required("ID type is required"),
+      docImg: Yup.array().of(Yup.string()).min(1, "At least one document image is required"),
+    }),
+  ).min(1, "At least one form of identification is required"),
+  agentType: Yup.string().oneOf(["Individual", "Company"], "Please select a valid agent type").required("Agent type is required"),
   agentLicenseNumber: Yup.string().optional().min(3, "License number must be at least 3 characters"),
-  profileBio: Yup.string().max(500, "Bio cannot exceed 500 characters"),
+  profileBio: Yup.string().optional().max(500, "Bio cannot exceed 500 characters"),
   specializations: Yup.array().of(Yup.string()).min(1, "Pick at least one specialization").max(5, "Maximum 5 specializations allowed"),
   languagesSpoken: Yup.array().of(Yup.string()).min(1, "Pick at least one language"),
   servicesOffered: Yup.array().of(Yup.string()).min(1, "Pick at least one service"),
@@ -47,13 +54,7 @@ const kycValidationSchema = Yup.object({
     localGovtArea: Yup.string().required("Local government area is required"),
   }),
   regionOfOperation: Yup.array().of(Yup.string()).min(1, "Select at least one region"),
-  agentType: Yup.string().oneOf(["Individual", "Company"], "Please select a valid agent type").required("Agent type is required"),
-  meansOfId: Yup.array().of(
-    Yup.object({
-      name: Yup.string().required("ID type is required"),
-      docImg: Yup.array().of(Yup.string().url("Invalid image URL")).min(1, "At least one document image is required"),
-    }),
-  ).min(1, "At least one form of identification is required"),
+  achievements: Yup.array().optional(),
 });
 
 const steps = [
