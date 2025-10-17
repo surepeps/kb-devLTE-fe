@@ -36,7 +36,7 @@ import PendingKycReview from "@/components/agent-kyc/PendingKycReview";
 
 const kycValidationSchema = Yup.object({
   agentLicenseNumber: Yup.string().optional().min(3, "License number must be at least 3 characters"),
-  profileBio: Yup.string().required("Profile bio is required").min(50, "Bio must be at least 50 characters").max(500, "Bio cannot exceed 500 characters"),
+  profileBio: Yup.string().max(500, "Bio cannot exceed 500 characters").optional(),
   specializations: Yup.array().of(Yup.string()).min(1, "Pick at least one specialization").max(5, "Maximum 5 specializations allowed"),
   languagesSpoken: Yup.array().of(Yup.string()).min(1, "Pick at least one language"),
   servicesOffered: Yup.array().of(Yup.string()).min(1, "Pick at least one service"),
