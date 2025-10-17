@@ -8,16 +8,16 @@ import { useHomePageSettings } from "@/hooks/useSystemSettings";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import EmailVerification from "@/components/EmailVerification";
 import DevelopmentNotice from "@/components/general-components/DevelopmentNotice";
- 
+   
 // New landing page components
-import NewHeroSection from "@/components/homepage/new-hero-section";
-import KeyFeaturesSection from "@/components/homepage/key-features-section";
-import ValuePropositionSection from "@/components/homepage/value-proposition-section";
-import FeaturedPropertiesSection from "@/components/homepage/featured-properties-section";
-import SocialProofSection from "@/components/homepage/social-proof-section";
-import ForAgentsSection from "@/components/homepage/for-agents-section";
-import SecurityTransparencySection from "@/components/homepage/security-transparency-section";
-import FinalCTASection from "@/components/homepage/final-cta-section";
+import NewHeroSection from "@/components/new-homepage/new-hero-section";
+import KeyFeaturesSection from "@/components/new-homepage/key-features-section";
+import ValuePropositionSection from "@/components/new-homepage/value-proposition-section";
+import FeaturedPropertiesSection from "@/components/new-homepage/featured-properties-section";
+import SocialProofSection from "@/components/new-homepage/social-proof-section";
+import ForAgentsSection from "@/components/new-homepage/for-agents-section";
+import SecurityTransparencySection from "@/components/new-homepage/security-transparency-section";
+import FinalCTASection from "@/components/new-homepage/final-cta-section";
 
 /**
  * @NewHomepage - Modern, redesigned landing page following the new specifications

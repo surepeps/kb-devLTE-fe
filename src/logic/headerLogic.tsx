@@ -2,23 +2,14 @@
 
 "use client";
 import React, { Fragment } from "react";
-import Header from "@/components/homepage/header";
-import AgentHeader from "@/components/agent-page-components/agent_header";
+import Header from "@/components/new-homepage/header";
 import { usePathname } from "next/navigation";
 
-const HeaderLogic = ({ isComingSoon }: { isComingSoon?: boolean }) => {
+const HeaderLogic = () => {
 	const pathname = usePathname();
 	return (
 		<Fragment>
-			<Header isComingSoon={isComingSoon} />
-			{/* {(pathname?.includes("agent") && pathname?.includes("briefs")) ||
-			(pathname?.includes("onboard") && pathname?.includes("agent")) ||
-			(pathname?.includes("under-review") &&
-				pathname?.includes("under-review")) ? (
-				<AgentHeader /> 
-			) : (
-				
-			)} */}
+			<Header />
 		</Fragment>
 	);
 };

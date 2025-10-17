@@ -7,7 +7,7 @@ import Button from '../general-components/button';
 import Link from 'next/link';
 import { useHomePageSettings } from '@/hooks/useSystemSettings';
 import useEmblaCarousel from 'embla-carousel-react';
-
+ 
 const NewHeroSection = () => {
   const { settings: homePageSettings, loading: settingsLoading } = useHomePageSettings();
   const [emblaRef, emblaApi] = useEmblaCarousel({

@@ -13,17 +13,16 @@ import { usePageContext } from "@/context/page-context";
 
 interface Props {
 	children: ReactNode;
-	isComingSoon?: boolean;
 } 
 
-export default function HeaderFooterWrapper({ children, isComingSoon }: Props) {
+export default function HeaderFooterWrapper({ children }: Props) {
 	const pathname = usePathname();
 	const { viewImage, imageData } = usePageContext();
 	return (
 		<Fragment>
-			<HeaderLogic isComingSoon={isComingSoon} />
+			<HeaderLogic />
 			{children}
-			<NewFooter isComingSoon={isComingSoon} />
+			<NewFooter />
 			{viewImage && <ViewImage imageData={imageData} />}
 		</Fragment>
 	);

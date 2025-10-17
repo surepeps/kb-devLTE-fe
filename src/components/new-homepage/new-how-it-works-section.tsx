@@ -64,7 +64,7 @@ const NewHowItWorksSection = () => {
             How Khabiteq Works
           </h2>
           <p className='text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8'>
-            From property search to closing deals - we've simplified the entire real estate journey into 4 easy steps.
+            From property search to closing deals - we&apos;ve simplified the entire real estate journey into 4 easy steps.
           </p>
           
           {/* "See it in Action" button */}

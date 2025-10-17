@@ -67,13 +67,13 @@ const FinalCTASection = () => {
           className='text-center mb-16'>
           
           <h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-display leading-tight'>
-            Whether you're buying, renting, or selling—
+            Whether you&apos;re buying, renting, or selling—
             <br />
             <span className='text-[#09391C]'>Khabiteq gets you there faster.</span>
           </h2>
           
           <p className='text-xl md:text-2xl text-white/90 max-w-4xl mx-auto mb-12 leading-relaxed'>
-            Join thousands of satisfied customers who've found their perfect properties through our verified network.
+            Join thousands of satisfied customers who&apos;ve found their perfect properties through our verified network.
           </p>
 
           {/* Primary CTA Button */}
