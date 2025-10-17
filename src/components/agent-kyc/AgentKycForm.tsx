@@ -706,7 +706,7 @@ const AgentKycForm: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State *</label>
                     <Select
-                      styles={makeSelectStyles(hasError("address.state"))}
+                      styles={makeSelectStyles("address.state")}
                       options={stateOptions.map((s) => ({ value: s, label: s }))}
                       value={
                         formik.values.address.state
