@@ -130,7 +130,6 @@ const AgentKycForm: React.FC = () => {
       const token = getCookie("token") as string;
       const response = await PUT_REQUEST(`${URLS.BASE}${URLS.submitKyc}`, values, token as string);
       if (response.success) {
-        toast.success("KYC submitted successfully");
         setUser({
           _id: user?._id ?? "",
           id: user?.id,
@@ -156,11 +155,9 @@ const AgentKycForm: React.FC = () => {
           individualAgent: user?.individualAgent,
           companyAgent: user?.companyAgent,
         });
-      } else {
-        toast.error(response.message || "KYC submission failed");
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      // Error handled, validation messages will be shown via formik
     } finally {
       setIsSubmitting(false);
     }
