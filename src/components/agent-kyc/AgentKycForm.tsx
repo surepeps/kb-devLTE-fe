@@ -551,12 +551,12 @@ const AgentKycForm: React.FC = () => {
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent License Number (Optional)</label>
                     <input type="text" {...formik.getFieldProps("agentLicenseNumber")} className={inputClass("agentLicenseNumber")} placeholder="AGT-12345-XYZ" />
                     {formik.touched.agentLicenseNumber && formik.errors.agentLicenseNumber && (
-                      <p className="text-red-500 text-sm mt-1">{formik.errors.agentLicenseNumber as string}</p>
+                      <p className="text-red-500 text-sm mt-2">{formik.errors.agentLicenseNumber as string}</p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type *</label>
                     <Select
                       styles={makeSelectStyles(hasError("agentType"))}
                       options={[
@@ -570,29 +570,29 @@ const AgentKycForm: React.FC = () => {
                       }}
                       placeholder="Select agent type"
                     />
-                    {formik.touched.agentType && formik.errors.agentType && (
-                      <p className="text-red-500 text-sm mt-1">{formik.errors.agentType as string}</p>
+                    {hasError("agentType") && (
+                      <p className="text-red-500 text-sm mt-2">{getError("agentType")}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Profile Bio</label>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Profile Bio (Optional)</label>
                   <textarea
                     {...formik.getFieldProps("profileBio")}
                     rows={5}
                     className={inputClass("profileBio")}
                     placeholder="Describe your experience, expertise, and what makes you unique as a real estate agent..."
                   />
-                  <div className="flex justify-between text-sm text-gray-500 mt-1">
+                  <div className="flex justify-between text-sm text-gray-500 mt-2">
                     <span>{formik.values.profileBio.length}/500 characters</span>
                     {formik.touched.profileBio && formik.errors.profileBio && <span className="text-red-500">{formik.errors.profileBio as string}</span>}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Specializations</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 ${hasError("specializations") ? "border border-red-500 rounded-lg p-2" : ""}`}>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Specializations *</label>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${hasError("specializations") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {SPECIALIZATION_OPTIONS.map((option) => {
                       const selected = formik.values.specializations.includes(option.value);
                       return (
@@ -605,14 +605,14 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.specializations && formik.errors.specializations && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.specializations as any}</p>
+                  {hasError("specializations") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("specializations")}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 ${hasError("languagesSpoken") ? "border border-red-500 rounded-lg p-2" : ""}`}>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken *</label>
+                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-2 rounded-lg ${hasError("languagesSpoken") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {LANGUAGE_OPTIONS.map((language) => {
                       const selected = formik.values.languagesSpoken.includes(language);
                       return (
@@ -625,14 +625,14 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.languagesSpoken && formik.errors.languagesSpoken && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.languagesSpoken as any}</p>
+                  {hasError("languagesSpoken") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("languagesSpoken")}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 ${hasError("servicesOffered") ? "border border-red-500 rounded-lg p-2" : ""}`}>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered *</label>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${hasError("servicesOffered") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {SERVICE_OPTIONS.map((option) => {
                       const selected = formik.values.servicesOffered.includes(option.value);
                       return (
@@ -645,8 +645,8 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.servicesOffered && formik.errors.servicesOffered && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.servicesOffered as any}</p>
+                  {hasError("servicesOffered") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("servicesOffered")}</p>
                   )}
                 </div>
               </div>
