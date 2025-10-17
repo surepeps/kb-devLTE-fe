@@ -336,10 +336,19 @@ const AgentKycForm: React.FC = () => {
     value: string,
   ) => {
     const current = (formik.values[field] as string[]) || [];
-    const next = current.includes(value)
-      ? current.filter((v) => v !== value)
-      : [...current, value];
-    formik.setFieldValue(field, next);
+    const requiresMinimum = ["specializations", "languagesSpoken", "servicesOffered", "regionOfOperation"].includes(field as string);
+
+    if (current.includes(value)) {
+      // Prevent deselecting if it's a required field with only 1 item
+      if (requiresMinimum && current.length === 1) {
+        return;
+      }
+      const next = current.filter((v) => v !== value);
+      formik.setFieldValue(field, next);
+    } else {
+      const next = [...current, value];
+      formik.setFieldValue(field, next);
+    }
     formik.setFieldTouched(field as string, true, true);
   };
 
