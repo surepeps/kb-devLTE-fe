@@ -102,9 +102,34 @@ const AgentKycForm: React.FC = () => {
     if (typeof error === 'string') return error;
     return undefined;
   };
+
+  const isRequired = (path: string): boolean => {
+    const requiredFields = [
+      "meansOfId", "agentType", "specializations", "languagesSpoken", "servicesOffered",
+      "address.street", "address.homeNo", "address.state", "address.localGovtArea", "regionOfOperation"
+    ];
+    return requiredFields.some(field => path === field || path.startsWith(field + "["));
+  };
+
   const hasError = (path: string) => !!getError(path);
+
+  const shouldShowRedBorder = (path: string): boolean => {
+    const error = getError(path);
+    if (error) return true;
+    const value = getIn(formik.values, path);
+    const isReq = isRequired(path);
+    if (!isReq) return false;
+
+    // Show red border by default for required fields
+    const isTouched = !!getIn(formik.touched, path);
+    if (!isTouched) return true;
+
+    // If touched, only show red if there's an error
+    return !!error;
+  };
+
   const inputBase = "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent";
-  const inputClass = (path: string) => `${inputBase} ${hasError(path) ? "border-red-500" : "border-gray-300"}`;
+  const inputClass = (path: string) => `${inputBase} ${shouldShowRedBorder(path) ? "border-red-500" : "border-gray-300"}`;
   const makeSelectStyles = (err: boolean) => ({
     ...customStyles,
     control: (base: any, state: any) => ({
