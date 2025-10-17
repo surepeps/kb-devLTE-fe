@@ -220,7 +220,13 @@ const AgentKycForm: React.FC = () => {
     const errors = formik.errors;
 
     if (currentStep === 0) {
-      return !errors.meansOfId && formik.values.meansOfId.length > 0 && formik.values.meansOfId.every((doc) => doc.name && doc.docImg.length > 0);
+      return (
+        !errors.meansOfId &&
+        formik.values.meansOfId.length > 0 &&
+        formik.values.meansOfId.every(
+          (doc) => !!doc.name && doc.docImg.length > 0
+        )
+      );
     }
 
     if (currentStep === 1) {
@@ -229,7 +235,7 @@ const AgentKycForm: React.FC = () => {
         !errors.specializations &&
         !errors.languagesSpoken &&
         !errors.servicesOffered &&
-        formik.values.agentType &&
+        !!formik.values.agentType &&
         formik.values.specializations.length > 0 &&
         formik.values.languagesSpoken.length > 0 &&
         formik.values.servicesOffered.length > 0
@@ -240,16 +246,17 @@ const AgentKycForm: React.FC = () => {
       return (
         !errors.address &&
         !errors.regionOfOperation &&
-        formik.values.address.street &&
-        formik.values.address.homeNo &&
-        formik.values.address.state &&
-        formik.values.address.localGovtArea &&
+        !!formik.values.address.street &&
+        !!formik.values.address.homeNo &&
+        !!formik.values.address.state &&
+        !!formik.values.address.localGovtArea &&
         formik.values.regionOfOperation.length > 0
       );
     }
 
     return true;
   };
+
 
   const goNext = async () => {
     const ok = await validateCurrentStep();
