@@ -645,7 +645,7 @@ const AgentKycForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken *</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-2 rounded-lg ${hasError("languagesSpoken") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-2 rounded-lg ${shouldShowRedBorder("languagesSpoken") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {LANGUAGE_OPTIONS.map((language) => {
                       const selected = formik.values.languagesSpoken.includes(language);
                       return (
