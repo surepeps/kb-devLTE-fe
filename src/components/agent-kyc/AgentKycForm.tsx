@@ -130,11 +130,11 @@ const AgentKycForm: React.FC = () => {
 
   const inputBase = "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent";
   const inputClass = (path: string) => `${inputBase} ${shouldShowRedBorder(path) ? "border-red-500" : "border-gray-300"}`;
-  const makeSelectStyles = (err: boolean) => ({
+  const makeSelectStyles = (path: string) => ({
     ...customStyles,
     control: (base: any, state: any) => ({
       ...(customStyles as any).control?.(base, state),
-      borderColor: err ? "#ef4444" : state.isFocused ? "teal" : base.borderColor,
+      borderColor: shouldShowRedBorder(path) ? "#ef4444" : state.isFocused ? "teal" : base.borderColor,
       boxShadow: state.isFocused ? "0 0 0 1px teal" : base.boxShadow,
     }),
   });
