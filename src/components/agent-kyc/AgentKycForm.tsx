@@ -90,6 +90,7 @@ const AgentKycForm: React.FC = () => {
       agentType: "Individual" as AgentType,
     },
     validationSchema: kycValidationSchema,
+    // onSubmit will now only be called explicitly when the final submit button is clicked
     onSubmit: async (values) => {
       await handleSubmit(values);
     },
@@ -279,6 +280,11 @@ const AgentKycForm: React.FC = () => {
         !!formik.values.address.localGovtArea &&
         formik.values.regionOfOperation.length > 0
       );
+    }
+    // For the last step, we just assume it's valid to proceed to submit if previous steps were okay.
+    // Full form validation will happen on actual submit.
+    if (currentStep === 3) {
+        return true;
     }
 
     return true;
@@ -473,7 +479,13 @@ const AgentKycForm: React.FC = () => {
           </div>
 
           <form
-            onSubmit={formik.handleSubmit}
+            // Only call formik.handleSubmit when the form should actually be submitted (i.e., on the last step)
+            onSubmit={(e) => {
+              e.preventDefault(); // Prevent default browser submission
+              if (currentStep === steps.length - 1) {
+                formik.handleSubmit(e); // Manually trigger formik's submit
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 const target = e.target as HTMLElement;
@@ -885,15 +897,15 @@ const AgentKycForm: React.FC = () => {
                 >
                   Next <ChevronRight size={18} />
                 </button>
-              ) : currentStep === steps.length - 1 ? (
+              ) : ( // Only show the submit button on the last step
                 <button
-                  type="submit"
-                  disabled={isSubmitting || !formik.isValid}
+                  type="submit" // This button will now trigger the form's onSubmit event
+                  disabled={isSubmitting || !formik.isValid} // Ensure full form validity before enabling
                   className="px-8 py-2 bg-gradient-to-r from-[#0B572B] to-[#8DDB90] text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Submitting..." : "Submit KYC"}
                 </button>
-              ) : null}
+              )}
             </div>
           </form>
         </div>
