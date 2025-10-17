@@ -98,7 +98,9 @@ const AgentKycForm: React.FC = () => {
   const getError = (path: string): string | undefined => {
     const touched = getIn(formik.touched, path);
     const error = getIn(formik.errors, path);
-    return touched && error ? (error as string) : undefined;
+    if (!touched || !error) return undefined;
+    if (typeof error === 'string') return error;
+    return undefined;
   };
   const hasError = (path: string) => !!getError(path);
   const inputBase = "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent";
