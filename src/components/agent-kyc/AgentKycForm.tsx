@@ -102,14 +102,39 @@ const AgentKycForm: React.FC = () => {
     if (typeof error === 'string') return error;
     return undefined;
   };
+
+  const isRequired = (path: string): boolean => {
+    const requiredFields = [
+      "meansOfId", "agentType", "specializations", "languagesSpoken", "servicesOffered",
+      "address.street", "address.homeNo", "address.state", "address.localGovtArea", "regionOfOperation"
+    ];
+    return requiredFields.some(field => path === field || path.startsWith(field + "["));
+  };
+
   const hasError = (path: string) => !!getError(path);
+
+  const shouldShowRedBorder = (path: string): boolean => {
+    const error = getError(path);
+    if (error) return true;
+    const value = getIn(formik.values, path);
+    const isReq = isRequired(path);
+    if (!isReq) return false;
+
+    // Show red border by default for required fields
+    const isTouched = !!getIn(formik.touched, path);
+    if (!isTouched) return true;
+
+    // If touched, only show red if there's an error
+    return !!error;
+  };
+
   const inputBase = "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent";
-  const inputClass = (path: string) => `${inputBase} ${hasError(path) ? "border-red-500" : "border-gray-300"}`;
-  const makeSelectStyles = (err: boolean) => ({
+  const inputClass = (path: string) => `${inputBase} ${shouldShowRedBorder(path) ? "border-red-500" : "border-gray-300"}`;
+  const makeSelectStyles = (path: string) => ({
     ...customStyles,
     control: (base: any, state: any) => ({
       ...(customStyles as any).control?.(base, state),
-      borderColor: err ? "#ef4444" : state.isFocused ? "teal" : base.borderColor,
+      borderColor: shouldShowRedBorder(path) ? "#ef4444" : state.isFocused ? "teal" : base.borderColor,
       boxShadow: state.isFocused ? "0 0 0 1px teal" : base.boxShadow,
     }),
   });
@@ -311,10 +336,19 @@ const AgentKycForm: React.FC = () => {
     value: string,
   ) => {
     const current = (formik.values[field] as string[]) || [];
-    const next = current.includes(value)
-      ? current.filter((v) => v !== value)
-      : [...current, value];
-    formik.setFieldValue(field, next);
+    const requiresMinimum = ["specializations", "languagesSpoken", "servicesOffered", "regionOfOperation"].includes(field as string);
+
+    if (current.includes(value)) {
+      // Prevent deselecting if it's a required field with only 1 item
+      if (requiresMinimum && current.length === 1) {
+        return;
+      }
+      const next = current.filter((v) => v !== value);
+      formik.setFieldValue(field, next);
+    } else {
+      const next = [...current, value];
+      formik.setFieldValue(field, next);
+    }
     formik.setFieldTouched(field as string, true, true);
   };
 
@@ -479,7 +513,7 @@ const AgentKycForm: React.FC = () => {
                           <div>
                             <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type *</label>
                             <Select
-                              styles={makeSelectStyles(!!nameError)}
+                              styles={makeSelectStyles(namePath)}
                               options={[
                                 { value: "International Passport", label: "International Passport" },
                                 { value: "National ID", label: "National ID" },
@@ -566,7 +600,7 @@ const AgentKycForm: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type *</label>
                     <Select
-                      styles={makeSelectStyles(hasError("agentType"))}
+                      styles={makeSelectStyles("agentType")}
                       options={[
                         { value: "Individual", label: "Individual" },
                         { value: "Company", label: "Company" },
@@ -600,7 +634,7 @@ const AgentKycForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Specializations *</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${hasError("specializations") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${shouldShowRedBorder("specializations") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {SPECIALIZATION_OPTIONS.map((option) => {
                       const selected = formik.values.specializations.includes(option.value);
                       return (
@@ -620,7 +654,7 @@ const AgentKycForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken *</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-2 rounded-lg ${hasError("languagesSpoken") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-2 rounded-lg ${shouldShowRedBorder("languagesSpoken") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {LANGUAGE_OPTIONS.map((language) => {
                       const selected = formik.values.languagesSpoken.includes(language);
                       return (
@@ -640,7 +674,7 @@ const AgentKycForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered *</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${hasError("servicesOffered") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${shouldShowRedBorder("servicesOffered") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {SERVICE_OPTIONS.map((option) => {
                       const selected = formik.values.servicesOffered.includes(option.value);
                       return (
@@ -681,7 +715,7 @@ const AgentKycForm: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State *</label>
                     <Select
-                      styles={makeSelectStyles(hasError("address.state"))}
+                      styles={makeSelectStyles("address.state")}
                       options={stateOptions.map((s) => ({ value: s, label: s }))}
                       value={
                         formik.values.address.state
@@ -702,7 +736,7 @@ const AgentKycForm: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area *</label>
                     <Select
-                      styles={makeSelectStyles(hasError("address.localGovtArea"))}
+                      styles={makeSelectStyles("address.localGovtArea")}
                       isDisabled={!selectedState}
                       options={lgaOptions.map((l) => ({ value: l, label: l }))}
                       value={
@@ -727,7 +761,7 @@ const AgentKycForm: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation *</label>
                   <p className="text-xs text-gray-500 mb-2">Select areas/LGAs you primarily operate in for the selected state</p>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto p-3 border-2 rounded-lg ${hasError("regionOfOperation") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto p-3 border-2 rounded-lg ${shouldShowRedBorder("regionOfOperation") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {(areaOptions || []).map((area) => {
                       const selected = formik.values.regionOfOperation.includes(area);
                       return (
@@ -851,7 +885,7 @@ const AgentKycForm: React.FC = () => {
                 >
                   Next <ChevronRight size={18} />
                 </button>
-              ) : (
+              ) : currentStep === steps.length - 1 ? (
                 <button
                   type="submit"
                   disabled={isSubmitting || !formik.isValid}
@@ -859,7 +893,7 @@ const AgentKycForm: React.FC = () => {
                 >
                   {isSubmitting ? "Submitting..." : "Submit KYC"}
                 </button>
-              )}
+              ) : null}
             </div>
           </form>
         </div>
