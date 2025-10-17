@@ -661,17 +661,17 @@ const AgentKycForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Street Address</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Street Address *</label>
                     <input type="text" {...formik.getFieldProps("address.street")} className={inputClass("address.street")} placeholder="Bode Thomas Street" />
-                    {getError("address.street") && <p className="text-red-500 text-sm mt-1">{getError("address.street")}</p>}
+                    {getError("address.street") && <p className="text-red-500 text-sm mt-2">{getError("address.street")}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">House Number</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">House Number *</label>
                     <input type="text" {...formik.getFieldProps("address.homeNo")} className={inputClass("address.homeNo")} placeholder="12A" />
-                    {getError("address.homeNo") && <p className="text-red-500 text-sm mt-1">{getError("address.homeNo")}</p>}
+                    {getError("address.homeNo") && <p className="text-red-500 text-sm mt-2">{getError("address.homeNo")}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State *</label>
                     <Select
                       styles={makeSelectStyles(hasError("address.state"))}
                       options={stateOptions.map((s) => ({ value: s, label: s }))}
@@ -689,10 +689,10 @@ const AgentKycForm: React.FC = () => {
                       placeholder="Select state"
                       isClearable
                     />
-                    {getError("address.state") && <p className="text-red-500 text-sm mt-1">{getError("address.state")}</p>}
+                    {getError("address.state") && <p className="text-red-500 text-sm mt-2">{getError("address.state")}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area *</label>
                     <Select
                       styles={makeSelectStyles(hasError("address.localGovtArea"))}
                       isDisabled={!selectedState}
@@ -712,14 +712,14 @@ const AgentKycForm: React.FC = () => {
                       placeholder="Select LGA"
                       isClearable
                     />
-                    {getError("address.localGovtArea") && <p className="text-red-500 text-sm mt-1">{getError("address.localGovtArea")}</p>}
+                    {getError("address.localGovtArea") && <p className="text-red-500 text-sm mt-2">{getError("address.localGovtArea")}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation</label>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation *</label>
                   <p className="text-xs text-gray-500 mb-2">Select areas/LGAs you primarily operate in for the selected state</p>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto border rounded-lg p-3 ${hasError("regionOfOperation") ? "border-red-500" : "border-gray-200"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto p-3 border-2 rounded-lg ${hasError("regionOfOperation") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {(areaOptions || []).map((area) => {
                       const selected = formik.values.regionOfOperation.includes(area);
                       return (
@@ -732,8 +732,8 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.regionOfOperation && formik.errors.regionOfOperation && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.regionOfOperation as string}</p>
+                  {hasError("regionOfOperation") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("regionOfOperation")}</p>
                   )}
                 </div>
               </div>
