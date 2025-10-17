@@ -504,7 +504,7 @@ const AgentKycForm: React.FC = () => {
                           <div>
                             <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type *</label>
                             <Select
-                              styles={makeSelectStyles(!!nameError)}
+                              styles={makeSelectStyles(namePath)}
                               options={[
                                 { value: "International Passport", label: "International Passport" },
                                 { value: "National ID", label: "National ID" },
