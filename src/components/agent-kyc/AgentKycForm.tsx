@@ -450,85 +450,90 @@ const AgentKycForm: React.FC = () => {
                   <h2 className="text-xl font-semibold text-[#0C1E1B]">Identity Documents</h2>
                 </div>
 
-                {formik.values.meansOfId.map((idDoc, index) => {
-                  const namePath = `meansOfId[${index}].name`;
-                  const imgPath = `meansOfId[${index}].docImg`;
-                  const nameError = getError(namePath);
-                  const imgError = getError(imgPath);
-                  return (
-                    <div key={index} className={`bg-gray-50 p-6 rounded-lg border ${nameError || imgError ? "border-red-500" : "border-gray-200"}`}>
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="font-medium text-[#0C1E1B]">Document {index + 1}</h3>
-                        {formik.values.meansOfId.length > 1 && (
-                          <button type="button" onClick={() => removeMeansOfId(index)} className="text-red-500 hover:text-red-700">
-                            <X size={20} />
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type</label>
-                          <Select
-                            styles={makeSelectStyles(!!nameError)}
-                            options={[
-                              { value: "International Passport", label: "International Passport" },
-                              { value: "National ID", label: "National ID" },
-                              { value: "Driver's License", label: "Driver's License" },
-                              { value: "Voter's Card", label: "Voter's Card" },
-                            ]}
-                            placeholder="Select ID Type"
-                            value={idDoc.name ? ({ value: idDoc.name, label: idDoc.name } as any) : null}
-                            onChange={(opt: any) => {
-                              const next = [...formik.values.meansOfId];
-                              next[index].name = opt?.value || "";
-                              formik.setFieldValue("meansOfId", next);
-                              formik.setFieldTouched(namePath, true, true);
-                            }}
-                            isClearable
-                          />
-                          {nameError && (
-                            <p className="text-red-500 text-sm mt-1">{nameError}</p>
+                <div className="space-y-4">
+                  {formik.values.meansOfId.map((idDoc, index) => {
+                    const namePath = `meansOfId[${index}].name`;
+                    const imgPath = `meansOfId[${index}].docImg`;
+                    const nameError = getError(namePath);
+                    const imgError = getError(imgPath);
+                    return (
+                      <div key={index} className={`bg-gray-50 p-6 rounded-lg border-2 ${nameError || imgError ? "border-red-500" : "border-gray-200"}`}>
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="font-medium text-[#0C1E1B]">Document {index + 1}</h3>
+                          {formik.values.meansOfId.length > 1 && (
+                            <button type="button" onClick={() => removeMeansOfId(index)} className="text-red-500 hover:text-red-700">
+                              <X size={20} />
+                            </button>
                           )}
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Document Images</label>
-                          <div className="space-y-3">
-                            {[0, 1].map((imgIndex) => (
-                              <div key={imgIndex} className="space-y-2">
-                                <AttachFile
-                                  heading={`Upload Image ${imgIndex + 1}`}
-                                  setFileUrl={(url: string | null) => handleFileUpload(url!, "meansOfId", index, imgIndex)}
-                                  id={`means-of-id-${index}-${imgIndex}`}
-                                  className="w-full"
-                                  acceptedFileTypes="image/*"
-                                  onUploadStart={() => setIsUploading(true)}
-                                  onUploadEnd={() => setIsUploading(false)}
-                                />
-                                {idDoc.docImg?.[imgIndex] && (
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-20 h-14 rounded overflow-hidden bg-white border">
-                                      <img src={idDoc.docImg[imgIndex]} alt={`Document ${index + 1}-${imgIndex + 1}`} className="w-full h-full object-cover" />
-                                    </div>
-                                    <a className="text-sm text-[#0B572B] underline" href={idDoc.docImg[imgIndex]} target="_blank" rel="noreferrer">
-                                      Preview
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type *</label>
+                            <Select
+                              styles={makeSelectStyles(!!nameError)}
+                              options={[
+                                { value: "International Passport", label: "International Passport" },
+                                { value: "National ID", label: "National ID" },
+                                { value: "Driver's License", label: "Driver's License" },
+                                { value: "Voter's Card", label: "Voter's Card" },
+                              ]}
+                              placeholder="Select ID Type"
+                              value={idDoc.name ? ({ value: idDoc.name, label: idDoc.name } as any) : null}
+                              onChange={(opt: any) => {
+                                const next = [...formik.values.meansOfId];
+                                next[index].name = opt?.value || "";
+                                formik.setFieldValue("meansOfId", next);
+                                formik.setFieldTouched(namePath, true, true);
+                              }}
+                              isClearable
+                            />
+                            {nameError && (
+                              <p className="text-red-500 text-sm mt-2">{nameError}</p>
+                            )}
                           </div>
-                          {imgError && (
-                            <p className="text-red-500 text-sm mt-1">{imgError}</p>
-                          )}
+
+                          <div>
+                            <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Document Images *</label>
+                            <div className="space-y-3">
+                              {[0, 1].map((imgIndex) => (
+                                <div key={imgIndex} className="space-y-2">
+                                  <AttachFile
+                                    heading={`Upload Image ${imgIndex + 1}`}
+                                    setFileUrl={(url: string | null) => handleFileUpload(url!, "meansOfId", index, imgIndex)}
+                                    id={`means-of-id-${index}-${imgIndex}`}
+                                    className="w-full"
+                                    acceptedFileTypes="image/*"
+                                    onUploadStart={() => setIsUploading(true)}
+                                    onUploadEnd={() => setIsUploading(false)}
+                                  />
+                                  {idDoc.docImg?.[imgIndex] && (
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-20 h-14 rounded overflow-hidden bg-white border">
+                                        <img src={idDoc.docImg[imgIndex]} alt={`Document ${index + 1}-${imgIndex + 1}`} className="w-full h-full object-cover" />
+                                      </div>
+                                      <a className="text-sm text-[#0B572B] underline" href={idDoc.docImg[imgIndex]} target="_blank" rel="noreferrer">
+                                        Preview
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            {imgError && (
+                              <p className="text-red-500 text-sm mt-2">{imgError}</p>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                  {getError("meansOfId") && (
+                    <p className="text-red-500 text-sm">{getError("meansOfId")}</p>
+                  )}
+                </div>
 
-                <button type="button" onClick={addMeansOfId} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg">
+                <button type="button" onClick={addMeansOfId} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg hover:bg-[#E8F7EE]">
                   <Plus size={16} /> Add Another ID Document
                 </button>
               </div>
