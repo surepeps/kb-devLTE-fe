@@ -11,7 +11,6 @@ import {
   SERVICE_OPTIONS,
   LANGUAGE_OPTIONS,
 } from "@/types/agent-upgrade.types";
-import toast from "react-hot-toast";
 import AttachFile from "@/components/general-components/attach_file";
 import {
   FileText,
@@ -35,8 +34,15 @@ import Preloader from "@/components/general-components/preloader";
 import PendingKycReview from "@/components/agent-kyc/PendingKycReview";
 
 const kycValidationSchema = Yup.object({
+  meansOfId: Yup.array().of(
+    Yup.object({
+      name: Yup.string().required("ID type is required"),
+      docImg: Yup.array().of(Yup.string()).min(1, "At least one document image is required"),
+    }),
+  ).min(1, "At least one form of identification is required"),
+  agentType: Yup.string().oneOf(["Individual", "Company"], "Please select a valid agent type").required("Agent type is required"),
   agentLicenseNumber: Yup.string().optional().min(3, "License number must be at least 3 characters"),
-  profileBio: Yup.string().max(500, "Bio cannot exceed 500 characters"),
+  profileBio: Yup.string().optional().max(500, "Bio cannot exceed 500 characters"),
   specializations: Yup.array().of(Yup.string()).min(1, "Pick at least one specialization").max(5, "Maximum 5 specializations allowed"),
   languagesSpoken: Yup.array().of(Yup.string()).min(1, "Pick at least one language"),
   servicesOffered: Yup.array().of(Yup.string()).min(1, "Pick at least one service"),
@@ -47,13 +53,7 @@ const kycValidationSchema = Yup.object({
     localGovtArea: Yup.string().required("Local government area is required"),
   }),
   regionOfOperation: Yup.array().of(Yup.string()).min(1, "Select at least one region"),
-  agentType: Yup.string().oneOf(["Individual", "Company"], "Please select a valid agent type").required("Agent type is required"),
-  meansOfId: Yup.array().of(
-    Yup.object({
-      name: Yup.string().required("ID type is required"),
-      docImg: Yup.array().of(Yup.string().url("Invalid image URL")).min(1, "At least one document image is required"),
-    }),
-  ).min(1, "At least one form of identification is required"),
+  achievements: Yup.array().optional(),
 });
 
 const steps = [
@@ -129,7 +129,6 @@ const AgentKycForm: React.FC = () => {
       const token = getCookie("token") as string;
       const response = await PUT_REQUEST(`${URLS.BASE}${URLS.submitKyc}`, values, token as string);
       if (response.success) {
-        toast.success("KYC submitted successfully");
         setUser({
           _id: user?._id ?? "",
           id: user?.id,
@@ -155,11 +154,9 @@ const AgentKycForm: React.FC = () => {
           individualAgent: user?.individualAgent,
           companyAgent: user?.companyAgent,
         });
-      } else {
-        toast.error(response.message || "KYC submission failed");
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      // Error handled, validation messages will be shown via formik
     } finally {
       setIsSubmitting(false);
     }
@@ -189,11 +186,10 @@ const AgentKycForm: React.FC = () => {
 
     if (currentStep === 1) {
       const fields = [
-        "profileBio",
+        "agentType",
         "specializations",
         "languagesSpoken",
         "servicesOffered",
-        "agentType",
       ];
       const hasErrors = fields.some((f) => (errors as any)[f]);
       if (hasErrors) {
@@ -215,6 +211,41 @@ const AgentKycForm: React.FC = () => {
         setAllTouched(fields);
         return false;
       }
+    }
+
+    return true;
+  };
+
+  const isCurrentStepValid = (): boolean => {
+    const errors = formik.errors;
+
+    if (currentStep === 0) {
+      return !errors.meansOfId && formik.values.meansOfId.length > 0 && formik.values.meansOfId.every((doc) => doc.name && doc.docImg.length > 0);
+    }
+
+    if (currentStep === 1) {
+      return (
+        !errors.agentType &&
+        !errors.specializations &&
+        !errors.languagesSpoken &&
+        !errors.servicesOffered &&
+        formik.values.agentType &&
+        formik.values.specializations.length > 0 &&
+        formik.values.languagesSpoken.length > 0 &&
+        formik.values.servicesOffered.length > 0
+      );
+    }
+
+    if (currentStep === 2) {
+      return (
+        !errors.address &&
+        !errors.regionOfOperation &&
+        formik.values.address.street &&
+        formik.values.address.homeNo &&
+        formik.values.address.state &&
+        formik.values.address.localGovtArea &&
+        formik.values.regionOfOperation.length > 0
+      );
     }
 
     return true;
@@ -418,85 +449,90 @@ const AgentKycForm: React.FC = () => {
                   <h2 className="text-xl font-semibold text-[#0C1E1B]">Identity Documents</h2>
                 </div>
 
-                {formik.values.meansOfId.map((idDoc, index) => {
-                  const namePath = `meansOfId[${index}].name`;
-                  const imgPath = `meansOfId[${index}].docImg`;
-                  const nameError = getError(namePath);
-                  const imgError = getError(imgPath);
-                  return (
-                    <div key={index} className={`bg-gray-50 p-6 rounded-lg border ${nameError || imgError ? "border-red-500" : "border-gray-200"}`}>
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="font-medium text-[#0C1E1B]">Document {index + 1}</h3>
-                        {formik.values.meansOfId.length > 1 && (
-                          <button type="button" onClick={() => removeMeansOfId(index)} className="text-red-500 hover:text-red-700">
-                            <X size={20} />
-                          </button>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type</label>
-                          <Select
-                            styles={makeSelectStyles(!!nameError)}
-                            options={[
-                              { value: "International Passport", label: "International Passport" },
-                              { value: "National ID", label: "National ID" },
-                              { value: "Driver's License", label: "Driver's License" },
-                              { value: "Voter's Card", label: "Voter's Card" },
-                            ]}
-                            placeholder="Select ID Type"
-                            value={idDoc.name ? ({ value: idDoc.name, label: idDoc.name } as any) : null}
-                            onChange={(opt: any) => {
-                              const next = [...formik.values.meansOfId];
-                              next[index].name = opt?.value || "";
-                              formik.setFieldValue("meansOfId", next);
-                              formik.setFieldTouched(namePath, true, true);
-                            }}
-                            isClearable
-                          />
-                          {nameError && (
-                            <p className="text-red-500 text-sm mt-1">{nameError}</p>
+                <div className="space-y-4">
+                  {formik.values.meansOfId.map((idDoc, index) => {
+                    const namePath = `meansOfId[${index}].name`;
+                    const imgPath = `meansOfId[${index}].docImg`;
+                    const nameError = getError(namePath);
+                    const imgError = getError(imgPath);
+                    return (
+                      <div key={index} className={`bg-gray-50 p-6 rounded-lg border-2 ${nameError || imgError ? "border-red-500" : "border-gray-200"}`}>
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="font-medium text-[#0C1E1B]">Document {index + 1}</h3>
+                          {formik.values.meansOfId.length > 1 && (
+                            <button type="button" onClick={() => removeMeansOfId(index)} className="text-red-500 hover:text-red-700">
+                              <X size={20} />
+                            </button>
                           )}
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Document Images</label>
-                          <div className="space-y-3">
-                            {[0, 1].map((imgIndex) => (
-                              <div key={imgIndex} className="space-y-2">
-                                <AttachFile
-                                  heading={`Upload Image ${imgIndex + 1}`}
-                                  setFileUrl={(url: string | null) => handleFileUpload(url!, "meansOfId", index, imgIndex)}
-                                  id={`means-of-id-${index}-${imgIndex}`}
-                                  className="w-full"
-                                  acceptedFileTypes="image/*"
-                                  onUploadStart={() => setIsUploading(true)}
-                                  onUploadEnd={() => setIsUploading(false)}
-                                />
-                                {idDoc.docImg?.[imgIndex] && (
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-20 h-14 rounded overflow-hidden bg-white border">
-                                      <img src={idDoc.docImg[imgIndex]} alt={`Document ${index + 1}-${imgIndex + 1}`} className="w-full h-full object-cover" />
-                                    </div>
-                                    <a className="text-sm text-[#0B572B] underline" href={idDoc.docImg[imgIndex]} target="_blank" rel="noreferrer">
-                                      Preview
-                                    </a>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-[#0C1E1B] mb-2">ID Type *</label>
+                            <Select
+                              styles={makeSelectStyles(!!nameError)}
+                              options={[
+                                { value: "International Passport", label: "International Passport" },
+                                { value: "National ID", label: "National ID" },
+                                { value: "Driver's License", label: "Driver's License" },
+                                { value: "Voter's Card", label: "Voter's Card" },
+                              ]}
+                              placeholder="Select ID Type"
+                              value={idDoc.name ? ({ value: idDoc.name, label: idDoc.name } as any) : null}
+                              onChange={(opt: any) => {
+                                const next = [...formik.values.meansOfId];
+                                next[index].name = opt?.value || "";
+                                formik.setFieldValue("meansOfId", next);
+                                formik.setFieldTouched(namePath, true, true);
+                              }}
+                              isClearable
+                            />
+                            {nameError && (
+                              <p className="text-red-500 text-sm mt-2">{nameError}</p>
+                            )}
                           </div>
-                          {imgError && (
-                            <p className="text-red-500 text-sm mt-1">{imgError}</p>
-                          )}
+
+                          <div>
+                            <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Document Images *</label>
+                            <div className="space-y-3">
+                              {[0, 1].map((imgIndex) => (
+                                <div key={imgIndex} className="space-y-2">
+                                  <AttachFile
+                                    heading={`Upload Image ${imgIndex + 1}`}
+                                    setFileUrl={(url: string | null) => handleFileUpload(url!, "meansOfId", index, imgIndex)}
+                                    id={`means-of-id-${index}-${imgIndex}`}
+                                    className="w-full"
+                                    acceptedFileTypes="image/*"
+                                    onUploadStart={() => setIsUploading(true)}
+                                    onUploadEnd={() => setIsUploading(false)}
+                                  />
+                                  {idDoc.docImg?.[imgIndex] && (
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-20 h-14 rounded overflow-hidden bg-white border">
+                                        <img src={idDoc.docImg[imgIndex]} alt={`Document ${index + 1}-${imgIndex + 1}`} className="w-full h-full object-cover" />
+                                      </div>
+                                      <a className="text-sm text-[#0B572B] underline" href={idDoc.docImg[imgIndex]} target="_blank" rel="noreferrer">
+                                        Preview
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            {imgError && (
+                              <p className="text-red-500 text-sm mt-2">{imgError}</p>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                  {getError("meansOfId") && (
+                    <p className="text-red-500 text-sm">{getError("meansOfId")}</p>
+                  )}
+                </div>
 
-                <button type="button" onClick={addMeansOfId} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg">
+                <button type="button" onClick={addMeansOfId} className="flex items-center gap-2 px-4 py-2 text-[#0B572B] border border-[#8DDB90] rounded-lg hover:bg-[#E8F7EE]">
                   <Plus size={16} /> Add Another ID Document
                 </button>
               </div>
@@ -514,12 +550,12 @@ const AgentKycForm: React.FC = () => {
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent License Number (Optional)</label>
                     <input type="text" {...formik.getFieldProps("agentLicenseNumber")} className={inputClass("agentLicenseNumber")} placeholder="AGT-12345-XYZ" />
                     {formik.touched.agentLicenseNumber && formik.errors.agentLicenseNumber && (
-                      <p className="text-red-500 text-sm mt-1">{formik.errors.agentLicenseNumber as string}</p>
+                      <p className="text-red-500 text-sm mt-2">{formik.errors.agentLicenseNumber as string}</p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type *</label>
                     <Select
                       styles={makeSelectStyles(hasError("agentType"))}
                       options={[
@@ -533,29 +569,29 @@ const AgentKycForm: React.FC = () => {
                       }}
                       placeholder="Select agent type"
                     />
-                    {formik.touched.agentType && formik.errors.agentType && (
-                      <p className="text-red-500 text-sm mt-1">{formik.errors.agentType as string}</p>
+                    {hasError("agentType") && (
+                      <p className="text-red-500 text-sm mt-2">{getError("agentType")}</p>
                     )}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Profile Bio</label>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Profile Bio (Optional)</label>
                   <textarea
                     {...formik.getFieldProps("profileBio")}
                     rows={5}
                     className={inputClass("profileBio")}
                     placeholder="Describe your experience, expertise, and what makes you unique as a real estate agent..."
                   />
-                  <div className="flex justify-between text-sm text-gray-500 mt-1">
+                  <div className="flex justify-between text-sm text-gray-500 mt-2">
                     <span>{formik.values.profileBio.length}/500 characters</span>
                     {formik.touched.profileBio && formik.errors.profileBio && <span className="text-red-500">{formik.errors.profileBio as string}</span>}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Specializations</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 ${hasError("specializations") ? "border border-red-500 rounded-lg p-2" : ""}`}>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Specializations *</label>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${hasError("specializations") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {SPECIALIZATION_OPTIONS.map((option) => {
                       const selected = formik.values.specializations.includes(option.value);
                       return (
@@ -568,14 +604,14 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.specializations && formik.errors.specializations && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.specializations as any}</p>
+                  {hasError("specializations") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("specializations")}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 ${hasError("languagesSpoken") ? "border border-red-500 rounded-lg p-2" : ""}`}>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Languages Spoken *</label>
+                  <div className={`grid grid-cols-2 md:grid-cols-4 gap-2 p-3 border-2 rounded-lg ${hasError("languagesSpoken") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {LANGUAGE_OPTIONS.map((language) => {
                       const selected = formik.values.languagesSpoken.includes(language);
                       return (
@@ -588,14 +624,14 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.languagesSpoken && formik.errors.languagesSpoken && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.languagesSpoken as any}</p>
+                  {hasError("languagesSpoken") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("languagesSpoken")}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered</label>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 ${hasError("servicesOffered") ? "border border-red-500 rounded-lg p-2" : ""}`}>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Services Offered *</label>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 p-3 border-2 rounded-lg ${hasError("servicesOffered") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {SERVICE_OPTIONS.map((option) => {
                       const selected = formik.values.servicesOffered.includes(option.value);
                       return (
@@ -608,8 +644,8 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.servicesOffered && formik.errors.servicesOffered && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.servicesOffered as any}</p>
+                  {hasError("servicesOffered") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("servicesOffered")}</p>
                   )}
                 </div>
               </div>
@@ -624,17 +660,17 @@ const AgentKycForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Street Address</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Street Address *</label>
                     <input type="text" {...formik.getFieldProps("address.street")} className={inputClass("address.street")} placeholder="Bode Thomas Street" />
-                    {getError("address.street") && <p className="text-red-500 text-sm mt-1">{getError("address.street")}</p>}
+                    {getError("address.street") && <p className="text-red-500 text-sm mt-2">{getError("address.street")}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">House Number</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">House Number *</label>
                     <input type="text" {...formik.getFieldProps("address.homeNo")} className={inputClass("address.homeNo")} placeholder="12A" />
-                    {getError("address.homeNo") && <p className="text-red-500 text-sm mt-1">{getError("address.homeNo")}</p>}
+                    {getError("address.homeNo") && <p className="text-red-500 text-sm mt-2">{getError("address.homeNo")}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">State *</label>
                     <Select
                       styles={makeSelectStyles(hasError("address.state"))}
                       options={stateOptions.map((s) => ({ value: s, label: s }))}
@@ -652,10 +688,10 @@ const AgentKycForm: React.FC = () => {
                       placeholder="Select state"
                       isClearable
                     />
-                    {getError("address.state") && <p className="text-red-500 text-sm mt-1">{getError("address.state")}</p>}
+                    {getError("address.state") && <p className="text-red-500 text-sm mt-2">{getError("address.state")}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Local Government Area *</label>
                     <Select
                       styles={makeSelectStyles(hasError("address.localGovtArea"))}
                       isDisabled={!selectedState}
@@ -675,14 +711,14 @@ const AgentKycForm: React.FC = () => {
                       placeholder="Select LGA"
                       isClearable
                     />
-                    {getError("address.localGovtArea") && <p className="text-red-500 text-sm mt-1">{getError("address.localGovtArea")}</p>}
+                    {getError("address.localGovtArea") && <p className="text-red-500 text-sm mt-2">{getError("address.localGovtArea")}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation</label>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation *</label>
                   <p className="text-xs text-gray-500 mb-2">Select areas/LGAs you primarily operate in for the selected state</p>
-                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto border rounded-lg p-3 ${hasError("regionOfOperation") ? "border-red-500" : "border-gray-200"}`}>
+                  <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto p-3 border-2 rounded-lg ${hasError("regionOfOperation") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {(areaOptions || []).map((area) => {
                       const selected = formik.values.regionOfOperation.includes(area);
                       return (
@@ -695,8 +731,8 @@ const AgentKycForm: React.FC = () => {
                       );
                     })}
                   </div>
-                  {formik.touched.regionOfOperation && formik.errors.regionOfOperation && (
-                    <p className="text-red-500 text-sm mt-1">{formik.errors.regionOfOperation as string}</p>
+                  {hasError("regionOfOperation") && (
+                    <p className="text-red-500 text-sm mt-2">{getError("regionOfOperation")}</p>
                   )}
                 </div>
               </div>
@@ -801,7 +837,8 @@ const AgentKycForm: React.FC = () => {
                 <button
                   type="button"
                   onClick={goNext}
-                  className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg"
+                  disabled={!isCurrentStepValid()}
+                  className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next <ChevronRight size={18} />
                 </button>
@@ -809,7 +846,7 @@ const AgentKycForm: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting || !formik.isValid}
-                  className="px-8 py-2 bg-gradient-to-r from-[#0B572B] to-[#8DDB90] text-white font-semibold rounded-lg disabled:opacity-50"
+                  className="px-8 py-2 bg-gradient-to-r from-[#0B572B] to-[#8DDB90] text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Submitting..." : "Submit KYC"}
                 </button>
