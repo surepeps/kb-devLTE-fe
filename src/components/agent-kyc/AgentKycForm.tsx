@@ -504,7 +504,7 @@ const AgentKycForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Profile Bio</label>
+                  <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Profile Bio (Optional)</label>
                   <textarea
                     {...formik.getFieldProps("profileBio")}
                     rows={5}
