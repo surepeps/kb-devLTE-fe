@@ -876,7 +876,7 @@ const AgentKycForm: React.FC = () => {
                 >
                   Next <ChevronRight size={18} />
                 </button>
-              ) : (
+              ) : currentStep === steps.length - 1 ? (
                 <button
                   type="submit"
                   disabled={isSubmitting || !formik.isValid}
@@ -884,7 +884,7 @@ const AgentKycForm: React.FC = () => {
                 >
                   {isSubmitting ? "Submitting..." : "Submit KYC"}
                 </button>
-              )}
+              ) : null}
             </div>
           </form>
         </div>
