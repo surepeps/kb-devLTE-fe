@@ -591,7 +591,7 @@ const AgentKycForm: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type *</label>
                     <Select
-                      styles={makeSelectStyles(hasError("agentType"))}
+                      styles={makeSelectStyles("agentType")}
                       options={[
                         { value: "Individual", label: "Individual" },
                         { value: "Company", label: "Company" },
