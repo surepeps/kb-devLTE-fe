@@ -153,19 +153,6 @@ const Login: FC = () => {
 
           router.push("/dashboard");
 
-          // Default redirect logic
-          // if (userPayload.userType === "Agent") {
-          //   if (!userPayload.agentData?.agentType) {
-          //     router.push("/agent-onboard");
-          //   } else if (userPayload.accountApproved === false) {
-          //     router.push("/agent-under-review");
-          //   } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
-          //     router.push("/dashboard");
-          //   }
-          // } else {
-          //   router.push("/dashboard");
-          // }
-
         } else if (response.error) {
           toast.error(response.error);
         } else {
@@ -190,7 +177,7 @@ const Login: FC = () => {
 
     window.fbAsyncInit = function () {
       window.FB.init({
-        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "0000000000000000", // Disabled if no app ID
+        appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
         cookie: true,
         xfbml: true,
         version: "v21.0",
@@ -214,11 +201,11 @@ const Login: FC = () => {
                 try {
                   const url = URLS.BASE + URLS.authFacebook;
                   const payload = {
-                    accessToken: response.authResponse.accessToken,
-                    userID: response.authResponse.userID,
-                    email: userInfo.email,
-                    firstName: userInfo.first_name,
-                    lastName: userInfo.last_name,
+                    idToken: response.authResponse.accessToken,
+                    // userID: response.authResponse.userID,
+                    // email: userInfo.email,
+                    // firstName: userInfo.first_name,
+                    // lastName: userInfo.last_name,
                   };
 
                   const result = await POST_REQUEST(url, payload);
@@ -239,19 +226,6 @@ const Login: FC = () => {
                     }
 
                     router.push("/dashboard");
-
-                    // Default redirect logic
-                    // if (userPayload.userType === "Agent") {
-                    //   if (!userPayload.agentData?.agentType) {
-                    //     router.push("/agent-onboard");
-                    //   } else if (userPayload.accountApproved === false) {
-                    //     router.push("/agent-under-review");
-                    //   } else if (userPayload.phoneNumber && userPayload.agentData.agentType) {
-                    //     router.push("/dashboard");
-                    //   }
-                    // } else {
-                    //   router.push("/dashboard");
-                    // }
 
                   } else if (response.error) {
                     toast.error(response.error);
