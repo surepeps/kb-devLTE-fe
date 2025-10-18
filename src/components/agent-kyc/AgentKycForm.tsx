@@ -434,6 +434,19 @@ const AgentKycForm: React.FC = () => {
     );
   }
 
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Do nothing - form should only submit via the Submit button click
+    return false;
+  };
+
+  const handleSubmitButtonClick = async () => {
+    if (currentStep === steps.length - 1) {
+      await formik.submitForm();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <Preloader isVisible={isUploading} message="Uploading file..." />
@@ -473,33 +486,7 @@ const AgentKycForm: React.FC = () => {
           </div>
 
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              // Only allow submission if on last step and not from Enter key
-              if (currentStep === steps.length - 1) {
-                formik.handleSubmit(e);
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                const target = e.target as HTMLElement;
-                const tag = (target?.tagName || "").toLowerCase();
-                // Only allow Enter to create newlines in textarea
-                if (tag === "textarea") {
-                  const textarea = target as HTMLTextAreaElement;
-                  const start = textarea.selectionStart;
-                  const end = textarea.selectionEnd;
-                  const value = textarea.value;
-                  textarea.value = value.substring(0, start) + "\n" + value.substring(end);
-                  textarea.selectionStart = textarea.selectionEnd = start + 1;
-                  
-                  // Trigger onChange manually
-                  const event = new Event('input', { bubbles: true });
-                  textarea.dispatchEvent(event);
-                }
-              }
-            }}
+            onSubmit={handleFormSubmit}
             className="p-6 space-y-8"
           >
             {currentStep === 0 && (
@@ -806,7 +793,7 @@ const AgentKycForm: React.FC = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-[#0C1E1B]">Achievements</h3>
+                  <h3 className="font-semibold text-[#0C1E1B]">Achievements (Optional)</h3>
                   {(formik.values.achievements || []).map((ach, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-3">
                       <div className="flex justify-between">
@@ -904,7 +891,8 @@ const AgentKycForm: React.FC = () => {
                 </button>
               ) : currentStep === steps.length - 1 ? (
                 <button
-                  type="submit"
+                  type="button"
+                  onClick={handleSubmitButtonClick}
                   disabled={isSubmitting || !formik.isValid}
                   className="px-8 py-2 bg-gradient-to-r from-[#0B572B] to-[#8DDB90] text-white font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
