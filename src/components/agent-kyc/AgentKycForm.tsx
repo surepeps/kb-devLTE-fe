@@ -473,19 +473,30 @@ const AgentKycForm: React.FC = () => {
           </div>
 
           <form
-            onSubmit={formik.handleSubmit}
+            onSubmit={(e) => {
+              e.preventDefault();
+              // Only allow submission if on last step and not from Enter key
+              if (currentStep === steps.length - 1) {
+                formik.handleSubmit(e);
+              }
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
+                e.preventDefault();
                 const target = e.target as HTMLElement;
                 const tag = (target?.tagName || "").toLowerCase();
-                // Prevent Enter from submitting the form unless it's the submit button
-                if (tag !== "textarea" || currentStep < steps.length - 1) {
-                  e.preventDefault();
-                }
-                // Even for textarea, prevent submission if not on final step
-                if (tag === "textarea" && currentStep < steps.length - 1) {
-                  // Allow newline in textarea but prevent form submission
-                  return;
+                // Only allow Enter to create newlines in textarea
+                if (tag === "textarea") {
+                  const textarea = target as HTMLTextAreaElement;
+                  const start = textarea.selectionStart;
+                  const end = textarea.selectionEnd;
+                  const value = textarea.value;
+                  textarea.value = value.substring(0, start) + "\n" + value.substring(end);
+                  textarea.selectionStart = textarea.selectionEnd = start + 1;
+                  
+                  // Trigger onChange manually
+                  const event = new Event('input', { bubbles: true });
+                  textarea.dispatchEvent(event);
                 }
               }
             }}
