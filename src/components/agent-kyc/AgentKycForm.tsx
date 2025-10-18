@@ -114,19 +114,44 @@ const AgentKycForm: React.FC = () => {
   const hasError = (path: string) => !!getError(path);
 
   const shouldShowRedBorder = (path: string): boolean => {
-    const error = getError(path);
-    if (error) return true;
     const value = getIn(formik.values, path);
+    const error = getError(path);
     const isReq = isRequired(path);
+    
+    // If not required, never show red border
     if (!isReq) return false;
 
-    // Show red border by default for required fields
-    const isTouched = !!getIn(formik.touched, path);
-    if (!isTouched) return true;
+    // For arrays (like specializations, languagesSpoken, servicesOffered, regionOfOperation)
+    if (Array.isArray(value)) {
+      // If array has items, no red border (value is valid, ignore stale errors)
+      if (value.length > 0) return false;
+      // Empty array for required field = red border
+      return true;
+    }
 
-    // If touched, only show red if there's an error
-    return !!error;
+    // For meansOfId docImg arrays - check if at least first image exists
+    if (path.includes('docImg')) {
+      if (!value || !Array.isArray(value)) return true;
+      // Check if first image exists
+      if (value[0] && value[0].trim() !== '') return false;
+      return true;
+    }
+
+    // For strings
+    if (typeof value === 'string') {
+      // If string has content, no red border (value is valid, ignore stale errors)
+      if (value && value.trim() !== '') return false;
+      // Empty string for required field = red border
+      return true;
+    }
+
+    // Check error as fallback
+    if (error) return true;
+
+    // Default: show red if value is falsy
+    return !value;
   };
+  
 
   const inputBase = "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent";
   const inputClass = (path: string) => `${inputBase} ${shouldShowRedBorder(path) ? "border-red-500" : "border-gray-300"}`;
@@ -541,7 +566,7 @@ const AgentKycForm: React.FC = () => {
 
                           <div>
                             <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Document Images *</label>
-                            <div className="space-y-3">
+                            <div className={`space-y-3 p-3 border-2 rounded-lg ${shouldShowRedBorder(imgPath) ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                               {[0, 1].map((imgIndex) => (
                                 <div key={imgIndex} className="space-y-2">
                                   <AttachFile
@@ -606,6 +631,7 @@ const AgentKycForm: React.FC = () => {
                     <Select
                       styles={makeSelectStyles("agentType")}
                       options={[
+                        { value: "", label: "Select Agent Type" },
                         { value: "Individual", label: "Individual" },
                         { value: "Company", label: "Company" },
                       ]}
