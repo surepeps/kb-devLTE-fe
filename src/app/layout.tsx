@@ -60,8 +60,8 @@ export default function RootLayout({
                             <body
                               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                             >
-                              {/* Promo placeholder - hidden when no ads */}
-                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent h-20" />
+                              {/* Promo placeholder - no height reserved, only sized when ads exist */}
+                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent" />
 
                               <HeaderFooterWrapper>
                                 <Body>{children}</Body>
