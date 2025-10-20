@@ -50,6 +50,8 @@ const Register = () => {
   const [agreed, setAgreed] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
+  const [socialProcessing, setSocialProcessing] = useState(false);
+  const [overlayMessage, setOverlayMessage] = useState<string>("");
 
   // Memoized callback for password toggle (for InputField)
   const togglePasswordVisibility = useCallback(() => {
@@ -168,6 +170,8 @@ const Register = () => {
         return;
       }
 
+      setOverlayMessage("Signing up with Google...");
+      setSocialProcessing(true);
       try {
         const url = URLS.BASE + URLS.authGoogle;
         const response = await POST_REQUEST(url, {
@@ -182,18 +186,21 @@ const Register = () => {
 
           toast.success("Authentication successful via Google!");
 
+          setSocialProcessing(false);
           router.push("/dashboard");
 
         } else if (response.error) {
           toast.error(response.error);
         } else {
-            toast.error("Google authentication failed. Please try again.");
+          toast.error("Google authentication failed. Please try again.");
         }
 
 
       } catch (error: any) {
         console.error("Google signup error:", error);
         toast.error(error.message || "Google registration failed!");
+      } finally {
+        setSocialProcessing(false);
       }
     },
     onError: (errorResponse: any) => toast.error(errorResponse.message || "Google sign-up was cancelled or failed."),
@@ -240,7 +247,7 @@ const Register = () => {
                   const url = URLS.BASE + URLS.authFacebook;
                   const payload = {
                     accessToken: response.authResponse.accessToken,
-                    userID: response.authResponse.userID, // Note: Backend expects userID, ensure consistency
+                    userID: response.authResponse.userID,
                     email: userInfo.email,
                     firstName: userInfo.first_name,
                     lastName: userInfo.last_name,
@@ -248,6 +255,8 @@ const Register = () => {
                     ...(formik.values.referralCode ? { referralCode: formik.values.referralCode } : {}),
                   };
 
+                  setOverlayMessage("Signing up with Facebook...");
+                  setSocialProcessing(true);
                   const result = await POST_REQUEST(url, payload);
 
                   if (result.success) {
@@ -256,16 +265,19 @@ const Register = () => {
 
                     toast.success("Authentication successful via Facebook!");
 
+                    setSocialProcessing(false);
                     router.push("/dashboard");
 
                   } else if (response.error) {
                     toast.error(response.error);
                   } else {
-                      toast.error("Facebook authentication failed. Please try again.");
+                    toast.error("Facebook authentication failed. Please try again.");
                   }
                 } catch (error: any) {
                   console.error("Facebook signup error:", error);
                   toast.error(error.message || "Facebook registration failed, please try again!");
+                } finally {
+                  setSocialProcessing(false);
                 }
               },
             );
@@ -578,13 +590,15 @@ const Register = () => {
         </form>
       </div>
       <OverlayPreloader
-        isVisible={overlayVisible}
+        isVisible={overlayVisible || socialProcessing}
         message={
-          isSuccess
-            ? formik.values.userType === "Agent"
-              ? "Sending verification email..."
-              : "Setting up your account..."
-            : "Processing registration..."
+          socialProcessing
+            ? overlayMessage || "Processing..."
+            : isSuccess
+              ? formik.values.userType === "Agent"
+                ? "Sending verification email..."
+                : "Setting up your account..."
+              : "Processing registration..."
         }
       />
     </section>
