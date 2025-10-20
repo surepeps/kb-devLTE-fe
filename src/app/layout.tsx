@@ -74,7 +74,9 @@ export default function RootLayout({
                               
                               <GlobalPropertyActionsFAB />
                               <SubscriptionFeaturesClient />
-                              <WhatsAppChatWidget />
+                              <Suspense fallback={null}>
+                                <WhatsAppChatWidget />
+                              </Suspense>
                               <Toaster />
                               <ChunkErrorHandler />
                             </body>
