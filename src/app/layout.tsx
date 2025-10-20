@@ -33,6 +33,8 @@ import SubscriptionInitializer from '@/components/providers/SubscriptionInitiali
 import { PromoProvider } from '@/context/promo-context';
 // Promo mount client component
 import PromoMount from '@/components/promo/PromoMount';
+// FontAwesome configuration
+import '@/utils/fontawesome';
 
 export default function RootLayout({
   children,
@@ -58,18 +60,8 @@ export default function RootLayout({
                             <body
                               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                             >
-                              {/* Server-rendered placeholder for top promo banner to avoid hydration mismatch */}
-                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent h-20">
-                                <div className="container mx-auto px-4 h-full flex items-center justify-center bg-[#F8FAFC] border border-dashed border-gray-200">
-                                  <div className="flex items-center gap-4">
-                                    <img src="/placeholder-property.svg" alt="promo-sample" className="h-12 w-auto object-contain" />
-                                    <div>
-                                      <div className="text-sm font-semibold">Place your advert here</div>
-                                      <div className="text-xs text-gray-500">Reach thousands of visitors — contact us to advertise</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                              {/* Promo placeholder - hidden when no ads */}
+                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent h-20" />
 
                               <HeaderFooterWrapper>
                                 <Body>{children}</Body>
