@@ -179,12 +179,14 @@ const NewHomepage = ({
       </section>
 
       {/* Email Verification Modal */}
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={null}>
         <EmailVerification />
       </Suspense>
 
       {/* Development Notice */}
-      <DevelopmentNotice />
+      <Suspense fallback={null}>
+        <DevelopmentNotice />
+      </Suspense>
     </Fragment>
   );
 };
