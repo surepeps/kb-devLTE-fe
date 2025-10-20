@@ -431,7 +431,7 @@ const Register = () => {
                   icon={googleIcon}
                   text="Continue with Google"
                   onClick={googleLogin}
-                  isDisabled={isDisabled}
+                  isDisabled={isDisabled || socialProcessing}
                 />
                 <RegisterWith
                   icon={facebookIcon}
