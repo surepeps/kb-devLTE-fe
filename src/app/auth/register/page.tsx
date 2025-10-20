@@ -437,7 +437,7 @@ const Register = () => {
                   icon={facebookIcon}
                   text="Continue with Facebook"
                   onClick={handleFacebookSignup}
-                  isDisabled={isDisabled}
+                  isDisabled={isDisabled || socialProcessing}
                 />
               </div>
 
