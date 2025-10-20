@@ -57,7 +57,8 @@ const Login: FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
-  
+  const [overlayMessage, setOverlayMessage] = useState<string>("");
+
   // ✅ NEW STATE: Track if Facebook SDK is initialized
   const [isFbSdkReady, setIsFbSdkReady] = useState(false);
 
@@ -83,6 +84,7 @@ const Login: FC = () => {
     Cookies.set("token", response.data.token);
     setUser(userPayload);
 
+    setOverlayMessage("Loading your dashboard...");
     setOverlayVisible(true);
 
     setTimeout(() => {
@@ -136,6 +138,8 @@ const Login: FC = () => {
   const googleLogin = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
+      setOverlayMessage("Signing in with Google...");
+      setOverlayVisible(true);
       try {
         const url = URLS.BASE + URLS.authGoogle;
         const response = await POST_REQUEST(url, { idToken: codeResponse.code });
@@ -149,21 +153,25 @@ const Login: FC = () => {
           const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
           if (redirectUrl) {
             try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
+            setOverlayVisible(false);
             router.push(redirectUrl);
             return;
           }
 
+          setOverlayVisible(false);
           router.push("/dashboard");
 
         } else if (response.error) {
           toast.error(response.error);
         } else {
-            toast.error("Google authentication failed. Please try again.");
+          toast.error("Google authentication failed. Please try again.");
         }
 
       } catch (error) {
         console.error("Google login error:", error);
         toast.error("Google sign-in failed, please try again!");
+      } finally {
+        setOverlayVisible(false);
       }
     },
     onError: () => toast.error("Google sign-in was cancelled or failed."),
@@ -218,8 +226,10 @@ const Login: FC = () => {
                     idToken: response.authResponse.accessToken,
                   };
 
+                  setOverlayMessage("Signing in with Facebook...");
+                  setOverlayVisible(true);
                   const result = await POST_REQUEST(url, payload);
-                  
+
                   if (result.success) {
                     Cookies.set("token", result.data.token);
                     setUser(result.data.user);
@@ -229,10 +239,12 @@ const Login: FC = () => {
                     const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
                     if (redirectUrl) {
                       try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
+                      setOverlayVisible(false);
                       router.push(redirectUrl);
                       return;
                     }
 
+                    setOverlayVisible(false);
                     router.push("/dashboard");
 
                   } else if (result.error) {
@@ -244,6 +256,8 @@ const Login: FC = () => {
                 } catch (error) {
                   console.error("Facebook login API error:", error);
                   toast.error("Facebook login failed, please try again!");
+                } finally {
+                  setOverlayVisible(false);
                 }
               },
             );
@@ -333,13 +347,14 @@ const Login: FC = () => {
               icon={googleIcon}
               text="Continue with Google"
               onClick={googleLogin}
+              isDisabled={overlayVisible}
             />
             {/* ✅ MODIFIED RegisterWith for Facebook to show loading state and be disabled */}
             <RegisterWith
               icon={facebookIcon}
               text={isFbSdkReady ? "Continue with Facebook" : "Loading Facebook..."}
               onClick={handleFacebookLogin}
-              isDisabled={!isFbSdkReady} // Disable button until SDK is ready
+              isDisabled={!isFbSdkReady || overlayVisible}
             />
           </div>
           
@@ -348,7 +363,7 @@ const Login: FC = () => {
 
       <OverlayPreloader
         isVisible={overlayVisible}
-        message="Loading your dashboard..."
+        message={overlayMessage || "Processing..."}
       />
 
     </section>

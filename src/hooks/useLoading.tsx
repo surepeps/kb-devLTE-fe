@@ -8,7 +8,10 @@ import { useEffect, useState } from 'react';
  *
  * @returns - isLoading (true or false)
  */
-export const useLoading = () => {
+export const useLoading = (simulate = false) => {
+  // If simulation not requested, don't show loading overlay
+  if (!simulate) return false;
+
   /**
    * Creating a useState to store isLoading variable and setIsLoading to make changes
    */
