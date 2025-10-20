@@ -37,8 +37,6 @@ import SubscriptionInitializer from '@/components/providers/SubscriptionInitiali
 import { PromoProvider } from '@/context/promo-context';
 // Promo mount client component
 import PromoMount from '@/components/promo/PromoMount';
-// FontAwesome configuration
-import '@/utils/fontawesome';
 
 export default function RootLayout({
   children,
