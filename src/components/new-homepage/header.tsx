@@ -190,7 +190,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       >
                         {item.name}
                       </span>
-                      <FaCaretDown
+                      <ChevronDown
+                        size={12}
                         className={`transition-transform duration-200 w-3 h-3 ${
                           isOpen ? "rotate-180" : ""
                         }`}
