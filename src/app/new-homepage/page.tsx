@@ -1,23 +1,25 @@
 /** @format */
 
 "use client";
-import React, { Fragment, Suspense } from "react";
+import React, { Fragment, Suspense, lazy } from "react";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
 import { useHomePageSettings } from "@/hooks/useSystemSettings";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import EmailVerification from "@/components/EmailVerification";
 import DevelopmentNotice from "@/components/general-components/DevelopmentNotice";
-   
-// New landing page components
+
+// Critical: Hero and Key Features loaded immediately
 import NewHeroSection from "@/components/new-homepage/new-hero-section";
 import KeyFeaturesSection from "@/components/new-homepage/key-features-section";
-import ValuePropositionSection from "@/components/new-homepage/value-proposition-section";
-import FeaturedPropertiesSection from "@/components/new-homepage/featured-properties-section";
-import SocialProofSection from "@/components/new-homepage/social-proof-section";
-import ForAgentsSection from "@/components/new-homepage/for-agents-section";
-import SecurityTransparencySection from "@/components/new-homepage/security-transparency-section";
-import FinalCTASection from "@/components/new-homepage/final-cta-section";
+
+// Non-critical: Lazy load lower sections
+const ValuePropositionSection = lazy(() => import("@/components/new-homepage/value-proposition-section"));
+const FeaturedPropertiesSection = lazy(() => import("@/components/new-homepage/featured-properties-section"));
+const SocialProofSection = lazy(() => import("@/components/new-homepage/social-proof-section"));
+const ForAgentsSection = lazy(() => import("@/components/new-homepage/for-agents-section"));
+const SecurityTransparencySection = lazy(() => import("@/components/new-homepage/security-transparency-section"));
+const FinalCTASection = lazy(() => import("@/components/new-homepage/final-cta-section"));
 
 /**
  * @NewHomepage - Modern, redesigned landing page following the new specifications
@@ -83,94 +85,108 @@ const NewHomepage = ({
           </ErrorBoundary>
 
           {/* 3. VALUE PROPOSITION SECTION (Replacement from Section 2) */}
-          <ErrorBoundary
-            fallback={
-              <div className="w-full py-16 bg-[#FFFEFB]">
-                <div className="container mx-auto px-4 text-center">
-                  <h2 className="text-3xl font-bold text-[#09391C] mb-4">Why Choose Khabiteq?</h2>
-                  <p className="text-gray-600">Unable to load value proposition section.</p>
+          <Suspense>
+            <ErrorBoundary
+              fallback={
+                <div className="w-full py-16 bg-[#FFFEFB]">
+                  <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-[#09391C] mb-4">Why Choose Khabiteq?</h2>
+                    <p className="text-gray-600">Unable to load value proposition section.</p>
+                  </div>
                 </div>
-              </div>
-            }>
-            <ValuePropositionSection />
-          </ErrorBoundary>
+              }>
+              <ValuePropositionSection />
+            </ErrorBoundary>
+          </Suspense>
 
           {/* 4. FEATURED PROPERTIES SECTION */}
-          <ErrorBoundary
-            fallback={
-              <div className="w-full py-16 bg-[#FFFEFB]">
-                <div className="container mx-auto px-4 text-center">
-                  <h2 className="text-3xl font-bold text-[#09391C] mb-4">Featured Properties</h2>
-                  <p className="text-gray-600">Unable to load featured properties section.</p>
+          <Suspense>
+            <ErrorBoundary
+              fallback={
+                <div className="w-full py-16 bg-[#FFFEFB]">
+                  <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-[#09391C] mb-4">Featured Properties</h2>
+                    <p className="text-gray-600">Unable to load featured properties section.</p>
+                  </div>
                 </div>
-              </div>
-            }>
-            <FeaturedPropertiesSection />
-          </ErrorBoundary>
+              }>
+              <FeaturedPropertiesSection />
+            </ErrorBoundary>
+          </Suspense>
 
           {/* 5. REVIEWS & COUNTERS (SOCIAL PROOF & TRUST SIGNALS) */}
-          <ErrorBoundary
-            fallback={
-              <div className="w-full py-16 bg-[#F5F7F9]">
-                <div className="container mx-auto px-4 text-center">
-                  <h2 className="text-3xl font-bold text-[#09391C] mb-4">Trusted by Thousands</h2>
-                  <p className="text-gray-600">Unable to load testimonials and stats.</p>
+          <Suspense>
+            <ErrorBoundary
+              fallback={
+                <div className="w-full py-16 bg-[#F5F7F9]">
+                  <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-[#09391C] mb-4">Trusted by Thousands</h2>
+                    <p className="text-gray-600">Unable to load testimonials and stats.</p>
+                  </div>
                 </div>
-              </div>
-            }>
-            <SocialProofSection />
-          </ErrorBoundary>
+              }>
+              <SocialProofSection />
+            </ErrorBoundary>
+          </Suspense>
 
           {/* 6. FOR REAL ESTATE AGENTS SECTION */}
-          <ErrorBoundary
-            fallback={
-              <div className="w-full py-16 bg-[#FFFEFB]">
-                <div className="container mx-auto px-4 text-center">
-                  <h2 className="text-3xl font-bold text-[#09391C] mb-4">For Real Estate Agents</h2>
-                  <p className="text-gray-600">Unable to load agent information.</p>
+          <Suspense>
+            <ErrorBoundary
+              fallback={
+                <div className="w-full py-16 bg-[#FFFEFB]">
+                  <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-[#09391C] mb-4">For Real Estate Agents</h2>
+                    <p className="text-gray-600">Unable to load agent information.</p>
+                  </div>
                 </div>
-              </div>
-            }>
-            <ForAgentsSection />
-          </ErrorBoundary>
+              }>
+              <ForAgentsSection />
+            </ErrorBoundary>
+          </Suspense>
 
           {/* 7. SECURITY & TRANSPARENCY SECTION */}
-          <ErrorBoundary
-            fallback={
-              <div className="w-full py-16 bg-[#09391C]">
-                <div className="container mx-auto px-4 text-center">
-                  <h2 className="text-3xl font-bold text-white mb-4">Security & Transparency</h2>
-                  <p className="text-gray-200">Unable to load security information.</p>
+          <Suspense>
+            <ErrorBoundary
+              fallback={
+                <div className="w-full py-16 bg-[#09391C]">
+                  <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-bold text-white mb-4">Security & Transparency</h2>
+                    <p className="text-gray-200">Unable to load security information.</p>
+                  </div>
                 </div>
-              </div>
-            }>
-            <SecurityTransparencySection />
-          </ErrorBoundary>
+              }>
+              <SecurityTransparencySection />
+            </ErrorBoundary>
+          </Suspense>
 
           {/* 8. FINAL CALL TO ACTION (BOTTOM) */}
-          <ErrorBoundary
-            fallback={
-              <div className="w-full py-16 bg-[#8DDB90]">
-                <div className="container mx-auto px-4 text-center">
-                  <h2 className="text-4xl font-bold text-white mb-6">Get Started Today</h2>
-                  <button className="bg-[#09391C] text-white px-8 py-4 rounded-full font-bold">
-                    Get Started Now
-                  </button>
+          <Suspense>
+            <ErrorBoundary
+              fallback={
+                <div className="w-full py-16 bg-[#8DDB90]">
+                  <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-4xl font-bold text-white mb-6">Get Started Today</h2>
+                    <button className="bg-[#09391C] text-white px-8 py-4 rounded-full font-bold">
+                      Get Started Now
+                    </button>
+                  </div>
                 </div>
-              </div>
-            }>
-            <FinalCTASection />
-          </ErrorBoundary>
+              }>
+              <FinalCTASection />
+            </ErrorBoundary>
+          </Suspense>
         </main>
       </section>
 
       {/* Email Verification Modal */}
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={null}>
         <EmailVerification />
       </Suspense>
 
       {/* Development Notice */}
-      <DevelopmentNotice />
+      <Suspense fallback={null}>
+        <DevelopmentNotice />
+      </Suspense>
     </Fragment>
   );
 };

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import BannerSlot from './BannerSlot';
+import { usePromos } from '@/context/promo-context';
 
 interface Props {
   slot: string;
@@ -13,6 +14,8 @@ interface Props {
 const PromoMount: React.FC<Props> = ({ slot, targetId, className, height }) => {
   const id = targetId || `promo-${slot}`;
   const [container, setContainer] = useState<HTMLElement | null>(null);
+  const { getPromos } = usePromos();
+  const promos = getPromos(slot);
 
   useEffect(() => {
     const el = document.getElementById(id);
@@ -21,11 +24,19 @@ const PromoMount: React.FC<Props> = ({ slot, targetId, className, height }) => {
       while (el.firstChild) {
         el.removeChild(el.firstChild);
       }
+      // Set dimensions and visibility based on promos existence
+      if (promos.length === 0) {
+        el.style.display = 'none';
+        el.style.height = '0';
+      } else {
+        el.style.display = '';
+        el.style.height = height ? undefined : '80px'; // h-20 = 80px
+      }
     }
     setContainer(el);
-  }, [id]);
+  }, [id, promos.length, height]);
 
-  if (!container) return null;
+  if (!container || promos.length === 0) return null;
 
   return createPortal(<BannerSlot slot={slot} className={className} height={height} />, container);
 };

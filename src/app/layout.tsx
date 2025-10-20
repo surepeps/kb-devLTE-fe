@@ -15,7 +15,10 @@ import NegotiationContextWrapper from '@/components/common/NegotiationContextWra
 import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsFAB';
 import SubscriptionFeaturesClient from '@/components/subscription/SubscriptionFeaturesClient';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
-import WhatsAppChatWidget from '@/components/whatsapp-chat-widget';
+import { lazy, Suspense } from 'react';
+
+// Lazy load WhatsApp widget - non-critical for initial render
+const WhatsAppChatWidget = lazy(() => import('@/components/whatsapp-chat-widget'));
 
 export const metadata = {
   title: 'Khabiteq',
@@ -24,6 +27,7 @@ export const metadata = {
   icons: {
     icon: '/khabi-teq.svg',
   },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || 'https://khabiteq.com'),
 };
 
 import ReduxWrapper from '@/components/providers/ReduxWrapper';
@@ -58,18 +62,8 @@ export default function RootLayout({
                             <body
                               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                             >
-                              {/* Server-rendered placeholder for top promo banner to avoid hydration mismatch */}
-                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent h-20">
-                                <div className="container mx-auto px-4 h-full flex items-center justify-center bg-[#F8FAFC] border border-dashed border-gray-200">
-                                  <div className="flex items-center gap-4">
-                                    <img src="/placeholder-property.svg" alt="promo-sample" className="h-12 w-auto object-contain" />
-                                    <div>
-                                      <div className="text-sm font-semibold">Place your advert here</div>
-                                      <div className="text-xs text-gray-500">Reach thousands of visitors — contact us to advertise</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                              {/* Promo placeholder - no height reserved, only sized when ads exist */}
+                              <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent" />
 
                               <HeaderFooterWrapper>
                                 <Body>{children}</Body>
@@ -79,7 +73,9 @@ export default function RootLayout({
                               
                               <GlobalPropertyActionsFAB />
                               <SubscriptionFeaturesClient />
-                              <WhatsAppChatWidget />
+                              <Suspense fallback={null}>
+                                <WhatsAppChatWidget />
+                              </Suspense>
                               <Toaster />
                               <ChunkErrorHandler />
                             </body>

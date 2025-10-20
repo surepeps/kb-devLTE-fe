@@ -14,7 +14,7 @@ import barIcon from "@/svgs/bars.svg";
 import { usePageContext } from "@/context/page-context";
 import { usePathname, useRouter } from "next/navigation";
 import SideBar from "../general-components/sideBar";
-import { FaCaretDown } from "react-icons/fa";
+import { ChevronDown } from "lucide-react";
 import useClickOutside from "@/hooks/clickOutside";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserContext } from "@/context/user-context";
@@ -190,7 +190,8 @@ const Header = ({ isComingSoon }: { isComingSoon?: boolean }) => {
                       >
                         {item.name}
                       </span>
-                      <FaCaretDown
+                      <ChevronDown
+                        size={12}
                         className={`transition-transform duration-200 w-3 h-3 ${
                           isOpen ? "rotate-180" : ""
                         }`}

@@ -10,12 +10,11 @@ import {
 } from "next/dist/shared/lib/get-img-props";
 import { motion } from "framer-motion";
 import randomImage from "@/assets/noImageAvailable.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { Star } from "lucide-react";
 import markerSVG from "@/svgs/marker.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/pagination"; // if using pagination
 import "swiper/css/navigation"; // if using navigation arrows
@@ -101,7 +100,7 @@ const Card = ({
             {isPremium ? (
               <div className="w-[88px] z-10 h-[28px] py-[8px] px-[6px] text-white flex gap-x-1 items-center bg-[#FF3D00] absolute rounded-br-md">
                 <span className="text-sm">Premium</span>
-                <FontAwesomeIcon icon={faStar} size="xs" />
+                <Star size={14} className="text-white" />
               </div>
             ) : null}
             <ImageSwiper
@@ -348,18 +347,16 @@ const NavigationButton: React.FC<NavigationButtonProps> = ({
     switch (type) {
       case "arrow left":
         return (
-          <FaCaretLeft
-            width={16}
-            height={16}
+          <ChevronLeft
+            size={16}
             color="#09391C"
             className="w-[16px] h-[16px]"
           />
         );
       case "arrow right":
         return (
-          <FaCaretRight
-            width={16}
-            height={16}
+          <ChevronRight
+            size={16}
             color="#09391C"
             className="w-[16px] h-[16px]"
           />

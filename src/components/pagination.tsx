@@ -1,7 +1,7 @@
 /** @format */
 
 import React from 'react';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
   setCurrentPage: (type: number | any) => void;
@@ -29,7 +29,7 @@ const Pagination: React.FC<PaginationProps> = ({
             : 'text-black-500 hover:text-[#8DDB90]'
         }`}
         disabled={currentPage === 1}>
-        <FaChevronLeft />
+        <ChevronLeft size={18} />
         {''}
       </button>
       {Array.from({ length: totalPages }, (_, index) => (
@@ -56,7 +56,7 @@ const Pagination: React.FC<PaginationProps> = ({
             : 'text-black-500 hover:text-[#8DDB90]'
         }`}
         disabled={currentPage === totalPages}>
-        <FaChevronRight />
+        <ChevronRight size={18} />
         {''}
       </button>
     </div>
