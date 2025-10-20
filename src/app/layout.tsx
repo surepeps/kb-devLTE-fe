@@ -15,7 +15,10 @@ import NegotiationContextWrapper from '@/components/common/NegotiationContextWra
 import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsFAB';
 import SubscriptionFeaturesClient from '@/components/subscription/SubscriptionFeaturesClient';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
-import WhatsAppChatWidget from '@/components/whatsapp-chat-widget';
+import { lazy, Suspense } from 'react';
+
+// Lazy load WhatsApp widget - non-critical for initial render
+const WhatsAppChatWidget = lazy(() => import('@/components/whatsapp-chat-widget'));
 
 export const metadata = {
   title: 'Khabiteq',
