@@ -57,6 +57,7 @@ const Login: FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
+  const [isFBReady, setIsFBReady] = useState(false);
 
   // Memoized callback for password toggle
   const togglePasswordVisibility = useCallback(() => {
@@ -176,10 +177,17 @@ const Login: FC = () => {
         xfbml: true,
         version: "v21.0",
       });
+      
+      // Mark FB as ready after initialization
+      setIsFBReady(true);
     };
 
     // Check if script already exists
     if (document.getElementById('facebook-jssdk')) {
+      // If script exists, check if FB is already initialized
+      if (window.FB) {
+        setIsFBReady(true);
+      }
       return;
     }
 
@@ -200,70 +208,66 @@ const Login: FC = () => {
   }, []);
  
   const handleFacebookLogin = () => {
-    if (typeof window !== "undefined" && window.FB) {
-      // Check if FB SDK is ready
-      if (!window.FB.getAccessToken) {
-        toast.error("Facebook SDK is still loading. Please try again in a moment.");
-        return;
-      }
-
-      window.FB.login(
-        (response: any) => {
-          if (response.authResponse) {
-            window.FB.api(
-              "/me",
-              { fields: "name,email,first_name,last_name" },
-              async (userInfo: any) => {
-                try {
-                  const url = URLS.BASE + URLS.authFacebook;
-                  const payload = {
-                    idToken: response.authResponse.accessToken,
-                    // userID: response.authResponse.userID,
-                    // email: userInfo.email,
-                    // firstName: userInfo.first_name,
-                    // lastName: userInfo.last_name,
-                  };
-
-                  const result = await POST_REQUEST(url, payload);
-                  
-                  if (result.success) {
-                    Cookies.set("token", result.data.token);
-                    setUser(result.data.user);
-
-                    toast.success("Authentication successful via Facebook!");
-
-                    const userPayload = result.data.user;
-
-                    const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
-                    if (redirectUrl) {
-                      try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
-                      router.push(redirectUrl);
-                      return;
-                    }
-
-                    router.push("/dashboard");
-
-                  } else if (response.error) {
-                    toast.error(response.error);
-                  } else {
-                      toast.error("Facebook authentication failed. Please try again.");
-                  }
-                  
-                } catch (error) {
-                  console.error("Facebook login API error:", error);
-                  toast.error("Facebook login failed, please try again!");
-                }
-              },
-            );
-          } else {
-            toast.error("Facebook login was cancelled");
-          }
-        },
-        { scope: "email,public_profile" },
-      );
-    } else {
-      toast.error("Facebook SDK not loaded. Please try again in a moment.");
+    // Check if FB SDK is ready
+    if (!isFBReady || !window.FB) {
+      toast.error("Facebook SDK is still loading. Please try again in a moment.");
+      return;
     }
+
+    window.FB.login(
+      (response: any) => {
+        if (response.authResponse) {
+          window.FB.api(
+            "/me",
+            { fields: "name,email,first_name,last_name" },
+            async (userInfo: any) => {
+              try {
+                const url = URLS.BASE + URLS.authFacebook;
+                const payload = {
+                  idToken: response.authResponse.accessToken,
+                  // userID: response.authResponse.userID,
+                  // email: userInfo.email,
+                  // firstName: userInfo.first_name,
+                  // lastName: userInfo.last_name,
+                };
+
+                const result = await POST_REQUEST(url, payload);
+                
+                if (result.success) {
+                  Cookies.set("token", result.data.token);
+                  setUser(result.data.user);
+
+                  toast.success("Authentication successful via Facebook!");
+
+                  const userPayload = result.data.user;
+
+                  const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
+                  if (redirectUrl) {
+                    try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
+                    router.push(redirectUrl);
+                    return;
+                  }
+
+                  router.push("/dashboard");
+
+                } else if (response.error) {
+                  toast.error(response.error);
+                } else {
+                    toast.error("Facebook authentication failed. Please try again.");
+                }
+                
+              } catch (error) {
+                console.error("Facebook login API error:", error);
+                toast.error("Facebook login failed, please try again!");
+              }
+            },
+          );
+        } else {
+          toast.error("Facebook login was cancelled");
+        }
+      },
+      { scope: "email,public_profile" },
+    );
   };
 
   if (isLoading) return <Loading />;
