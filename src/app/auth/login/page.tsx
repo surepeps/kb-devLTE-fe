@@ -347,13 +347,14 @@ const Login: FC = () => {
               icon={googleIcon}
               text="Continue with Google"
               onClick={googleLogin}
+              isDisabled={overlayVisible}
             />
             {/* ✅ MODIFIED RegisterWith for Facebook to show loading state and be disabled */}
             <RegisterWith
               icon={facebookIcon}
               text={isFbSdkReady ? "Continue with Facebook" : "Loading Facebook..."}
               onClick={handleFacebookLogin}
-              isDisabled={!isFbSdkReady} // Disable button until SDK is ready
+              isDisabled={!isFbSdkReady || overlayVisible}
             />
           </div>
           
