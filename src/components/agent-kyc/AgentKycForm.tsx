@@ -98,6 +98,14 @@ const AgentKycForm: React.FC = () => {
   const getError = (path: string): string | undefined => {
     const touched = getIn(formik.touched, path);
     const error = getIn(formik.errors, path);
+    const value = getIn(formik.values, path);
+
+    // If these array fields have at least one selection, suppress errors
+    const arrayFields = ["specializations", "languagesSpoken", "servicesOffered"];
+    if (arrayFields.includes(path) && Array.isArray(value) && value.length > 0) {
+      return undefined;
+    }
+
     if (!touched || !error) return undefined;
     if (typeof error === 'string') return error;
     return undefined;
