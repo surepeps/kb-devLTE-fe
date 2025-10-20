@@ -1,23 +1,25 @@
 /** @format */
 
 "use client";
-import React, { Fragment, Suspense } from "react";
+import React, { Fragment, Suspense, lazy } from "react";
 import Loading from "@/components/loading-component/loading";
 import { useLoading } from "@/hooks/useLoading";
 import { useHomePageSettings } from "@/hooks/useSystemSettings";
 import ErrorBoundary from "@/components/general-components/ErrorBoundary";
 import EmailVerification from "@/components/EmailVerification";
 import DevelopmentNotice from "@/components/general-components/DevelopmentNotice";
-   
-// New landing page components
+
+// Critical: Hero and Key Features loaded immediately
 import NewHeroSection from "@/components/new-homepage/new-hero-section";
 import KeyFeaturesSection from "@/components/new-homepage/key-features-section";
-import ValuePropositionSection from "@/components/new-homepage/value-proposition-section";
-import FeaturedPropertiesSection from "@/components/new-homepage/featured-properties-section";
-import SocialProofSection from "@/components/new-homepage/social-proof-section";
-import ForAgentsSection from "@/components/new-homepage/for-agents-section";
-import SecurityTransparencySection from "@/components/new-homepage/security-transparency-section";
-import FinalCTASection from "@/components/new-homepage/final-cta-section";
+
+// Non-critical: Lazy load lower sections
+const ValuePropositionSection = lazy(() => import("@/components/new-homepage/value-proposition-section"));
+const FeaturedPropertiesSection = lazy(() => import("@/components/new-homepage/featured-properties-section"));
+const SocialProofSection = lazy(() => import("@/components/new-homepage/social-proof-section"));
+const ForAgentsSection = lazy(() => import("@/components/new-homepage/for-agents-section"));
+const SecurityTransparencySection = lazy(() => import("@/components/new-homepage/security-transparency-section"));
+const FinalCTASection = lazy(() => import("@/components/new-homepage/final-cta-section"));
 
 /**
  * @NewHomepage - Modern, redesigned landing page following the new specifications
