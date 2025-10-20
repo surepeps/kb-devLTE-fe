@@ -347,18 +347,16 @@ const NavigationButton: React.FC<NavigationButtonProps> = ({
     switch (type) {
       case "arrow left":
         return (
-          <FaCaretLeft
-            width={16}
-            height={16}
+          <ChevronLeft
+            size={16}
             color="#09391C"
             className="w-[16px] h-[16px]"
           />
         );
       case "arrow right":
         return (
-          <FaCaretRight
-            width={16}
-            height={16}
+          <ChevronRight
+            size={16}
             color="#09391C"
             className="w-[16px] h-[16px]"
           />
