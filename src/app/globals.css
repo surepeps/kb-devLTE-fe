@@ -74,6 +74,7 @@ body {
     url("/Fonts/WEB/fonts/ClashDisplay-Regular.woff") format("woff"); /* Optional fallback */
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
