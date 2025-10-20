@@ -3,7 +3,7 @@
  */ 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { FC, useEffect, useState, useCallback, useMemo } from "react"; // Added useCallback
+import React, { FC, useEffect, useState, useCallback, useMemo } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -168,13 +168,7 @@ const Login: FC = () => {
   });
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://connect.facebook.net/en_US/sdk.js";
-    script.async = true;
-    script.defer = true;
-    script.crossOrigin = "anonymous";
-    document.head.appendChild(script);
-
+    // Set up fbAsyncInit before loading the script
     window.fbAsyncInit = function () {
       window.FB.init({
         appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
@@ -184,13 +178,35 @@ const Login: FC = () => {
       });
     };
 
+    // Check if script already exists
+    if (document.getElementById('facebook-jssdk')) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = "facebook-jssdk";
+    script.src = "https://connect.facebook.net/en_US/sdk.js";
+    script.async = true;
+    script.defer = true;
+    script.crossOrigin = "anonymous";
+    document.head.appendChild(script);
+
     return () => {
-      document.head.removeChild(script);
+      const existingScript = document.getElementById('facebook-jssdk');
+      if (existingScript) {
+        document.head.removeChild(existingScript);
+      }
     };
   }, []);
  
   const handleFacebookLogin = () => {
     if (typeof window !== "undefined" && window.FB) {
+      // Check if FB SDK is ready
+      if (!window.FB.getAccessToken) {
+        toast.error("Facebook SDK is still loading. Please try again in a moment.");
+        return;
+      }
+
       window.FB.login(
         (response: any) => {
           if (response.authResponse) {
@@ -269,19 +285,19 @@ const Login: FC = () => {
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
             <InputField
               formik={formik}
-              label="Email" // Changed title to label
-              name="email" // Use 'name' prop instead of 'id' for Formik
+              label="Email"
+              name="email"
               icon={mailIcon}
               type="email"
               placeholder="Enter your email"
             />
             <InputField
               formik={formik}
-              label="Password" // Changed title to label
-              name="password" // Use 'name' prop
+              label="Password"
+              name="password"
               type="password"
               placeholder="Enter your password"
-              showPasswordToggle={true} // Enable password toggle
+              showPasswordToggle={true}
               isPasswordVisible={showPassword}
               togglePasswordVisibility={togglePasswordVisibility}
             />
