@@ -84,6 +84,7 @@ const Login: FC = () => {
     Cookies.set("token", response.data.token);
     setUser(userPayload);
 
+    setOverlayMessage("Loading your dashboard...");
     setOverlayVisible(true);
 
     setTimeout(() => {
