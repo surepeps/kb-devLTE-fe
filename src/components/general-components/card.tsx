@@ -100,7 +100,7 @@ const Card = ({
             {isPremium ? (
               <div className="w-[88px] z-10 h-[28px] py-[8px] px-[6px] text-white flex gap-x-1 items-center bg-[#FF3D00] absolute rounded-br-md">
                 <span className="text-sm">Premium</span>
-                <FontAwesomeIcon icon={faStar} size="xs" />
+                <Star size={14} className="text-white" />
               </div>
             ) : null}
             <ImageSwiper
