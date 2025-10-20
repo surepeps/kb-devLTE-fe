@@ -4,7 +4,7 @@ import Select from 'react-select';
 import { epilogue } from '@/styles/font';
 import { useFormik, FormikProps } from 'formik';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { FaArrowLeft, FaDotCircle } from 'react-icons/fa';
+import { ArrowLeft, Circle } from 'lucide-react';
 import customStyles from '@/styles/inputStyle';
 import Input from '@/components/general-components/Input';
 import Card from './card';
