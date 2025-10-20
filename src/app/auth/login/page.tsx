@@ -1,6 +1,6 @@
 /**
  * @format
- */ 
+ */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { FC, useEffect, useState, useCallback, useMemo } from "react";
@@ -57,7 +57,9 @@ const Login: FC = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(false);
-  const [isFBReady, setIsFBReady] = useState(false);
+  
+  // ✅ NEW STATE: Track if Facebook SDK is initialized
+  const [isFbSdkReady, setIsFbSdkReady] = useState(false);
 
   // Memoized callback for password toggle
   const togglePasswordVisibility = useCallback(() => {
@@ -97,7 +99,7 @@ const Login: FC = () => {
       setOverlayVisible(false);
     }, 1500);
   }, [router, setUser, resolvedRedirectTarget]);
- 
+  
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -116,7 +118,8 @@ const Login: FC = () => {
             success: "Login successful!",
             error: (error: any) => {
               console.log(error, "Login Error");
-              return error.message || "Sign In failed, please try again!";
+              // Assuming error object from POST_REQUEST has a message property
+              return error.message || "Sign In failed, please try again!"; 
             },
           }
         );
@@ -143,8 +146,6 @@ const Login: FC = () => {
 
           toast.success("Authentication successful via Google!");
 
-          const userPayload = response.data.user;
-
           const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
           if (redirectUrl) {
             try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
@@ -168,8 +169,15 @@ const Login: FC = () => {
     onError: () => toast.error("Google sign-in was cancelled or failed."),
   });
 
+  // ✅ MODIFIED useEffect for Facebook SDK initialization
   useEffect(() => {
-    // Set up fbAsyncInit before loading the script
+    const script = document.createElement("script");
+    script.src = "https://connect.facebook.net/en_US/sdk.js";
+    script.async = true;
+    script.defer = true;
+    script.crossOrigin = "anonymous";
+    document.head.appendChild(script);
+
     window.fbAsyncInit = function () {
       window.FB.init({
         appId: process.env.NEXT_PUBLIC_FACEBOOK_APP_ID,
@@ -177,97 +185,78 @@ const Login: FC = () => {
         xfbml: true,
         version: "v21.0",
       });
-      
-      // Mark FB as ready after initialization
-      setIsFBReady(true);
+      // Set the state to true once initialization is complete
+      setIsFbSdkReady(true); 
     };
 
-    // Check if script already exists
-    if (document.getElementById('facebook-jssdk')) {
-      // If script exists, check if FB is already initialized
-      if (window.FB) {
-        setIsFBReady(true);
-      }
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = "facebook-jssdk";
-    script.src = "https://connect.facebook.net/en_US/sdk.js";
-    script.async = true;
-    script.defer = true;
-    script.crossOrigin = "anonymous";
-    document.head.appendChild(script);
-
     return () => {
-      const existingScript = document.getElementById('facebook-jssdk');
-      if (existingScript) {
-        document.head.removeChild(existingScript);
+      // Cleanup: check if script exists before removal to prevent errors
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
       }
     };
   }, []);
- 
+  
+  // ✅ MODIFIED handleFacebookLogin to check isFbSdkReady
   const handleFacebookLogin = () => {
-    // Check if FB SDK is ready
-    if (!isFBReady || !window.FB) {
-      toast.error("Facebook SDK is still loading. Please try again in a moment.");
+    if (!isFbSdkReady) {
+      toast.error("Facebook SDK is still loading. Please wait a moment.");
       return;
     }
 
-    window.FB.login(
-      (response: any) => {
-        if (response.authResponse) {
-          window.FB.api(
-            "/me",
-            { fields: "name,email,first_name,last_name" },
-            async (userInfo: any) => {
-              try {
-                const url = URLS.BASE + URLS.authFacebook;
-                const payload = {
-                  idToken: response.authResponse.accessToken,
-                  // userID: response.authResponse.userID,
-                  // email: userInfo.email,
-                  // firstName: userInfo.first_name,
-                  // lastName: userInfo.last_name,
-                };
+    if (typeof window !== "undefined" && window.FB) {
+      window.FB.login(
+        (response: any) => {
+          if (response.authResponse) {
+            window.FB.api(
+              "/me",
+              { fields: "name,email,first_name,last_name" },
+              async (userInfo: any) => {
+                try {
+                  const url = URLS.BASE + URLS.authFacebook;
+                  const payload = {
+                    idToken: response.authResponse.accessToken,
+                  };
 
-                const result = await POST_REQUEST(url, payload);
-                
-                if (result.success) {
-                  Cookies.set("token", result.data.token);
-                  setUser(result.data.user);
+                  const result = await POST_REQUEST(url, payload);
+                  
+                  if (result.success) {
+                    Cookies.set("token", result.data.token);
+                    setUser(result.data.user);
 
-                  toast.success("Authentication successful via Facebook!");
+                    toast.success("Authentication successful via Facebook!");
 
-                  const userPayload = result.data.user;
+                    const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
+                    if (redirectUrl) {
+                      try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
+                      router.push(redirectUrl);
+                      return;
+                    }
 
-                  const redirectUrl = resolvedRedirectTarget || sessionStorage.getItem('redirectAfterLogin');
-                  if (redirectUrl) {
-                    try { sessionStorage.removeItem('redirectAfterLogin'); } catch {}
-                    router.push(redirectUrl);
-                    return;
-                  }
+                    router.push("/dashboard");
 
-                  router.push("/dashboard");
-
-                } else if (response.error) {
-                  toast.error(response.error);
-                } else {
+                  } else if (result.error) {
+                    toast.error(result.error);
+                  } else {
                     toast.error("Facebook authentication failed. Please try again.");
+                  }
+                  
+                } catch (error) {
+                  console.error("Facebook login API error:", error);
+                  toast.error("Facebook login failed, please try again!");
                 }
-                
-              } catch (error) {
-                console.error("Facebook login API error:", error);
-                toast.error("Facebook login failed, please try again!");
-              }
-            },
-          );
-        } else {
-          toast.error("Facebook login was cancelled");
-        }
-      },
-      { scope: "email,public_profile" },
-    );
+              },
+            );
+          } else {
+            toast.error("Facebook login was cancelled");
+          }
+        },
+        { scope: "email,public_profile" },
+      );
+    } else {
+      // This toast should theoretically not be hit if isFbSdkReady is true
+      toast.error("Facebook SDK not available."); 
+    }
   };
 
   if (isLoading) return <Loading />;
@@ -289,19 +278,19 @@ const Login: FC = () => {
           <div className="w-full flex flex-col gap-[15px] lg:px-[60px]">
             <InputField
               formik={formik}
-              label="Email"
-              name="email"
+              label="Email" 
+              name="email" 
               icon={mailIcon}
               type="email"
               placeholder="Enter your email"
             />
             <InputField
               formik={formik}
-              label="Password"
-              name="password"
+              label="Password" 
+              name="password" 
               type="password"
               placeholder="Enter your password"
-              showPasswordToggle={true}
+              showPasswordToggle={true} 
               isPasswordVisible={showPassword}
               togglePasswordVisibility={togglePasswordVisibility}
             />
@@ -345,10 +334,12 @@ const Login: FC = () => {
               text="Continue with Google"
               onClick={googleLogin}
             />
+            {/* ✅ MODIFIED RegisterWith for Facebook to show loading state and be disabled */}
             <RegisterWith
               icon={facebookIcon}
-              text="Continue with Facebook"
+              text={isFbSdkReady ? "Continue with Facebook" : "Loading Facebook..."}
               onClick={handleFacebookLogin}
+              isDisabled={!isFbSdkReady} // Disable button until SDK is ready
             />
           </div>
           
