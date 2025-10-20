@@ -10,12 +10,11 @@ import {
 } from "next/dist/shared/lib/get-img-props";
 import { motion } from "framer-motion";
 import randomImage from "@/assets/noImageAvailable.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { Star } from "lucide-react";
 import markerSVG from "@/svgs/marker.svg";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/pagination"; // if using pagination
 import "swiper/css/navigation"; // if using navigation arrows
