@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import emailIcon from '@/svgs/emaiIcon.svg';
-import { FaArrowLeft, FaDotCircle } from 'react-icons/fa';
+import { ArrowLeft, Circle } from 'lucide-react';
 import { epilogue } from '@/styles/font';
 import Input from './general-components/Input';
 import axios from 'axios';
@@ -127,20 +127,16 @@ const submitEmail = async () => {
     <div className='w-full h-[400px] flex flex-col px-[20px] mt-[30px]'>
       <div className='flex items-center gap-[10px]'>
         <button type='button'>
-          <FaArrowLeft
-            size={'lg'}
-            width={16}
-            height={16}
+          <ArrowLeft
+            size={16}
             className='w-[16px] h-[16px] cursor-pointer'
             onClick={() => closeModal(false)}
           />
           {''}
         </button>
         <span className='text-[#25324B] text-xl'>Verify</span>
-        <FaDotCircle
-          size={'sm'}
-          width={16}
-          height={16}
+        <Circle
+          size={4}
           className='w-[4px] h-[4px]'
         />
         <span
