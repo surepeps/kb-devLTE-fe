@@ -3,7 +3,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { useNewMarketplace } from "@/context/new-marketplace-context";
-import { FiChevronDown } from "react-icons/fi";
+import { ChevronDown } from "lucide-react";
 
 const MarketplaceTabs = () => {
   const { activeTab, setActiveTab } = useNewMarketplace();
