@@ -24,15 +24,17 @@ const PromoMount: React.FC<Props> = ({ slot, targetId, className, height }) => {
       while (el.firstChild) {
         el.removeChild(el.firstChild);
       }
-      // Hide placeholder container if no promos
+      // Set dimensions and visibility based on promos existence
       if (promos.length === 0) {
         el.style.display = 'none';
+        el.style.height = '0';
       } else {
         el.style.display = '';
+        el.style.height = height ? undefined : '80px'; // h-20 = 80px
       }
     }
     setContainer(el);
-  }, [id, promos.length]);
+  }, [id, promos.length, height]);
 
   if (!container || promos.length === 0) return null;
 
