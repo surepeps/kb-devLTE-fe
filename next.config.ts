@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["react-icons", "framer-motion", "lucide-react"],
     optimizeCss: true,
-    isrMemoryCacheSize: 50 * 1024 * 1024, // Increase ISR cache
   },
   compress: true,
   images: {
