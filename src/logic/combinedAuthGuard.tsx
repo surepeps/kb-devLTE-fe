@@ -6,7 +6,8 @@ import Loading from "@/components/loading-component/loading";
 import { motion } from "framer-motion";
 import { Shield, CreditCard, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
- 
+import Block from "@/components/access/Block";
+  
 interface CombinedAuthGuardProps {
   children: ReactNode;
   requireAuth?: boolean;
@@ -48,39 +49,6 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
     user?.activeSubscription && user.activeSubscription.status === "active"
   );
 
-  const Block = ({
-    title,
-    message,
-    actionHref,
-    actionLabel,
-    icon,
-  }: {
-    title: string;
-    message: string;
-    actionHref: string;
-    actionLabel: string;
-    icon: React.ReactNode;
-  }) => (
-    <div className="min-h-screen flex items-center justify-center bg-[#F6F8F8] p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white border border-gray-200 rounded-xl p-8 text-center"
-      >
-        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-5">
-          {icon}
-        </div>
-        <h2 className="text-2xl font-semibold text-[#0C1E1B] mb-2">{title}</h2>
-        <p className="text-[#4F5B57] mb-6">{message}</p>
-        <Link
-          href={actionHref}
-          className="bg-[#0B572B] hover:bg-[#094C25] text-white px-6 py-3 rounded-lg font-medium inline-block"
-        >
-          {actionLabel}
-        </Link>
-      </motion.div>
-    </div>
-  );
 
   if (isLoading || !isInitialized) {
     return (
@@ -146,7 +114,7 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
           icon={<CheckCircle2 size={32} className="text-[#8DDB90]" />}
         />
       );
-    }
+    } 
 
     if (!hasActiveSubscription) {
       return (

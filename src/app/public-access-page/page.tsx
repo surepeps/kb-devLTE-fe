@@ -22,6 +22,7 @@ import {
   Trash,
   Shield,
   Check,
+  Mail,
 } from "lucide-react";
 import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
@@ -138,6 +139,7 @@ interface DealSiteSettings {
   about?: AboutSection;
   contactUs?: ContactUsSection;
   paymentDetails?: BankDetails;
+  status?: string;
 }
 
 interface DealSiteLog {
@@ -273,6 +275,7 @@ export default function DealSitePage() {
   const [saving, setSaving] = useState(false);
   const [slugLocked, setSlugLocked] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isOnHold, setIsOnHold] = useState(false);
   const [slugStatus, setSlugStatus] = useState<"idle" | "invalid" | "checking" | "available" | "taken">("idle");
   const [slugMessage, setSlugMessage] = useState<string>("");
 
@@ -328,7 +331,6 @@ export default function DealSitePage() {
     page: 1,
     limit: 10,
     isAvailable: true as boolean | undefined,
-    // status: "active" as string | undefined,
     propertyType: undefined as string | undefined,
     propertyCategory: undefined as string | undefined,
     state: undefined as string | undefined,
@@ -374,7 +376,7 @@ export default function DealSitePage() {
         const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/details`, token);
         hidePreloader();
         if (res?.success && res.data) {
-          const s = res.data as Partial<DealSiteSettings & { paused?: boolean }>;
+          const s = res.data[0] as Partial<DealSiteSettings & { paused?: boolean }>;
           setForm((prev) => ({
             ...prev,
             publicSlug: s.publicSlug || prev.publicSlug,
@@ -404,6 +406,7 @@ export default function DealSitePage() {
             contactUs: (s as any).contactUs || prev.contactUs,
           }));
           if (typeof s.paused === "boolean") setIsPaused(s.paused);
+          if (s.status === "on-hold") setIsOnHold(true);
           if (s.publicSlug) setSlugLocked(true);
         }
       } finally {
@@ -448,8 +451,8 @@ export default function DealSitePage() {
         heroImageUrl: ds.publicPage?.heroImage || prev.publicPage.heroImageUrl,
       },
       footer: {
-        shortDescription: ds.footerSection?.shortDesc || prev.footer?.shortDescription || "",
-        copyrightText: ds.footerSection?.copyRight || prev.footer?.copyrightText || "",
+        shortDescription: ds.footerSection?.shortDescription || prev.footer?.shortDescription || "",
+        copyrightText: ds.footerSection?.copyrightText || prev.footer?.copyrightText || "",
       },
       paymentDetails: (ds as any).paymentDetails || prev.paymentDetails,
       about: (ds as any).about || prev.about,
@@ -459,6 +462,9 @@ export default function DealSitePage() {
     if (ds.publicSlug && !slugLocked) {
       setSlugLocked(true);
     }
+
+    if (ds.status === "on-hold") setIsOnHold(true);
+
   }, [user, slugLocked]);
 
   useEffect(() => {
@@ -649,16 +655,6 @@ export default function DealSitePage() {
           return;
         }
         throw new Error((res as any)?.message || "Setup failed");
-      } else {
-        showPreloader("Saving settings...");
-        const res = await PUT_REQUEST(`${URLS.BASE}/account/dealSite/${form.publicSlug}/update`, payload, token);
-        hidePreloader();
-        if (res?.success) {
-          toast.success("Settings saved");
-          setActiveView("manage");
-          return;
-        }
-        throw new Error(res?.message || "Save failed");
       }
     } catch (err) {
       toast.error("Failed to save settings");
@@ -1184,67 +1180,6 @@ export default function DealSitePage() {
       : building.charAt(0).toUpperCase() + building.slice(1);
   };
 
-  const buildSectionPayload = (section: UpdatableSectionId) => {
-    switch (section) {
-      case "branding":
-        return {
-          title: form.title,
-          keywords: form.keywords.map((k) => k.trim()).filter(Boolean),
-          description: form.description,
-          logoUrl: form.logoUrl,
-        };
-      case "design":
-        return {
-          publicPage: form.publicPage,
-          footer: form.footer || { shortDescription: "", copyrightText: "" },
-        };
-      case "theme":
-        return { theme: form.theme };
-      case "marketplace":
-        return { marketplaceDefaults: form.marketplaceDefaults };
-      case "inspection":
-        return { inspectionSettings: form.inspectionSettings };
-      case "contact":
-        return {
-          contactVisibility: {
-            ...form.contactVisibility,
-            whatsappNumber: form.contactVisibility.showWhatsAppButton ? form.contactVisibility.whatsappNumber : "",
-          },
-        };
-      case "social":
-        return { socialLinks: form.socialLinks };
-      case "payment":
-        return {
-          paymentDetails: {
-            businessName: form.paymentDetails?.businessName || "",
-            accountNumber: form.paymentDetails?.accountNumber || "",
-            sortCode: form.paymentDetails?.sortCode || "",
-            primaryContactEmail: form.paymentDetails?.primaryContactEmail || "",
-            primaryContactName: form.paymentDetails?.primaryContactName || "",
-            primaryContactPhone: form.paymentDetails?.primaryContactPhone || "",
-          },
-        };
-      case "featured": {
-        const normalizedPropertyIds = form.featureSelection.propertyIds
-          .split(",")
-          .map((id) => id.trim())
-          .filter(Boolean)
-          .join(",");
-        return {
-          featureSelection: {
-            ...form.featureSelection,
-            propertyIds: normalizedPropertyIds,
-          },
-          listingsLimit: form.listingsLimit,
-        };
-      }
-      case "listings":
-        return { listingsLimit: form.listingsLimit };
-      default:
-        return {};
-    }
-  };
-
   const validateSection = (section: UpdatableSectionId): string | null => {
     if (section === "payment") {
       const payment = form.paymentDetails;
@@ -1291,12 +1226,12 @@ export default function DealSitePage() {
         }
         case "design": {
           return [
-            { path: "publicPage", body: { publicPage: form.publicPage } },
+            { path: "publicPage", body: { ...form.publicPage } },
             {
               path: "footerSection",
               body: {
-                shortDesc: form.footer?.shortDescription || "",
-                copyRight: form.footer?.copyrightText || "",
+                shortDescription: form.footer?.shortDescription || "",
+                copyrightText: form.footer?.copyrightText || "",
               },
             },
           ];
@@ -1425,7 +1360,7 @@ export default function DealSitePage() {
     try {
       const qs = buildQuery({ page, limit: SERVICE_LOGS_LIMIT });
       const response = await GET_REQUEST<DealSiteLog[], { page?: number; totalPages?: number; total?: number; limit?: number }>(
-        `${URLS.BASE}/dealSite/${form.publicSlug}/logs?${qs}`,
+        `${URLS.BASE}/account/dealSite/${form.publicSlug}/logs?${qs}`,
         token,
       );
 
@@ -1641,17 +1576,6 @@ export default function DealSitePage() {
               );
             })}
           </div>
-
-          {selectedIds.length > 0 && (
-            <div className="mt-4">
-              <h4 className="text-sm font-semibold text-[#09391C] mb-2">Selected Listings</h4>
-              <div className="flex flex-wrap gap-2">
-                {selectedIds.map((id) => (
-                  <span key={id} className="px-2 py-1 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">{id}</span>
-                ))}
-              </div>
-            </div>
-          )}
         </>
       )}
     </div>
@@ -1945,53 +1869,6 @@ export default function DealSitePage() {
         </div>
       </div>
 
-      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        <div className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-base font-semibold text-[#09391C] flex items-center gap-2"><BarChart2 size={18} /> Views (last days)</h3>
-          </div>
-          {viewsByDay.length > 0 ? (
-            <Line
-              data={{
-                labels: viewsByDay.map((d) => d.date),
-                datasets: [
-                  {
-                    label: "Views",
-                    data: viewsByDay.map((d) => d.count),
-                    borderColor: form.theme.primaryColor,
-                    backgroundColor: form.theme.secondaryColor,
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { x: { grid: { display: false } }, y: { beginAtZero: true } },
-              }}
-            />
-          ) : (
-            <div className="h-40 flex items-center justify-center text-sm text-gray-500">No analytics data available</div>
-          )}
-        </div>
-
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-base font-semibold text-[#09391C] mb-3">Most Viewed Property</h3>
-          {mostViewed ? (
-            <div className="flex items-center gap-3">
-              <div className="w-20 h-16 rounded bg-gray-100 overflow-hidden border">
-                {mostViewed.image && <img src={mostViewed.image} alt={mostViewed.title || "Property"} className="w-full h-full object-cover" />}
-              </div>
-              <div className="flex-1">
-                <div className="font-medium text-sm text-[#09391C] line-clamp-2">{mostViewed.title}</div>
-                <div className="text-xs text-[#5A5D63]">{mostViewed.views || 0} views</div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-sm text-[#5A5D63]">No property view data yet.</div>
-          )}
-        </div>
-      </div> */}
-
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
           <h3 className="text-base font-semibold text-[#09391C] flex items-center gap-2"><History size={18} /> Recent Activities</h3>
@@ -2090,12 +1967,6 @@ export default function DealSitePage() {
                                 handleChange(event);
                                 setForm({ ...form, publicSlug: v });
                               }}
-
-                              // onChange={(e) => {
-                              //   const v = e.target.value.replace(/[^a-z0-9-]/g, '').toLowerCase();
-                              //   handleChange({ ...e, target: { ...e.target, value: v } });
-                              //   setForm({ ...form, publicSlug: v });
-                              // }}
                               disabled={slugLocked}
                               className={`${inputBase} disabled:bg-gray-100 ${errors.publicSlug && touched.publicSlug ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
                               placeholder="yourname"
@@ -2302,6 +2173,7 @@ export default function DealSitePage() {
           ) : (
             <>
               {ManageHeader}
+
               {isPaused && slugLocked && (
                 <div className="mb-4 p-4 rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800 flex items-center justify-between gap-3">
                   <div className="text-sm">
@@ -2312,6 +2184,23 @@ export default function DealSitePage() {
                   </button>
                 </div>
               )}
+
+              {isOnHold && slugLocked && (
+                <div className="mb-4 p-4 rounded-lg border border-red-200 bg-red-50 text-red-800 flex items-center justify-between gap-3">
+                  <div className="text-sm">
+                    <span className="font-semibold">Public access page on hold.</span> 
+                    Your page is currently restricted due to policy or verification issues. 
+                    Please contact an administrator for assistance.
+                  </div>
+                  <button
+                    onClick={() => window.open('/contact-us', '_blank')}
+                    className="inline-flex items-center gap-2 px-3 py-2 border border-red-300 rounded-lg text-sm bg-white hover:bg-red-100 transition-colors"
+                  >
+                    <Mail size={16} /> Contact Admin
+                  </button>
+                </div>
+              )}
+
 
               <Tabs
                 active={activeTab}

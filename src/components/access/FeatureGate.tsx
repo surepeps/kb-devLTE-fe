@@ -8,7 +8,7 @@ interface FeatureGateProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }
-
+ 
 const DefaultFallback = () => (
   <div className="min-h-[40vh] flex items-center justify-center p-6">
     <div className="max-w-md w-full border border-gray-200 rounded-xl bg-white p-8 text-center">

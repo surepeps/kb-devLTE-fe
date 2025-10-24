@@ -296,16 +296,18 @@ const MyListingPropertyCard: React.FC<MyListingPropertyCardProps> = ({
                     <Edit size={14} />
                     Edit Property
                   </button>
-                  <button
-                    onClick={() => {
-                      onChangeStatus();
-                      setShowDropdown(false);
-                    }}
-                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                  >
-                    {property.isAvailable ? <ToggleLeft size={14} /> : <ToggleRight size={14} />}
-                    {property.isAvailable ? "Mark Unavailable" : "Mark Available"}
-                  </button>
+                  {!["pending", "deleted", "rejected", "hold", "flagged"].includes(property.status) && (
+                    <button
+                      onClick={() => {
+                        onChangeStatus();
+                        setShowDropdown(false);
+                      }}
+                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      {property.isAvailable ? <ToggleLeft size={14} /> : <ToggleRight size={14} />}
+                      {property.isAvailable ? "Mark Unavailable" : "Mark Available"}
+                    </button>
+                  )}
                   <hr className="my-1" />
                   <button
                     onClick={() => {
