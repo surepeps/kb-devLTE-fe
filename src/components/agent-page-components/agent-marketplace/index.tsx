@@ -138,18 +138,20 @@ const AgentMarketPlace = () => {
           className='container flex flex-col gap-[40px] pb-[50px]'>
           {/**Navigation */}
           <nav className='flex gap-[24px] items-center'>
-            <FaArrowLeft
+            <ArrowLeft
               onClick={renderedPage && renderDynamically().handleNavigation}
-              size={'sm'}
-              className='w-[24px] h-[24px] cursor-pointer'
-              title='Go Home'
-              color='#25324B'
-            />
+              size={24}
+              className="w-[24px] h-[24px] cursor-pointer"
+              color="#25324B"
+            >
+              <title>Go Home</title>
+            </ArrowLeft>
+
             <div className='flex gap-[8px] items-center'>
               <h2 className='text-xl text-[#25324B]'>
                 {renderedPage && renderDynamically().heading}
               </h2>
-              <FaDotCircle
+              <Circle
                 size={'sm'}
                 className='w-[4px] h-[4px]'
                 color='#25324B'

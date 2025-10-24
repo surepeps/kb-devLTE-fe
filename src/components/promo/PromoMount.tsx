@@ -30,7 +30,7 @@ const PromoMount: React.FC<Props> = ({ slot, targetId, className, height }) => {
         el.style.height = '0';
       } else {
         el.style.display = '';
-        el.style.height = height ? undefined : '80px'; // h-20 = 80px
+        el.style.height = height ? '' : '80px';
       }
     }
     setContainer(el);
