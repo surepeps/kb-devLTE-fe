@@ -30,8 +30,9 @@ import Select from "react-select";
 import customStyles from "@/styles/inputStyle";
 import { useUserContext } from "@/context/user-context";
 import { getStates, getLGAsByState, getAreasByStateLGA } from "@/utils/location-utils";
-import Preloader from "@/components/general-components/preloader";
 import PendingKycReview from "@/components/agent-kyc/PendingKycReview";
+import ProcessingRequest from "../loading-component/ProcessingRequest";
+import { handleApiError } from "@/utils/handleApiError";
 
 const kycValidationSchema = Yup.object({
   meansOfId: Yup.array().of(
@@ -87,7 +88,7 @@ const AgentKycForm: React.FC = () => {
         localGovtArea: "",
       },
       regionOfOperation: [],
-      agentType: "Individual" as AgentType,
+      agentType: "Individual",
     },
     validationSchema: kycValidationSchema,
     onSubmit: async (values) => {
@@ -188,33 +189,38 @@ const AgentKycForm: React.FC = () => {
     try {
       const token = getCookie("token") as string;
       const response = await PUT_REQUEST(`${URLS.BASE}${URLS.submitKyc}`, values, token as string);
-      if (response.success) {
-        setUser({
-          _id: user?._id ?? "",
-          id: user?.id,
-          email: user?.email,
-          firstName: user?.firstName,
-          lastName: user?.lastName,
-          phoneNumber: user?.phoneNumber,
-          selectedRegion: user?.selectedRegion,
-          userType: user?.userType,
-          accountApproved: user?.accountApproved ?? true,
-          agentData: {
-            accountApproved: user?.agentData?.accountApproved ?? true,
-            agentType: user?.agentData?.agentType ?? "Agent",
-            kycStatus: "pending",
-            kycData: values,
-          },
-          address: user?.address,
-          profile_picture: user?.profile_picture,
-          referralCode: user?.referralCode,
-          isAccountVerified: user?.isAccountVerified,
-          activeSubscription: user?.activeSubscription ?? null,
-          doc: user?.doc,
-          individualAgent: user?.individualAgent,
-          companyAgent: user?.companyAgent,
-        });
+
+      if (!response.success) {
+        handleApiError(response);
+        return;
       }
+
+      setUser({
+        _id: user?._id ?? "",
+        id: user?.id,
+        email: user?.email,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        phoneNumber: user?.phoneNumber,
+        selectedRegion: user?.selectedRegion,
+        userType: user?.userType,
+        accountApproved: user?.accountApproved ?? true,
+        agentData: {
+          accountApproved: user?.agentData?.accountApproved ?? true,
+          agentType: user?.agentData?.agentType ?? "Agent",
+          kycStatus: "pending",
+          kycData: values,
+        },
+        address: user?.address,
+        profile_picture: user?.profile_picture,
+        referralCode: user?.referralCode,
+        isAccountVerified: user?.isAccountVerified,
+        activeSubscription: user?.activeSubscription ?? null,
+        doc: user?.doc,
+        individualAgent: user?.individualAgent,
+        companyAgent: user?.companyAgent,
+      });
+
     } catch (error) {
       // Error handled, validation messages will be shown via formik
     } finally {
@@ -482,7 +488,17 @@ const AgentKycForm: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <Preloader isVisible={isUploading} message="Uploading file..." />
+      <ProcessingRequest
+        isVisible={isSubmitting || isUploading}
+        title={isUploading ? "Uploading File" : "Submitting Request"}
+        message={
+          isUploading
+            ? "Your file is being uploaded. Please hold on..."
+            : "We’re processing your KYC submission. This may take a moment..."
+        }
+        iconColor="#8DDB90"
+      />
+
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Agent KYC Verification</h1>
@@ -639,13 +655,12 @@ const AgentKycForm: React.FC = () => {
                     <Select
                       styles={makeSelectStyles("agentType")}
                       options={[
-                        { value: "", label: "Select Agent Type" },
                         { value: "Individual", label: "Individual" },
                         { value: "Company", label: "Company" },
                       ]}
                       value={formik.values.agentType ? ({ value: formik.values.agentType, label: formik.values.agentType } as any) : null}
                       onChange={(opt: any) => {
-                        formik.setFieldValue("agentType", opt?.value || "");
+                        formik.setFieldValue("agentType", opt?.value || "Individual");
                         formik.setFieldTouched("agentType", true, true);
                       }}
                       placeholder="Select agent type"

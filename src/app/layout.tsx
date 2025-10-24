@@ -27,7 +27,7 @@ export const metadata = {
   icons: {
     icon: '/khabi-teq.svg',
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || 'https://khabiteq.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_API_URL || 'https://www.khabiteqrealty.com'),
 };
 
 import ReduxWrapper from '@/components/providers/ReduxWrapper';

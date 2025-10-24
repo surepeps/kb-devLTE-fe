@@ -271,18 +271,21 @@ export default function AgentDashboard() {
           const freeDays = 7;
           return (
             <div className="space-y-3 mb-4">
+ 
               {!isKycApproved && (
                 <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg">
                   <div>Enjoy free {freeDays} days premium by completing your agent KYC verification.</div>
                   <Link href="/agent-kyc" className="px-3 py-1.5 bg-emerald-600 text-white rounded hover:bg-emerald-700 text-sm">Complete KYC</Link>
                 </div>
               )}
-              {!hasActiveSub && (
+
+              {(isKycApproved &&!hasActiveSub) && (
                 <div className="flex items-center justify-between bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
                   <div>Subscribe for a plan to enjoy full features and get your public access page.</div>
                   <Link href="/agent-subscriptions" className="px-3 py-1.5 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-sm">View Plans</Link>
                 </div>
               )}
+
             </div>
           );
         })()}

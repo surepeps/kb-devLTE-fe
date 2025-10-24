@@ -78,7 +78,7 @@ const PostPropertyPage = () => {
       router.push("/auth/login");
       return;
     }
-
+ 
     // Allow Landowners to access directly
     if (user.userType === "Landowners") {
       return;
@@ -114,6 +114,7 @@ const PostPropertyPage = () => {
       allowedUserTypes={["Agent", "Landowners"]}
       requireAgentOnboarding={false}
       requireAgentApproval={false}
+      requireKycApproved={true}
       agentCustomMessage="You must complete onboarding and be approved before you can post properties."
     >
       <FeatureGate featureKeys={[FEATURE_KEYS.LISTINGS]}>

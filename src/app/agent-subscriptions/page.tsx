@@ -15,7 +15,8 @@ import {
   XCircle,
   Plus,
   Eye,
-  Download
+  Download,
+  CheckCircle2
 } from 'lucide-react';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
@@ -23,6 +24,7 @@ import toast from 'react-hot-toast';
 import { AgentSubscription, SubscriptionPlan, SubscriptionTransaction } from '@/types/subscription.types';
 import { format } from 'date-fns';
 import { getCookie } from 'cookies-next';
+import Block from '@/components/access/Block';
 
 export default function AgentSubscriptionsPage() {
   const router = useRouter();
@@ -292,6 +294,8 @@ export default function AgentSubscriptionsPage() {
     );
   }
 
+  const kycApproved = (user as any)?.agentData?.kycStatus === 'approved';
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -370,193 +374,211 @@ export default function AgentSubscriptionsPage() {
           </div>
         </div>
 
-        {/* Tab Content */}
-        {activeTab === 'subscriptions' && (
-          <div className="space-y-6">
-            {tabLoading ? (
-              <div className="text-center py-12 text-gray-500">Loading...</div>
-            ) : subscriptions.length === 0 ? (
-              <div className="text-center py-12">
-                <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Subscriptions</h3>
-                <p className="text-gray-500 mb-6">You don&apos;t have any active subscriptions yet.</p>
-                <button
-                  onClick={() => setActiveTab('plans')}
-                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
-                >
-                  Browse Plans
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {subscriptions.map((subscription: any) => {
-                  // Normalize fields to support both old and new API shapes
-                  const planObj = subscription.plan && typeof subscription.plan === 'object' ? subscription.plan : (subscription.plan || null);
-                  const planName = planObj?.name || subscription.plan || subscription.subscriptionType || subscription.planName || (subscription.meta && subscription.meta.appliedPlanName) || '-';
-                  const planCode = planObj?.code || subscription.plan?.code || subscription.subscriptionType || subscription.meta?.planCode || subscription.meta?.planCode;
-                  const startDateRaw = subscription.startedAt || subscription.startDate || subscription.startedAt || null;
-                  const endDateRaw = subscription.expiresAt || subscription.endDate || subscription.endsAt || null;
-                  const amount = subscription.transaction?.amount || subscription.amount || 0;
-                  const txnRef = subscription.transaction?._id || subscription.transaction?.reference || subscription.transaction?.id || '-';
-                  const txnStatus = subscription.transaction?.status || subscription.status || '-';
-                  const isFreePlan = ((planObj && ((planObj as any).basePrice === 0 || (planObj as any).isTrial)) ||
-                    /free|trial/i.test(String(planName)) ||
-                    Number(amount || 0) === 0);
-
-                  return (
-                    <div key={subscription._id || subscription.id} className="bg-white rounded-lg border border-gray-200 p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">{planName}</h3>
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(subscription.status)}
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(subscription.status)}`}>
-                            {subscription.status}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3 mb-6">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Start Date:</span>
-                          <span className="font-medium">{startDateRaw ? format(new Date(startDateRaw), 'MMM d, yyyy') : '-'}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">End Date:</span>
-                          <span className="font-medium">{endDateRaw ? format(new Date(endDateRaw), 'MMM d, yyyy') : '-'}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Amount:</span>
-                          <span className="font-medium">₦{Number(amount || 0).toLocaleString()}</span>
-                        </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Transaction</h4>
-                        <div className="text-xs text-gray-600">Ref: {txnRef} • {txnStatus}</div>
-                      </div>
-
-                      {subscription.status === 'active' && !isFreePlan && (
-                        <button
-                          onClick={() => {
-                            setSelectedSubscription(subscription);
-                            setShowRenewalModal(true);
-                          }}
-                          className="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <RefreshCw size={16} />
-                          Renew Subscription
-                        </button>
-                      )}
-
-                      {subscription.status === 'expired' && (
-                        <button
-                          onClick={() => setActiveTab('plans')}
-                          className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <Plus size={16} />
-                          Subscribe Again
-                        </button>
-                      )}
+        {(activeTab === 'subscriptions' || activeTab === 'plans') && (
+          <>
+          {!kycApproved ? (
+            <Block
+              title="KYC Verification Required"
+              message={
+                "You must complete your onboarding and be approved before you can post properties."
+              }
+              actionHref="/agent-kyc"
+              actionLabel="Submit KYC"
+              icon={<CheckCircle2 size={32} className="text-[#8DDB90]" />}
+            />
+          ) : (
+            <>
+              {/* Tab Content */}
+              {activeTab === 'subscriptions' && (
+                <div className="space-y-6">
+                  {tabLoading ? (
+                    <div className="text-center py-12 text-gray-500">Loading...</div>
+                  ) : subscriptions.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No Subscriptions</h3>
+                      <p className="text-gray-500 mb-6">You don&apos;t have any active subscriptions yet.</p>
+                      <button
+                        onClick={() => setActiveTab('plans')}
+                        className="bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                      >
+                        Browse Plans
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {subscriptions.map((subscription: any) => {
+                        // Normalize fields to support both old and new API shapes
+                        const planObj = subscription.plan && typeof subscription.plan === 'object' ? subscription.plan : (subscription.plan || null);
+                        const planName = planObj?.name || subscription.plan || subscription.subscriptionType || subscription.planName || (subscription.meta && subscription.meta.appliedPlanName) || '-';
+                        const planCode = planObj?.code || subscription.plan?.code || subscription.subscriptionType || subscription.meta?.planCode || subscription.meta?.planCode;
+                        const startDateRaw = subscription.startedAt || subscription.startDate || subscription.startedAt || null;
+                        const endDateRaw = subscription.expiresAt || subscription.endDate || subscription.endsAt || null;
+                        const amount = subscription.transaction?.amount || subscription.amount || 0;
+                        const txnRef = subscription.transaction?._id || subscription.transaction?.reference || subscription.transaction?.id || '-';
+                        const txnStatus = subscription.transaction?.status || subscription.status || '-';
+                        const isFreePlan = ((planObj && ((planObj as any).basePrice === 0 || (planObj as any).isTrial)) ||
+                          /free|trial/i.test(String(planName)) ||
+                          Number(amount || 0) === 0);
 
-            {subscriptionsTotalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 pt-2">
-                <button disabled={subscriptionsPage <= 1} onClick={() => fetchSubscriptions(subscriptionsPage - 1)} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
-                <span className="text-sm text-gray-600">Page {subscriptionsPage} of {subscriptionsTotalPages}</span>
-                <button disabled={subscriptionsPage >= subscriptionsTotalPages} onClick={() => fetchSubscriptions(subscriptionsPage + 1)} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'plans' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {plans.map((plan: any) => (
-              <div key={plan.id || plan.name} className={`bg-white rounded-lg border-2 p-6 relative ${plan.popular ? 'border-green-500' : 'border-gray-200'}`}>
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">Most Popular</span>
-                  </div>
-                )}
-
-                <div className="text-center mb-6">
-                  <div className="flex items-center justify-center gap-3 mb-2">
-                    <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-                    {(() => {
-                      const isFreePlan = plan.basePrice === 0 || plan.isTrial || /free/i.test(plan.name || '');
-                      const kycApproved = (user as any)?.agentData?.kycStatus === 'approved';
-                      if (isFreePlan && kycApproved) {
                         return (
-                          <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">Used / Exhausted</span>
-                        );
-                      }
-                      return null;
-                    })()}
-                  </div>
-                  <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-                </div>
+                          <div key={subscription._id || subscription.id} className="bg-white rounded-lg border border-gray-200 p-6">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-lg font-semibold text-gray-900">{planName}</h3>
+                              <div className="flex items-center gap-2">
+                                {getStatusIcon(subscription.status)}
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(subscription.status)}`}>
+                                  {subscription.status}
+                                </span>
+                              </div>
+                            </div>
 
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Features:</h4>
-                  <ul className="space-y-2">
-                    {(plan.features || []).map((f: any, index: number) => {
-                      const type = String(f.type);
-                      const isOn = type === 'boolean' ? Number(f.value) === 1 : true;
-                      let valueText = '';
-                      if (type === 'count') valueText = `: ${f.value}`;
-                      if (type === 'unlimited') valueText = ': Unlimited';
-                      return (
-                        <li key={index} className={`flex items-center gap-2 text-sm ${isOn ? 'text-gray-700' : 'text-gray-400 line-through'}`}>
-                          {isOn ? (
-                            <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
-                          ) : (
-                            <XCircle size={14} className="text-gray-400 flex-shrink-0" />
-                          )}
-                          <span>{f.label}{valueText}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
+                            <div className="space-y-3 mb-6">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Start Date:</span>
+                                <span className="font-medium">{startDateRaw ? format(new Date(startDateRaw), 'MMM d, yyyy') : '-'}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">End Date:</span>
+                                <span className="font-medium">{endDateRaw ? format(new Date(endDateRaw), 'MMM d, yyyy') : '-'}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Amount:</span>
+                                <span className="font-medium">₦{Number(amount || 0).toLocaleString()}</span>
+                              </div>
+                            </div>
 
-                <div className="mb-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-3">Pricing:</h4>
-                  <div className="space-y-2">
-                    {Object.entries(plan.prices || {}).map(([duration, price]: any) => {
-                      const isFreePlan = plan.basePrice === 0 || plan.isTrial || /free/i.test(plan.name || '');
-                      const disabledByActive = !!(activeSubscriptionFromProfile && activeSubscriptionFromProfile.status === 'active');
-                      const disabledByKyc = isFreePlan && ((user as any)?.agentData?.kycStatus === 'approved');
-                      const disabled = disabledByActive || disabledByKyc;
-                      const label = disabledByKyc ? 'Expired' : (disabled ? 'Active' : 'Subscribe');
+                            <div className="mb-4">
+                              <h4 className="text-sm font-medium text-gray-700 mb-2">Transaction</h4>
+                              <div className="text-xs text-gray-600">Ref: {txnRef} • {txnStatus}</div>
+                            </div>
 
-                      return (
-                        <div key={duration} className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
-                          <div className="flex items-center gap-3">
-                            <span className="font-medium">₦{Number(price).toLocaleString()}</span>
-                            {!isFreePlan && (
+                            {subscription.status === 'active' && !isFreePlan && (
                               <button
-                                onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
-                                disabled={disabled}
-                                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
+                                onClick={() => {
+                                  setSelectedSubscription(subscription);
+                                  setShowRenewalModal(true);
+                                }}
+                                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
                               >
-                                {label}
+                                <RefreshCw size={16} />
+                                Renew Subscription
+                              </button>
+                            )}
+
+                            {subscription.status === 'expired' && (
+                              <button
+                                onClick={() => setActiveTab('plans')}
+                                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                              >
+                                <Plus size={16} />
+                                Subscribe Again
                               </button>
                             )}
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {subscriptionsTotalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 pt-2">
+                      <button disabled={subscriptionsPage <= 1} onClick={() => fetchSubscriptions(subscriptionsPage - 1)} className="px-3 py-1 border rounded disabled:opacity-50">Prev</button>
+                      <span className="text-sm text-gray-600">Page {subscriptionsPage} of {subscriptionsTotalPages}</span>
+                      <button disabled={subscriptionsPage >= subscriptionsTotalPages} onClick={() => fetchSubscriptions(subscriptionsPage + 1)} className="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
-          </div>
+              )}
+
+              {activeTab === 'plans' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {plans.map((plan: any) => (
+                    <div key={plan.id || plan.name} className={`bg-white rounded-lg border-2 p-6 relative ${plan.popular ? 'border-green-500' : 'border-gray-200'}`}>
+                      {plan.popular && (
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">Most Popular</span>
+                        </div>
+                      )}
+
+                      <div className="text-center mb-6">
+                        <div className="flex items-center justify-center gap-3 mb-2">
+                          <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                          {(() => {
+                            const isFreePlan = plan.basePrice === 0 || plan.isTrial || /free/i.test(plan.name || '');
+                            const kycApproved = (user as any)?.agentData?.kycStatus === 'approved';
+                            if (isFreePlan && kycApproved) {
+                              return (
+                                <span className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs font-medium">Used / Exhausted</span>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
+                        <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                      </div>
+
+                      <div className="mb-6">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Features:</h4>
+                        <ul className="space-y-2">
+                          {(plan.features || []).map((f: any, index: number) => {
+                            const type = String(f.type);
+                            const isOn = type === 'boolean' ? Number(f.value) === 1 : true;
+                            let valueText = '';
+                            if (type === 'count') valueText = `: ${f.value}`;
+                            if (type === 'unlimited') valueText = ': Unlimited';
+                            return (
+                              <li key={index} className={`flex items-center gap-2 text-sm ${isOn ? 'text-gray-700' : 'text-gray-400 line-through'}`}>
+                                {isOn ? (
+                                  <CheckCircle size={14} className="text-green-500 flex-shrink-0" />
+                                ) : (
+                                  <XCircle size={14} className="text-gray-400 flex-shrink-0" />
+                                )}
+                                <span>{f.label}{valueText}</span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+
+                      <div className="mb-6">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Pricing:</h4>
+                        <div className="space-y-2">
+                          {Object.entries(plan.prices || {}).map(([duration, price]: any) => {
+                            const isFreePlan = plan.basePrice === 0 || plan.isTrial || /free/i.test(plan.name || '');
+                            const disabledByActive = !!(activeSubscriptionFromProfile && activeSubscriptionFromProfile.status === 'active');
+                            const disabledByKyc = isFreePlan && ((user as any)?.agentData?.kycStatus === 'approved');
+                            const disabled = disabledByActive || disabledByKyc;
+                            const label = disabledByKyc ? 'Expired' : (disabled ? 'Active' : 'Subscribe');
+
+                            return (
+                              <div key={duration} className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">{duration} month{parseInt(duration) > 1 ? 's' : ''}:</span>
+                                <div className="flex items-center gap-3">
+                                  <span className="font-medium">₦{Number(price).toLocaleString()}</span>
+                                  {!isFreePlan && (
+                                    <button
+                                      onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
+                                      disabled={disabled}
+                                      className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
+                                    >
+                                      {label}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
         )}
+      </>
+    )}
 
         {activeTab === 'transactions' && (
           <div className="bg-white rounded-lg border border-gray-200">

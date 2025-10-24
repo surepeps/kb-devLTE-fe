@@ -87,7 +87,7 @@ const MarketplaceTabs = () => {
             <span className="truncate">
               {activeTabData?.label || "Select property type"}
             </span>
-            <FiChevronDown
+            <ChevronDown
               className={`w-4 h-4 ml-2 transition-transform duration-200 flex-shrink-0 ${
                 isDropdownOpen ? "rotate-180" : ""
               }`}

@@ -23,6 +23,7 @@ import {
 } from "@/types/my-listings.types";
 import "@/styles/my-listings.css";
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
+import ProcessingRequest from "@/components/loading-component/ProcessingRequest";
 
 
 
@@ -40,6 +41,11 @@ const MyListingPage = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [hasActiveFilters, setHasActiveFilters] = useState(false);
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+
   const router = useRouter();
 
   const [currentFilters, setCurrentFilters] = useState<SearchFilters>({
@@ -194,6 +200,12 @@ const MyListingPage = () => {
   };
 
   const handleChangeStatus = async (property: Property) => {
+    if (property.status === "pending") {
+      toast.error("This property is still under review. You can’t change its status until it’s approved.");
+      return;
+    }
+
+    setIsUpdating(true)
     try {
       const url = `${URLS.BASE}/account/properties/${property._id}/updateStatus`;
       const payload: StatusUpdatePayload = {
@@ -217,12 +229,15 @@ const MyListingPage = () => {
     } catch (error) {
       console.error("Error updating property status:", error);
       toast.error("Failed to update property status");
+    }finally{
+      setIsUpdating(false)
     }
   };
 
   const confirmDelete = async () => {
     if (!selectedProperty) return;
 
+    setIsDeleting(true)
     try {
       const url = `${URLS.BASE}/account/properties/${selectedProperty._id}/delete`;
       const response = await DELETE_REQUEST(url, null, Cookies.get("token"));
@@ -238,6 +253,8 @@ const MyListingPage = () => {
     } catch (error) {
       console.error("Error deleting property:", error);
       toast.error("Failed to delete property");
+    }finally{
+      setIsDeleting(false)
     }
   };
 
@@ -268,6 +285,18 @@ const MyListingPage = () => {
       agentCustomMessage="You must complete onboarding and be approved before you view posted properties."
     >
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-8">
+
+        <ProcessingRequest
+          isVisible={isDeleting || isUpdating}
+          title={isDeleting ? "Deleting Property" : "Updating Property Status"}
+          message={
+            isDeleting
+              ? "Please wait while we remove this property from your listings..."
+              : "We’re updating the property status. This will only take a moment..."
+          }
+          iconColor={isDeleting ? "#F87171" : "#8DDB90"}
+        />
+
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 sm:mb-8 gap-4">
