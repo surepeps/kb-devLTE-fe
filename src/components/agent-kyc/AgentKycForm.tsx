@@ -41,7 +41,6 @@ const kycValidationSchema = Yup.object({
       docImg: Yup.array().of(Yup.string()).min(1, "At least one document image is required"),
     }),
   ).min(1, "At least one form of identification is required"),
-  agentType: Yup.string().oneOf(["Individual", "Company"], "Please select a valid agent type").required("Agent type is required"),
   agentLicenseNumber: Yup.string().optional().min(3, "License number must be at least 3 characters"),
   profileBio: Yup.string().optional().max(500, "Bio cannot exceed 500 characters"),
   specializations: Yup.array().of(Yup.string()).min(1, "Pick at least one specialization").max(5, "Maximum 5 specializations allowed"),
@@ -114,7 +113,7 @@ const AgentKycForm: React.FC = () => {
 
   const isRequired = (path: string): boolean => {
     const requiredFields = [
-      "meansOfId", "agentType", "specializations", "languagesSpoken", "servicesOffered",
+      "meansOfId", "specializations", "languagesSpoken", "servicesOffered",
       "address.street", "address.homeNo", "address.state", "address.localGovtArea", "regionOfOperation"
     ];
     return requiredFields.some(field => path === field || path.startsWith(field + "["));
@@ -252,7 +251,6 @@ const AgentKycForm: React.FC = () => {
 
     if (currentStep === 1) {
       const fields = [
-        "agentType",
         "specializations",
         "languagesSpoken",
         "servicesOffered",
@@ -297,11 +295,9 @@ const AgentKycForm: React.FC = () => {
 
     if (currentStep === 1) {
       return (
-        !errors.agentType &&
         !errors.specializations &&
         !errors.languagesSpoken &&
         !errors.servicesOffered &&
-        !!formik.values.agentType &&
         formik.values.specializations.length > 0 &&
         formik.values.languagesSpoken.length > 0 &&
         formik.values.servicesOffered.length > 0
@@ -647,26 +643,6 @@ const AgentKycForm: React.FC = () => {
                     <input type="text" {...formik.getFieldProps("agentLicenseNumber")} className={inputClass("agentLicenseNumber")} placeholder="AGT-12345-XYZ" />
                     {formik.touched.agentLicenseNumber && formik.errors.agentLicenseNumber && (
                       <p className="text-red-500 text-sm mt-2">{formik.errors.agentLicenseNumber as string}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type *</label>
-                    <Select
-                      styles={makeSelectStyles("agentType")}
-                      options={[
-                        { value: "Individual", label: "Individual" },
-                        { value: "Company", label: "Company" },
-                      ]}
-                      value={formik.values.agentType ? ({ value: formik.values.agentType, label: formik.values.agentType } as any) : null}
-                      onChange={(opt: any) => {
-                        formik.setFieldValue("agentType", opt?.value || "Individual");
-                        formik.setFieldTouched("agentType", true, true);
-                      }}
-                      placeholder="Select agent type"
-                    />
-                    {hasError("agentType") && (
-                      <p className="text-red-500 text-sm mt-2">{getError("agentType")}</p>
                     )}
                   </div>
                 </div>
