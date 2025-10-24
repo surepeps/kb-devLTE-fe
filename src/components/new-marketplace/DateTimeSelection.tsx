@@ -6,8 +6,6 @@ import toast from "react-hot-toast";
 import Button from "@/components/general-components/button";
 import { POST_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import ProcessingRequest from "../loading-component/ProcessingRequest";
 
 interface DateTimeSelectionProps {
@@ -357,7 +355,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
- 
+  
       <ProcessingRequest
         isVisible={isSubmitting || isRedirectingToPayment}
         title={isRedirectingToPayment ? "Redirecting to Payment" : "Submitting Request"}
