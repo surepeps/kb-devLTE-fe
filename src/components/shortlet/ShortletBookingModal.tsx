@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Calendar, Clock, Users } from "lucide-react";
+import ProcessingRequest from "../loading-component/ProcessingRequest";
 import useAmount from "@/hooks/useAmount";
 
 interface ShortletBookingModalProps {
@@ -21,7 +22,7 @@ interface ShortletBookingModalProps {
   onClose: () => void;
   property: any;
   mode: "instant" | "request";
-}
+} 
 
 const getNightlyRate = (property: any): number => {
   const sd = property?.shortletDetails;
@@ -78,6 +79,8 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
   const [step, setStep] = useState<1 | 2>(1);
   const [successOpen, setSuccessOpen] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirectingToPayment, setIsRedirectingToPayment] = useState(false);
 
   const maxGuests = Number(property?.shortletDetails?.maxGuests ?? property?.maxGuests ?? 10);
   const nightly = useMemo(() => getNightlyRate(property), [property]);
@@ -214,16 +217,8 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
     validateOnBlur: true,
     validateOnChange: false,
     onSubmit: async (values) => {
-      const { payable: computedPayable } = useAmount(
-        nightly,
-        cleaningFee,
-        values.checkIn?.toISOString(),
-        values.checkOut?.toISOString(),
-        weeklyDiscountPercent,
-        monthlyDiscountPercent,
-        securityDeposit
-      );
-      const totalPayable = computedPayable;
+      // Use the already computed payable from amountInfo
+      const totalPayable = payable;
 
       const apiPayload: any = {
         bookedBy: {
@@ -245,9 +240,12 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
         bookingMode: mode,
       };
 
+      setIsSubmitting(true)
+
       try {
         const token = Cookies.get("token");
         const url = `${URLS.BASE}/inspections/book-request`;
+
         const response: any = await toast.promise(
           POST_REQUEST(url, apiPayload, token),
           {
@@ -272,17 +270,19 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
           null;
 
         if (authUrl && typeof authUrl === "string") {
+          setIsRedirectingToPayment(true)
           onClose();
           setTimeout(() => {
             window.location.href = authUrl as string;
           }, 50);
           return;
         }
-
-        const q = new URLSearchParams({ amount: String(total || 0), purpose: "shortlet-booking" });
         onClose();
-        router.push(`/payment-details?${q.toString()}`);
-      } catch {}
+      } catch {
+
+      }finally{
+        setIsSubmitting(false)
+      }
     },
   });
 
@@ -424,6 +424,15 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
             )}
           </AnimatePresence>
 
+          <ProcessingRequest
+            isVisible={isSubmitting || isRedirectingToPayment}
+            title={isRedirectingToPayment ? "Redirecting to Payment" : "Processing Booking"}
+            message={isRedirectingToPayment
+              ? "Your booking has been confirmed. You will be redirected to the payment page shortly..."
+              : "Please wait while we process your booking and generate your payment link..."}
+            iconColor="#8DDB90"
+          />
+
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -459,7 +468,7 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
                     <li>Select preferred check-in/out dates and times. Add guests and an optional note.</li>
                     <li>Enter your contact information (used to contact you about approval).</li>
                     <li>Submit your request. The host has a limited time window to accept.</li>
-                    <li>If accepted, you��ll be prompted to complete payment to confirm the booking. If declined/expired, you’ll be notified.</li>
+                    <li>If accepted, you&apos;ll be prompted to complete payment to confirm the booking. If declined/expired, you&apos;ll be notified.</li>
                   </ul>
                 )}
               </div>
