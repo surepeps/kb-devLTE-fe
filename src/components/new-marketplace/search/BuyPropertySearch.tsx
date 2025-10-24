@@ -121,8 +121,6 @@ const BuyPropertySearch = () => {
         searchParams.homeCondition = filters.homeCondition.trim();
       }
 
-      // console.log("Search params:", searchParams); // Debug log
-
       // Perform search
       await searchTabProperties("buy", searchParams);
     },
@@ -199,14 +197,6 @@ const BuyPropertySearch = () => {
   ) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
-
-  // Don't trigger initial search here - let BuyTab handle it
-  // This prevents duplicate API calls
-  // useEffect(() => {
-  //   if (activeTab === "buy" && buyTab.formikStatus === "idle") {
-  //     handleSearch();
-  //   }
-  // }, [activeTab, handleSearch, buyTab.formikStatus]);
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">

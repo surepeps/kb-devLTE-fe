@@ -55,7 +55,7 @@ const MarketplaceTabs = () => {
   const handleTabSelect = (tabId: typeof activeTab) => {
     setActiveTab(tabId);
     setIsDropdownOpen(false);
-  };
+  }; 
  
   return (
     <>

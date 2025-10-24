@@ -6,7 +6,6 @@ import { PUT_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
 import {
   AgentKycSubmissionPayload,
-  AgentType,
   SPECIALIZATION_OPTIONS,
   SERVICE_OPTIONS,
   LANGUAGE_OPTIONS,

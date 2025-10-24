@@ -145,7 +145,7 @@ const DocumentTypeFilter: React.FC<DocumentTypeFilterProps> = ({
                 </span>
               </label>
             ))}
-          </div>
+          </div> 
 
           {/* Action Buttons */}
           <div className="flex gap-2 sticky bottom-0 bg-white pt-2">

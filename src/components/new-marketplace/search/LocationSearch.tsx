@@ -23,7 +23,7 @@ interface LocationDetails {
   state: string;
   lga: string;
   area?: string;
-}
+} 
 
 interface LocationSuggestion {
   state: string;

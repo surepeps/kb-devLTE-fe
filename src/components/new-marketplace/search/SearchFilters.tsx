@@ -300,7 +300,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
               {loading ? "Searching..." : "Search"}
             </button>
           </div>
-        </div>
+        </div> 
 
         {/* Quick Location Search for Mobile */}
         <div className="w-full">
