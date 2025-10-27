@@ -808,7 +808,7 @@ const AgentKycForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Region of Operation *</label>
-                  <p className="text-xs text-gray-500 mb-2">Select areas/LGAs you primarily operate in for the selected state</p>
+                  <p className="text-xs text-gray-500 mb-2">Select at least 2 areas/LGAs you primarily operate in for the selected state</p>
                   <div className={`grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-auto p-3 border-2 rounded-lg ${shouldShowRedBorder("regionOfOperation") ? "border-red-500 bg-red-50" : "border-gray-300 bg-white"}`}>
                     {(areaOptions || []).map((area) => {
                       const selected = formik.values.regionOfOperation.includes(area);
