@@ -94,14 +94,26 @@ const AgentKycForm: React.FC = () => {
     },
   });
 
+  // Initialize agentType field as touched on mount to ensure default value is recognized
+  React.useEffect(() => {
+    if (currentStep === 1 && !formik.touched.agentType) {
+      formik.setFieldTouched("agentType", true, false);
+    }
+  }, [currentStep]);
+
   const getError = (path: string): string | undefined => {
     const touched = getIn(formik.touched, path);
     const error = getIn(formik.errors, path);
     const value = getIn(formik.values, path);
 
     // If these array fields have at least one selection, suppress errors
-    const arrayFields = ["specializations", "languagesSpoken", "servicesOffered"];
+    const arrayFields = ["specializations", "languagesSpoken", "servicesOffered", "regionOfOperation"];
     if (arrayFields.includes(path) && Array.isArray(value) && value.length > 0) {
+      return undefined;
+    }
+
+    // If address fields have values, suppress errors
+    if ((path === "address.state" || path === "address.localGovtArea") && typeof value === "string" && value.trim().length > 0) {
       return undefined;
     }
 
@@ -227,8 +239,6 @@ const AgentKycForm: React.FC = () => {
   };
 
   const validateCurrentStep = async (): Promise<boolean> => {
-    const errors = await formik.validateForm();
-
     const setAllTouched = (fields: string[]) => {
       const touched: any = { ...(formik.touched as any) };
       fields.forEach((f) => (touched[f] = true));
@@ -236,8 +246,8 @@ const AgentKycForm: React.FC = () => {
     };
 
     if (currentStep === 0) {
-      const hasIdErrors = !!errors.meansOfId;
-      if (hasIdErrors) {
+      const idErrors = await formik.validateField("meansOfId");
+      if (idErrors) {
         const fields: string[] = [];
         (formik.values.meansOfId || []).forEach((_, i) => {
           fields.push(`meansOfId[${i}].name`);
@@ -255,7 +265,14 @@ const AgentKycForm: React.FC = () => {
         "languagesSpoken",
         "servicesOffered",
       ];
-      const hasErrors = fields.some((f) => (errors as any)[f]);
+
+      const errors: any = {};
+      for (const field of fields) {
+        const err = await formik.validateField(field);
+        if (err) errors[field] = err;
+      }
+
+      const hasErrors = Object.keys(errors).length > 0;
       if (hasErrors) {
         setAllTouched(fields);
         return false;
@@ -270,7 +287,14 @@ const AgentKycForm: React.FC = () => {
         "address.localGovtArea",
         "regionOfOperation",
       ];
-      const hasErrors = !!errors.address || !!(errors as any).regionOfOperation;
+
+      const errors: any = {};
+      for (const field of fields) {
+        const err = await formik.validateField(field);
+        if (err) errors[field] = err;
+      }
+
+      const hasErrors = Object.keys(errors).length > 0;
       if (hasErrors) {
         setAllTouched(fields);
         return false;
@@ -294,16 +318,11 @@ const AgentKycForm: React.FC = () => {
     }
 
     if (currentStep === 1) {
-      return (
-        !errors.profileBio &&
-        !errors.specializations &&
-        !errors.languagesSpoken &&
-        !errors.servicesOffered &&
-        !!formik.values.profileBio &&
-        formik.values.specializations.length > 0 &&
-        formik.values.languagesSpoken.length > 0 &&
-        formik.values.servicesOffered.length > 0
-      );
+      const bioDefined = !!formik.values.profileBio && formik.values.profileBio.trim().length > 0;
+      const hasSpecializations = formik.values.specializations.length > 0;
+      const hasLanguages = formik.values.languagesSpoken.length > 0;
+      const hasServices = formik.values.servicesOffered.length > 0;
+      return bioDefined && hasSpecializations && hasLanguages && hasServices;
     }
 
     if (currentStep === 2) {
