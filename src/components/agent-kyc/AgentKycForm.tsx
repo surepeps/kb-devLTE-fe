@@ -313,16 +313,11 @@ const AgentKycForm: React.FC = () => {
     }
 
     if (currentStep === 1) {
-      return (
-        !errors.profileBio &&
-        !errors.specializations &&
-        !errors.languagesSpoken &&
-        !errors.servicesOffered &&
-        !!formik.values.profileBio &&
-        formik.values.specializations.length > 0 &&
-        formik.values.languagesSpoken.length > 0 &&
-        formik.values.servicesOffered.length > 0
-      );
+      const bioDefined = !!formik.values.profileBio && formik.values.profileBio.trim().length > 0;
+      const hasSpecializations = formik.values.specializations.length > 0;
+      const hasLanguages = formik.values.languagesSpoken.length > 0;
+      const hasServices = formik.values.servicesOffered.length > 0;
+      return bioDefined && hasSpecializations && hasLanguages && hasServices;
     }
 
     if (currentStep === 2) {
