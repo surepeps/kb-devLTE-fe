@@ -418,7 +418,9 @@ export default function DealSitePage() {
 
   // Load existing deal site from profile response if available
   useEffect(() => {
-    const ds = (user as any)?.dealSite?.[0];
+    const dealSiteArray = (user as any)?.dealSite;
+    const ds = Array.isArray(dealSiteArray) && dealSiteArray.length > 0 ? dealSiteArray[0] : null;
+
     if (!ds) return;
 
     setForm((prev) => ({
