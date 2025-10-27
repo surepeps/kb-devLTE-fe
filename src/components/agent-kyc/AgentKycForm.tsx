@@ -107,8 +107,13 @@ const AgentKycForm: React.FC = () => {
     const value = getIn(formik.values, path);
 
     // If these array fields have at least one selection, suppress errors
-    const arrayFields = ["specializations", "languagesSpoken", "servicesOffered"];
+    const arrayFields = ["specializations", "languagesSpoken", "servicesOffered", "regionOfOperation"];
     if (arrayFields.includes(path) && Array.isArray(value) && value.length > 0) {
+      return undefined;
+    }
+
+    // If address fields have values, suppress errors
+    if ((path === "address.state" || path === "address.localGovtArea") && typeof value === "string" && value.trim().length > 0) {
       return undefined;
     }
 
