@@ -649,19 +649,19 @@ const AgentKycForm: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type</label>
+                    <label className="block text-sm font-medium text-[#0C1E1B] mb-2">Agent Type (Optional)</label>
                     <Select
-                      styles={makeSelectStyles("agentType")}
+                      styles={customStyles}
                       options={[
                         { value: "Individual", label: "Individual" },
                         { value: "Company", label: "Company" },
                       ]}
-                      value={formik.values.agentType ? ({ value: formik.values.agentType, label: formik.values.agentType } as any) : null}
+                      value={{ value: formik.values.agentType, label: formik.values.agentType }}
                       onChange={(opt: any) => {
                         formik.setFieldValue("agentType", opt?.value || "Individual");
-                        formik.setFieldTouched("agentType", true, true);
                       }}
                       placeholder="Select agent type"
+                      isSearchable={false}
                     />
                   </div>
                 </div>
