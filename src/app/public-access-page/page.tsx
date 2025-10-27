@@ -375,7 +375,7 @@ export default function DealSitePage() {
         showPreloader("Loading Public Access Page...");
         const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/details`, token);
         hidePreloader();
-        if (res?.success && res.data) {
+        if (res?.success && res.data && Array.isArray(res.data) && res.data.length > 0) {
           const s = res.data[0] as Partial<DealSiteSettings & { paused?: boolean }>;
           setForm((prev) => ({
             ...prev,
@@ -418,7 +418,9 @@ export default function DealSitePage() {
 
   // Load existing deal site from profile response if available
   useEffect(() => {
-    const ds = (user as any)?.dealSite?.[0];
+    const dealSiteArray = (user as any)?.dealSite;
+    const ds = Array.isArray(dealSiteArray) && dealSiteArray.length > 0 ? dealSiteArray[0] : null;
+
     if (!ds) return;
 
     setForm((prev) => ({
