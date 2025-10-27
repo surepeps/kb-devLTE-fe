@@ -94,6 +94,13 @@ const AgentKycForm: React.FC = () => {
     },
   });
 
+  // Initialize agentType field as touched on mount to ensure default value is recognized
+  React.useEffect(() => {
+    if (currentStep === 1 && !formik.touched.agentType) {
+      formik.setFieldTouched("agentType", true, false);
+    }
+  }, [currentStep]);
+
   const getError = (path: string): string | undefined => {
     const touched = getIn(formik.touched, path);
     const error = getIn(formik.errors, path);
