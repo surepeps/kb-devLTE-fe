@@ -234,8 +234,6 @@ const AgentKycForm: React.FC = () => {
   };
 
   const validateCurrentStep = async (): Promise<boolean> => {
-    const errors = await formik.validateForm();
-
     const setAllTouched = (fields: string[]) => {
       const touched: any = { ...(formik.touched as any) };
       fields.forEach((f) => (touched[f] = true));
@@ -243,8 +241,8 @@ const AgentKycForm: React.FC = () => {
     };
 
     if (currentStep === 0) {
-      const hasIdErrors = !!errors.meansOfId;
-      if (hasIdErrors) {
+      const idErrors = await formik.validateField("meansOfId");
+      if (idErrors) {
         const fields: string[] = [];
         (formik.values.meansOfId || []).forEach((_, i) => {
           fields.push(`meansOfId[${i}].name`);
@@ -261,7 +259,14 @@ const AgentKycForm: React.FC = () => {
         "languagesSpoken",
         "servicesOffered",
       ];
-      const hasErrors = fields.some((f) => (errors as any)[f]);
+
+      const errors: any = {};
+      for (const field of fields) {
+        const err = await formik.validateField(field);
+        if (err) errors[field] = err;
+      }
+
+      const hasErrors = Object.keys(errors).length > 0;
       if (hasErrors) {
         setAllTouched(fields);
         return false;
@@ -276,7 +281,14 @@ const AgentKycForm: React.FC = () => {
         "address.localGovtArea",
         "regionOfOperation",
       ];
-      const hasErrors = !!errors.address || !!(errors as any).regionOfOperation;
+
+      const errors: any = {};
+      for (const field of fields) {
+        const err = await formik.validateField(field);
+        if (err) errors[field] = err;
+      }
+
+      const hasErrors = Object.keys(errors).length > 0;
       if (hasErrors) {
         setAllTouched(fields);
         return false;
