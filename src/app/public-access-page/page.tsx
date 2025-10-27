@@ -375,7 +375,7 @@ export default function DealSitePage() {
         showPreloader("Loading Public Access Page...");
         const res = await GET_REQUEST<any>(`${URLS.BASE}/account/dealSite/details`, token);
         hidePreloader();
-        if (res?.success && res.data) {
+        if (res?.success && res.data && Array.isArray(res.data) && res.data.length > 0) {
           const s = res.data[0] as Partial<DealSiteSettings & { paused?: boolean }>;
           setForm((prev) => ({
             ...prev,
