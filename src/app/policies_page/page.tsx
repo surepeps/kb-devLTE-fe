@@ -26,9 +26,7 @@ const Policies = () => {
         .map(section => ({
           ...section,
           items: section.items.filter(item =>
-            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (Array.isArray(item.details) && item.details.some(d => d.toLowerCase().includes(searchTerm.toLowerCase())))
+            item.text.toLowerCase().includes(searchTerm.toLowerCase())
           ),
         }))
         .filter(section => section.items.length > 0),
@@ -133,9 +131,6 @@ const Policies = () => {
                     <h3 className='text-[28px] lg:text-[32px] font-bold text-[#09391C] mb-2'>
                       {filteredPolicy.name}
                     </h3>
-                    <p className='text-[#5A5D63] text-[16px] leading-[24px]'>
-                      {filteredPolicy.description}
-                    </p>
                   </div>
                 </div>
               </div>
@@ -187,32 +182,12 @@ const Policies = () => {
                                   key={itemIdx}
                                   initial={{ opacity: 0, x: -10 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: itemIdx * 0.05 }}>
-                                  <div className='flex gap-3'>
-                                    <span className='text-[#8DDB90] font-bold mt-1 flex-shrink-0'>•</span>
-                                    <div className='flex-1'>
-                                      <p className='text-[#09391C] font-semibold text-[15px] lg:text-[16px]'>
-                                        {item.title}
-                                      </p>
-                                      {item.description && (
-                                        <p className='text-[#5A5D63] text-[14px] lg:text-[15px] leading-[22px] mt-1'>
-                                          {item.description}
-                                        </p>
-                                      )}
-                                      {Array.isArray(item.details) && item.details.length > 0 && (
-                                        <ul className='mt-2 ml-3 space-y-2'>
-                                          {item.details.map((detail, detailIdx) => (
-                                            <li
-                                              key={detailIdx}
-                                              className='text-[#5A5D63] text-[14px] leading-[21px] flex gap-2'>
-                                              <span className='text-[#8DDB90] flex-shrink-0'>◦</span>
-                                              <span>{detail}</span>
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      )}
-                                    </div>
-                                  </div>
+                                  transition={{ delay: itemIdx * 0.05 }}
+                                  className='flex gap-3'>
+                                  <span className='text-[#8DDB90] font-bold mt-1 flex-shrink-0'>•</span>
+                                  <p className='text-[#5A5D63] text-[14px] lg:text-[15px] leading-[22px] flex-1'>
+                                    {item.text}
+                                  </p>
                                 </motion.div>
                               ))}
                             </div>
@@ -261,826 +236,434 @@ const Policies = () => {
   );
 };
 
-const POLICIES_DATA = [
+type PolicyContent = {
+  sectionNumber: string;
+  title: string;
+  items: { text: string }[];
+};
+
+type PolicyData = {
+  id: string;
+  name: string;
+  shortName: string;
+  icon: JSX.Element;
+  content: PolicyContent[];
+};
+
+const POLICIES_DATA: PolicyData[] = [
   {
     id: 'platform',
-    name: 'Platform Policies',
+    name: 'Khabiteq Platform Policies (Master Framework)',
     shortName: 'Platform',
     icon: <Zap className='w-4 h-4' />,
-    description: 'Master framework guiding all transactions, subscriptions, listings, payments, and interactions across the Khabiteq platform.',
     content: [
       {
         sectionNumber: '1',
         title: 'Subscription Policy',
         items: [
-          {
-            title: 'Who Can Subscribe',
-            description: 'Subscription is available only to registered agents.',
-          },
-          {
-            title: 'Free Trial',
-            description: 'All new agents enjoy a 7-day Free Trial with Premium benefits. After trial, subscription is required to maintain access.',
-          },
-          {
-            title: 'Premium Plan',
-            description: 'Premium – ₦15,000/month (all features, no commission)',
-            details: ['Quarterly – save 10%', 'Yearly – save 20%'],
-          },
-          {
-            title: 'Plan Changes',
-            description: 'Agents cannot upgrade or downgrade mid-cycle; changes take effect in the next billing cycle.',
-          },
-          {
-            title: 'Auto-Renewal Options',
-            description: 'Agents may choose auto-renewal or manual renewal.',
-          },
-          {
-            title: 'Access Revocation',
-            description: 'Once a subscription expires, access is immediately revoked.',
-          },
-          {
-            title: 'Document Verification',
-            description: 'Document verification is excluded from subscription and charged separately on a pay-per-use basis.',
-          },
+          { text: 'Subscription is available only to registered agents.' },
+          { text: 'All new agents enjoy a 7-day Free Trial with Premium benefits. After trial, subscription is required to maintain access.' },
+          { text: 'Premium – ₦15,000/month (all features, no commission).' },
+          { text: 'Quarterly – (save 10%).' },
+          { text: 'Yearly – (save 20%).' },
+          { text: 'Agents cannot upgrade or downgrade mid-cycle; changes take effect in the next billing cycle.' },
+          { text: 'Agents may choose auto-renewal or manual renewal.' },
+          { text: 'Once a subscription expires, access is immediately revoked.' },
+          { text: 'Document verification is excluded from subscription and charged separately on a pay-per-use basis.' },
         ],
       },
       {
         sectionNumber: '2',
         title: 'Inspection Policy',
         items: [
-          {
-            title: 'Inspection Fees',
-            description: 'Agents may set their own inspection fee; Khabiteq charges 15% of set inspection fee per booking for Premium agents and ₦5,000 per booking for unsubscribed agents.',
-          },
-          {
-            title: 'Pay-Per-Request Model',
-            description: 'Inspection fees are pay-per-request.',
-          },
-          {
-            title: 'Client Error Refunds',
-            description: 'If inspection fails due to the client\'s error → no refund.',
-          },
-          {
-            title: 'System Error Refunds',
-            description: 'If inspection fails due to agent, landlord, or Khabiteq error → refund will be made after investigation.',
-          },
-          {
-            title: 'Property Requirements',
-            description: 'Properties must be accessible, safe, and available during scheduled inspections.',
-          },
+          { text: 'Agents may set their own inspection fee; Khabiteq charges 15% of set inspection fee per booking for Premium agents and ₦5,000 per booking for unsubscribed agents.' },
+          { text: 'Inspection fees are pay-per-request.' },
+          { text: 'If inspection fails due to the client\'s error → no refund.' },
+          { text: 'If inspection fails due to agent, landlord, or Khabiteq error → refund will be made after investigation.' },
+          { text: 'Properties must be accessible, safe, and available during scheduled inspections.' },
         ],
       },
       {
         sectionNumber: '3',
         title: 'Payment & Refund Policy',
         items: [
-          {
-            title: 'Payment Channels',
-            description: 'Payments are made through Khabiteq\'s approved payment channels only.',
-          },
-          {
-            title: 'Subscription Refunds',
-            description: 'Subscriptions are non-refundable, except where legally required.',
-          },
-          {
-            title: 'Inspection Refunds',
-            description: 'Inspection refunds are case-specific as stated in the Inspection Policy.',
-          },
-          {
-            title: 'Payment Completion',
-            description: 'All payments must be completed before services are activated.',
-          },
-          {
-            title: 'Currency',
-            description: 'Accepted currency: Nigerian Naira (₦). USD/GBP transactions may be allowed for diaspora clients.',
-          },
-          {
-            title: 'Tax & Processing',
-            description: 'All commissions, fees, and escrow deductions are subject to Paystack processing charges and applicable taxes.',
-          },
-          {
-            title: 'Payout Timeline',
-            description: 'Payouts to agents/hosts occur within the agreed timelines (e.g., 12–24 hours post shortlet check-in).',
-          },
+          { text: 'Payments are made through Khabiteq\'s approved payment channels only.' },
+          { text: 'Subscriptions are non-refundable, except where legally required.' },
+          { text: 'Inspection refunds are case-specific as stated above.' },
+          { text: 'All payments must be completed before services are activated.' },
+          { text: 'Accepted currency: Nigerian Naira (₦). USD/GBP transactions may be allowed for diaspora clients.' },
+          { text: 'All commissions, fees, and escrow deductions are subject to Paystack processing charges and applicable taxes.' },
+          { text: 'Payouts to agents/hosts occur within the agreed timelines (e.g., 12–24 hours post shortlet check-in).' },
         ],
       },
       {
         sectionNumber: '4',
         title: 'Agent & Listing Policy',
         items: [
-          {
-            title: 'Verified Agents Only',
-            description: 'Only verified agents may list properties.',
-          },
-          {
-            title: 'Listing Accuracy',
-            description: 'Listings must be accurate, updated, and not misleading.',
-          },
-          {
-            title: 'Fraudulent Content Removal',
-            description: 'Fraudulent or duplicate listings will be removed without refund.',
-          },
-          {
-            title: 'Agent Compliance',
-            description: 'Agents are responsible for ensuring compliance with all real estate laws, permits, and taxes.',
-          },
-          {
-            title: 'Media Standards',
-            description: 'No watermarks, stock images, or fake documents are allowed.',
-          },
-          {
-            title: 'Ownership Declaration',
-            description: 'At posting, sellers/agents/landlords must complete an Ownership Declaration to confirm authority to list.',
-          },
+          { text: 'Only verified agents may list properties.' },
+          { text: 'Listings must be accurate, updated, and not misleading.' },
+          { text: 'Fraudulent or duplicate listings will be removed without refund.' },
+          { text: 'Agents are responsible for ensuring compliance with all real estate laws, permits, and taxes.' },
+          { text: 'No watermarks, stock images, or fake documents are allowed.' },
+          { text: 'At posting, sellers/agents/landlords must complete an Ownership Declaration to confirm authority to list.' },
         ],
       },
       {
         sectionNumber: '5',
         title: 'Verification & Due Diligence Policy',
         items: [
-          {
-            title: 'Optional Verification',
-            description: 'Document verification is optional and charged per request.',
-          },
-          {
-            title: 'Verification Outcomes',
-            description: 'Verification outcomes are based on Khabiteq\'s checks, but Khabiteq is not liable for third-party fraud or misrepresentation.',
-          },
-          {
-            title: 'Suspension Rights',
-            description: 'Khabiteq reserves the right to suspend agents with repeated failed verifications.',
-          },
-          {
-            title: 'Client Advice',
-            description: 'Buyers/tenants are advised to use the verification service before committing.',
-          },
+          { text: 'Document verification is optional and charged per request.' },
+          { text: 'Verification outcomes are based on Khabiteq\'s checks, but Khabiteq is not liable for third-party fraud or misrepresentation.' },
+          { text: 'Khabiteq reserves the right to suspend agents with repeated failed verifications.' },
+          { text: 'Buyers/tenants are advised to use the verification service before committing.' },
         ],
       },
       {
         sectionNumber: '6',
         title: 'Anti-Fraud & Scam Policy',
         items: [
-          {
-            title: 'Zero Tolerance',
-            description: 'Strict zero-tolerance for fraudulent activities.',
-          },
-          {
-            title: 'Immediate Suspension',
-            description: 'Any suspected fraud leads to immediate suspension and possible blacklisting.',
-          },
-          {
-            title: 'Account Termination',
-            description: 'Agents found guilty will lose access without refund.',
-          },
-          {
-            title: 'Law Enforcement Notification',
-            description: 'Khabiteq may notify law enforcement in cases of fraud, forgery, or scams.',
-          },
+          { text: 'Strict zero-tolerance for fraudulent activities.' },
+          { text: 'Any suspected fraud leads to immediate suspension and possible blacklisting.' },
+          { text: 'Agents found guilty will lose access without refund.' },
+          { text: 'Khabiteq may notify law enforcement in cases of fraud, forgery, or scams.' },
         ],
       },
       {
         sectionNumber: '7',
         title: 'Dispute Resolution Policy',
         items: [
-          {
-            title: 'Direct Resolution',
-            description: 'Disputes between agents and clients should first be resolved directly.',
-          },
-          {
-            title: 'Khabiteq Mediation',
-            description: 'Where unresolved, Khabiteq may act as a mediator but is not legally bound to enforce settlement.',
-          },
-          {
-            title: 'Escalation',
-            description: 'If disputes escalate, parties are encouraged to use independent mediation or arbitration.',
-          },
-          {
-            title: 'Escrow Release',
-            description: 'Escrow funds will only be released upon confirmation of milestones, mutual agreement, or dispute resolution outcome.',
-          },
+          { text: 'Disputes between agents and clients should first be resolved directly.' },
+          { text: 'Where unresolved, Khabiteq may act as a mediator but is not legally bound to enforce settlement.' },
+          { text: 'If disputes escalate, parties are encouraged to use independent mediation or arbitration.' },
+          { text: 'Escrow funds will only be released upon confirmation of milestones, mutual agreement, or dispute resolution outcome.' },
         ],
       },
       {
         sectionNumber: '8',
         title: 'Data & Privacy Policy',
         items: [
-          {
-            title: 'Data Collection',
-            description: 'Khabiteq collects only data necessary to operate the platform (e.g., agent profile info, listings, inspection history).',
-          },
-          {
-            title: 'Regulatory Compliance',
-            description: 'Data is processed under NDPR and GDPR standards.',
-          },
-          {
-            title: 'No Data Sales',
-            description: 'Khabiteq does not sell personal data to third parties.',
-          },
-          {
-            title: 'Consent to Promotion',
-            description: 'Agents consent to their profile, reviews, and listings being publicly displayed and promoted across the Khabiteq platform and social media.',
-          },
-          {
-            title: 'Data Retention',
-            description: 'Active agents → data retained as long as account is active. Inactive/suspended agents → data retained for 3 years for compliance.',
-          },
-          {
-            title: 'Data Deletion',
-            description: 'Users may request data deletion, subject to regulatory requirements.',
-          },
+          { text: 'Khabiteq collects only data necessary to operate the platform (e.g., agent profile info, listings, inspection history).' },
+          { text: 'Data is processed under NDPR and GDPR standards.' },
+          { text: 'Khabiteq does not sell personal data to third parties.' },
+          { text: 'Agents consent to their profile, reviews, and listings being publicly displayed and promoted across the Khabiteq platform and social media.' },
+          { text: 'Active agents → data retained as long as account is active.' },
+          { text: 'Inactive/suspended agents → data retained for 3 years for compliance.' },
+          { text: 'Users may request data deletion, subject to regulatory requirements.' },
         ],
       },
       {
         sectionNumber: '9',
         title: 'Intellectual Property & Content Use',
         items: [
-          {
-            title: 'Agent Ownership',
-            description: 'Agents retain ownership of property photos, videos, and descriptions they upload.',
-          },
-          {
-            title: 'Khabiteq License',
-            description: 'By uploading, agents grant Khabiteq a royalty-free license to display, distribute, and advertise such content.',
-          },
-          {
-            title: 'Unauthorized Reproduction',
-            description: 'Unauthorized reproduction of platform content outside Khabiteq is prohibited.',
-          },
+          { text: 'Agents retain ownership of property photos, videos, and descriptions they upload.' },
+          { text: 'By uploading, agents grant Khabiteq a royalty-free license to display, distribute, and advertise such content.' },
+          { text: 'Unauthorized reproduction of platform content outside Khabiteq is prohibited.' },
         ],
       },
       {
         sectionNumber: '10',
         title: 'Termination & Suspension Policy',
         items: [
-          {
-            title: 'Suspension Grounds',
-            description: 'Khabiteq may suspend or terminate an agent\'s access if they:',
-            details: ['Engage in fraud or scams', 'Repeatedly violate listing rules', 'Misuse inspection or subscription services'],
-          },
-          {
-            title: 'Appeal Process',
-            description: 'Suspended agents may appeal within 7 working days.',
-          },
-          {
-            title: 'Final Termination',
-            description: 'Termination due to fraud or major violations is final, with no refund.',
-          },
+          { text: 'Khabiteq may suspend or terminate an agent\'s access if they engage in fraud or scams.' },
+          { text: 'Khabiteq may suspend or terminate an agent\'s access if they repeatedly violate listing rules.' },
+          { text: 'Khabiteq may suspend or terminate an agent\'s access if they misuse inspection or subscription services.' },
+          { text: 'Suspended agents may appeal within 7 working days.' },
+          { text: 'Termination due to fraud or major violations is final, with no refund.' },
         ],
       },
       {
         sectionNumber: '11',
         title: 'Platform Usage & Access Policy',
         items: [
-          {
-            title: 'Credential Security',
-            description: 'Users must not share login credentials with third parties.',
-          },
-          {
-            title: 'Single Account',
-            description: 'Multiple accounts for the same agent are prohibited.',
-          },
-          {
-            title: 'Misuse Suspension',
-            description: 'Khabiteq may suspend accounts for misuse, impersonation, or unauthorized access.',
-          },
+          { text: 'Users must not share login credentials with third parties.' },
+          { text: 'Multiple accounts for the same agent are prohibited.' },
+          { text: 'Khabiteq may suspend accounts for misuse, impersonation, or unauthorized access.' },
         ],
       },
       {
         sectionNumber: '12',
         title: 'Advertising & Promotion Policy',
         items: [
-          {
-            title: 'Ad Services',
-            description: 'Agents may promote their listings via Khabiteq\'s ad services (sponsored placements, featured listings).',
-          },
-          {
-            title: 'Prohibited Practices',
-            description: 'Misleading promotions, false discounts, or use of Khabiteq branding without approval are prohibited.',
-          },
-          {
-            title: 'Sponsored Listing Labels',
-            description: 'Sponsored listings will always be clearly labeled.',
-          },
+          { text: 'Agents may promote their listings via Khabiteq\'s ad services (sponsored placements, featured listings).' },
+          { text: 'Misleading promotions, false discounts, or use of Khabiteq branding without approval are prohibited.' },
+          { text: 'Sponsored listings will always be clearly labeled.' },
         ],
       },
       {
         sectionNumber: '13',
         title: 'Client Protection Policy',
         items: [
-          {
-            title: 'Verification Requirement',
-            description: 'Clients are advised to complete document verification before making payments.',
-          },
-          {
-            title: 'Off-Platform Payments',
-            description: 'Off-platform payments are strictly discouraged; Khabiteq is not liable for losses from such transactions.',
-          },
-          {
-            title: 'Agent Suspension',
-            description: 'Khabiteq reserves the right to suspend agents who attempt to divert clients off-platform.',
-          },
+          { text: 'Clients are advised to complete document verification before making payments.' },
+          { text: 'Off-platform payments are strictly discouraged; Khabiteq is not liable for losses from such transactions.' },
+          { text: 'Khabiteq reserves the right to suspend agents who attempt to divert clients off-platform.' },
         ],
       },
       {
         sectionNumber: '14',
         title: 'Content Moderation & Takedown Policy',
         items: [
-          {
-            title: 'Content Removal',
-            description: 'Khabiteq may remove any content that is:',
-            details: ['Fraudulent, offensive, discriminatory, or misleading', 'In breach of copyright (e.g., stolen photos)', 'Not meeting platform quality standards'],
-          },
+          { text: 'Khabiteq may remove any content that is fraudulent, offensive, discriminatory, or misleading.' },
+          { text: 'Khabiteq may remove content in breach of copyright (e.g., stolen photos).' },
+          { text: 'Khabiteq may remove content not meeting platform quality standards.' },
         ],
       },
       {
         sectionNumber: '15',
         title: 'Customer Review & Rating Policy',
         items: [
-          {
-            title: 'Honest Reviews',
-            description: 'Clients may rate and review agents honestly.',
-          },
-          {
-            title: 'Fake Reviews',
-            description: 'Fake, coerced, or manipulated reviews will be removed.',
-          },
-          {
-            title: 'Agent Response',
-            description: 'Agents cannot demand removal of genuine negative reviews but may respond professionally.',
-          },
+          { text: 'Clients may rate and review agents honestly.' },
+          { text: 'Fake, coerced, or manipulated reviews will be removed.' },
+          { text: 'Agents cannot demand removal of genuine negative reviews but may respond professionally.' },
         ],
       },
       {
         sectionNumber: '16',
         title: 'Anti-Money Laundering (AML) & KYC Policy',
         items: [
-          {
-            title: 'High-Value Sales',
-            description: 'For high-value sales, Khabiteq may request additional identity documents.',
-          },
-          {
-            title: 'Suspicious Transactions',
-            description: 'Suspicious transactions may be flagged or reported to authorities.',
-          },
-          {
-            title: 'Compliance',
-            description: 'Agents must comply with all Nigerian KYC and AML requirements where applicable.',
-          },
+          { text: 'For high-value sales, Khabiteq may request additional identity documents.' },
+          { text: 'Suspicious transactions may be flagged or reported to authorities.' },
+          { text: 'Agents must comply with all Nigerian KYC and AML requirements where applicable.' },
         ],
       },
       {
         sectionNumber: '17',
         title: 'Compliance & Legal Disclaimer',
         items: [
-          {
-            title: 'Platform Role',
-            description: 'Khabiteq is a digital marketplace platform and does not act as a buyer, seller, or legal representative in property transactions.',
-          },
-          {
-            title: 'Agent Responsibility',
-            description: 'Agents and landlords are fully responsible for the legality and accuracy of listed properties.',
-          },
-          {
-            title: 'Liability Disclaimer',
-            description: 'Khabiteq is not liable for disputes, financial losses, or damages from off-platform transactions.',
-          },
+          { text: 'Khabiteq is a digital marketplace platform and does not act as a buyer, seller, or legal representative in property transactions.' },
+          { text: 'Agents and landlords are fully responsible for the legality and accuracy of listed properties.' },
+          { text: 'Khabiteq is not liable for disputes, financial losses, or damages from off-platform transactions.' },
         ],
       },
       {
         sectionNumber: '18',
         title: 'Customer Support Policy',
         items: [
-          {
-            title: 'Support Channels',
-            description: 'Support is available via phone, email, and in-app channels.',
-          },
-          {
-            title: 'Response Time',
-            description: 'Typical response time: 24–48 hours.',
-          },
-          {
-            title: 'Official Communication',
-            description: 'Khabiteq will not be responsible for unofficial communications outside its official channels.',
-          },
+          { text: 'Support is available via phone, email, and in-app channels.' },
+          { text: 'Typical response time: 24–48 hours.' },
+          { text: 'Khabiteq will not be responsible for unofficial communications outside its official channels.' },
         ],
       },
       {
         sectionNumber: '19',
         title: 'Force Majeure & Service Availability',
         items: [
-          {
-            title: 'Platform Availability',
-            description: 'Khabiteq will make reasonable efforts to keep the platform available 24/7.',
-          },
-          {
-            title: 'Exemptions',
-            description: 'Not liable for downtime caused by:',
-            details: ['Internet failures', 'Power outages', 'Maintenance', 'Acts of God, government action, or force majeure'],
-          },
-          {
-            title: 'Subscription Extension',
-            description: 'Subscription periods will not be extended unless downtime exceeds 7 consecutive days.',
-          },
+          { text: 'Khabiteq will make reasonable efforts to keep the platform available 24/7.' },
+          { text: 'Not liable for downtime caused by internet failures, power outages, maintenance, or acts of God, government action, or force majeure.' },
+          { text: 'Subscription periods will not be extended unless downtime exceeds 7 consecutive days.' },
         ],
       },
     ],
   },
   {
     id: 'property-posting',
-    name: 'Property Posting Policy',
+    name: 'Agent Rules & Property Posting Policy',
     shortName: 'Posting',
     icon: <FileText className='w-4 h-4' />,
-    description: 'Comprehensive rules for agents, landlords, and brokers to ensure professionalism, transparency, and accountability in property listings.',
     content: [
       {
         sectionNumber: '1',
         title: 'Registration & Verification',
         items: [
-          {
-            title: 'Registration Requirement',
-            description: 'All agents must register through the Khabiteq website.',
-          },
-          {
-            title: 'Required Documents',
-            description: 'Required documents include: Valid government-issued ID, contact information, real estate license or association membership (if applicable), and at least one verifiable professional reference.',
-          },
-          {
-            title: 'Agent Approval',
-            description: 'Khabiteq reserves the right to verify and approve all agents before granting full access.',
-          },
+          { text: 'All agents must register through the Khabiteq website.' },
+          { text: 'Required documents include: Valid government-issued ID, contact information, real estate license or association membership (if applicable), and at least one verifiable professional reference.' },
+          { text: 'Khabiteq reserves the right to verify and approve all agents before granting full access.' },
         ],
       },
       {
         sectionNumber: '2',
         title: 'Subscription & Access Levels',
         items: [
-          {
-            title: 'Subscribed Agents with Public Page',
-            description: 'Can display their WhatsApp and contact details. Clients may contact them directly for negotiations and inspections. Khabiteq still enforces compliance with all commission and platform rules.',
-          },
-          {
-            title: 'Trial/Unsubscribed Agents',
-            description: 'Clients cannot contact them directly. All communications, inspections, and payments must go through Khabiteq. A ₦5,000 inspection fee is paid by the buyer or tenant to Khabiteq. Khabiteq acts as the intermediary for these transactions.',
-          },
+          { text: 'Subscribed Agents with a Public Page: Can display their WhatsApp and contact details. Clients may contact them directly for negotiations and inspections. Khabiteq still enforces compliance with all commission and platform rules.' },
+          { text: 'Trial/Unsubscribed Agents: Clients cannot contact them directly. All communications, inspections, and payments must go through Khabiteq. A ₦5,000 inspection fee is paid by the buyer or tenant to Khabiteq. Khabiteq acts as the intermediary for these transactions.' },
         ],
       },
       {
         sectionNumber: '3',
         title: 'Property Posting Rules',
         items: [
-          {
-            title: 'No Watermarks',
-            description: 'No watermarks are allowed on property photos.',
-          },
-          {
-            title: 'Image Quality',
-            description: 'Images must be clear, recent, and accurate (no stock or misleading images).',
-          },
-          {
-            title: 'Document Validity',
-            description: 'All property documents must be valid and verifiable.',
-          },
-          {
-            title: 'Duplicate Prevention',
-            description: 'Duplicate or fake listings are strictly prohibited.',
-          },
-          {
-            title: 'Ownership Declaration',
-            description: 'At the point of posting, the seller/agent/landlord must complete an Ownership Declaration to confirm they are authorized to list the property.',
-          },
+          { text: 'No watermarks are allowed on property photos.' },
+          { text: 'Images must be clear, recent, and accurate (no stock or misleading images).' },
+          { text: 'All property documents must be valid and verifiable.' },
+          { text: 'Duplicate or fake listings are strictly prohibited.' },
+          { text: 'At the point of posting, the seller/agent/landlord must complete an Ownership Declaration to confirm they are authorized to list the property.' },
         ],
       },
       {
         sectionNumber: '4',
         title: 'Buyer/Tenant Responsibilities',
         items: [
-          {
-            title: 'Document Verification',
-            description: 'Buyers and tenants should insist on document verification before making commitments.',
-          },
-          {
-            title: 'Verification Feature',
-            description: 'Khabiteq provides a Document Verification feature that buyers can use to confirm ownership and property authenticity.',
-          },
-          {
-            title: 'No Unverified Transactions',
-            description: 'No transaction should proceed without proper verification.',
-          },
+          { text: 'Buyers and tenants should insist on document verification before making commitments.' },
+          { text: 'Khabiteq provides a Document Verification feature that buyers can use to confirm ownership and property authenticity.' },
+          { text: 'No transaction should proceed without proper verification.' },
         ],
       },
       {
         sectionNumber: '5',
         title: 'Professional Conduct',
         items: [
-          {
-            title: 'Professional Treatment',
-            description: 'Agents must treat clients professionally and transparently.',
-          },
-          {
-            title: 'No Off-Platform Diversion',
-            description: 'Agents must not divert clients off-platform to avoid fees.',
-          },
-          {
-            title: 'Subscription Compliance',
-            description: 'Subscribed agents with public pages may transact directly, but Khabiteq\'s commission and compliance policies still apply.',
-          },
+          { text: 'Agents must treat clients professionally and transparently.' },
+          { text: 'Agents must not divert clients off-platform to avoid fees.' },
+          { text: 'Subscribed agents with public pages may transact directly, but Khabiteq\'s commission and compliance policies still apply.' },
         ],
       },
       {
         sectionNumber: '6',
         title: 'Shortlets',
         items: [
-          {
-            title: 'Property Standards',
-            description: 'Hosts must ensure properties are safe, clean, and accurately described.',
-          },
-          {
-            title: 'Service Fee',
-            description: 'Guests must pay the shortlet service fee, which applies whether the booking comes from an agent\'s public page or the marketplace.',
-          },
-          {
-            title: 'Payout Timeline',
-            description: 'Hosts are paid 12–24 hours after check-in is confirmed.',
-          },
+          { text: 'Hosts must ensure properties are safe, clean, and accurately described.' },
+          { text: 'Guests must pay the shortlet service fee, which applies whether the booking comes from an agent\'s public page or the marketplace.' },
+          { text: 'Hosts are paid 12–24 hours after check-in is confirmed.' },
         ],
       },
       {
         sectionNumber: '7',
         title: 'Joint Ventures (JV)',
         items: [
-          {
-            title: 'Signed LOI',
-            description: 'JV deals must include a signed Letter of Instruction (LOI) between landowners and developers.',
-          },
-          {
-            title: 'Industry Standard Commission',
-            description: 'Where no LOI is signed, Khabiteq reserves the right to apply industry-standard sales commission, as mutually agreed before closing.',
-          },
-          {
-            title: 'Khabiteq Involvement',
-            description: 'Khabiteq must be included in the transaction process for commissions to apply.',
-          },
+          { text: 'JV deals must include a signed Letter of Instruction (LOI) between landowners and developers.' },
+          { text: 'Where no LOI is signed, Khabiteq reserves the right to apply industry-standard sales commission, as mutually agreed before closing.' },
+          { text: 'Khabiteq must be included in the transaction process for commissions to apply.' },
         ],
       },
       {
         sectionNumber: '8',
         title: 'Escrow & Dispute Resolution',
         items: [
-          {
-            title: 'Escrow Services',
-            description: 'Khabiteq may use escrow services to safeguard funds until conditions are met.',
-          },
-          {
-            title: 'Dispute Reporting',
-            description: 'Any disputes between clients, agents, or landlords must be reported to Khabiteq.',
-          },
-          {
-            title: 'Corrective Action',
-            description: 'Khabiteq reserves the right to mediate and take corrective action, including suspension or blacklisting.',
-          },
+          { text: 'Khabiteq may use escrow services to safeguard funds until conditions are met.' },
+          { text: 'Any disputes between clients, agents, or landlords must be reported to Khabiteq.' },
+          { text: 'Khabiteq reserves the right to mediate and take corrective action, including suspension or blacklisting.' },
         ],
       },
       {
         sectionNumber: '9',
         title: 'Compliance & Enforcement',
         items: [
-          {
-            title: 'Content Removal',
-            description: 'Fraudulent, fake, or misleading listings will be removed.',
-          },
-          {
-            title: 'Repeat Offenders',
-            description: 'Repeated offenders may be blacklisted and barred from re-registering.',
-          },
-          {
-            title: 'Legal Notification',
-            description: 'Legal authorities may be notified in cases of fraud or misconduct.',
-          },
+          { text: 'Fraudulent, fake, or misleading listings will be removed.' },
+          { text: 'Repeated offenders may be blacklisted and barred from re-registering.' },
+          { text: 'Legal authorities may be notified in cases of fraud or misconduct.' },
         ],
       },
       {
         sectionNumber: '10',
         title: 'Refunds & Failed Inspections',
         items: [
-          {
-            title: 'Pay-Per-Request',
-            description: 'Inspection fees are pay-per-request.',
-          },
-          {
-            title: 'Client Error',
-            description: 'If inspection fails due to the client\'s error (buyer/tenant), no refund applies.',
-          },
-          {
-            title: 'System Error',
-            description: 'If inspection fails due to agent, landlord, or Khabiteq error, refunds will be made after investigation.',
-          },
-          {
-            title: 'Subscription Refunds',
-            description: 'Subscriptions remain non-refundable, except where legally required.',
-          },
+          { text: 'Inspection fees are pay-per-request.' },
+          { text: 'If inspection fails due to the client\'s error (buyer/tenant), no refund applies.' },
+          { text: 'If inspection fails due to agent, landlord, or Khabiteq error, refunds will be made after investigation.' },
+          { text: 'Subscriptions remain non-refundable, except where legally required.' },
         ],
       },
     ],
   },
   {
     id: 'subscription',
-    name: 'Subscription & Account Management',
+    name: 'Khabiteq Realty – Subscription & Account Management Policy',
     shortName: 'Subscription',
     icon: <Zap className='w-4 h-4' />,
-    description: 'Rules for agents, landlords, and property managers who subscribe to Khabiteq services.',
     content: [
       {
         sectionNumber: '1',
         title: 'Subscription Plan',
         items: [
-          {
-            title: 'Premium Plan',
-            description: 'Premium Subscription Plan: ₦15,000 per month.',
-          },
-          {
-            title: 'Discount Options',
-            description: 'Discounts available for longer commitments:',
-            details: ['3-month subscription: 10% discount', '6-month subscription: 15% discount', '12-month subscription: 20% discount'],
-          },
-          {
-            title: 'Free Trial',
-            description: 'Trial Period: Free 7-day trial before payment is required.',
-          },
+          { text: 'Premium Subscription Plan: ₦15,000 per month.' },
+          { text: '3-month subscription: 10% discount.' },
+          { text: '6-month subscription: 15% discount.' },
+          { text: '12-month subscription: 20% discount.' },
+          { text: 'Trial Period: Free 7-day trial before payment is required.' },
         ],
       },
       {
         sectionNumber: '2',
         title: 'Account Features (Premium Subscribers)',
         items: [
-          {
-            title: 'Personal Agent Page',
-            description: 'Personal Agent Public Page with listings and profile.',
-          },
-          {
-            title: 'Custom Inspection Fees',
-            description: 'Ability to set custom inspection fees (Khabiteq retains 15% as platform commission).',
-          },
-          {
-            title: 'Zero Commission',
-            description: 'Zero sales/rental commission payable to Khabiteq (commission-free transactions).',
-          },
-          {
-            title: 'Agent Marketplace Access',
-            description: 'Access to client preferences via Agent Marketplace.',
-          },
-          {
-            title: 'Marketing Exposure',
-            description: 'Marketing exposure through the General Marketplace.',
-          },
+          { text: 'Personal Agent Public Page with listings and profile.' },
+          { text: 'Ability to set custom inspection fees (Khabiteq retains 15% as platform commission).' },
+          { text: 'Zero sales/rental commission payable to Khabiteq (commission-free transactions).' },
+          { text: 'Access to client preferences via Agent Marketplace.' },
+          { text: 'Marketing exposure through the General Marketplace.' },
         ],
       },
       {
         sectionNumber: '3',
         title: 'Inspection Fees',
         items: [
-          {
-            title: 'Subscribed Agents',
-            description: 'May set their own inspection fee; Khabiteq collects 15% of this fee.',
-          },
-          {
-            title: 'Unsubscribed Agents',
-            description: 'Cannot set fees; fixed inspection fee of ₦5,000 applies and is collected fully by Khabiteq.',
-          },
-          {
-            title: 'Non-Refundable',
-            description: 'Inspection fees are non-refundable except where required by law.',
-          },
+          { text: 'Subscribed Agents: May set their own inspection fee; Khabiteq collects 15% of this fee.' },
+          { text: 'Trial/Unsubscribed Agents: Cannot set fees; fixed inspection fee of ₦5,000 applies and is collected fully by Khabiteq.' },
+          { text: 'Inspection fees are non-refundable except where required by law.' },
         ],
       },
       {
         sectionNumber: '4',
         title: 'Payments & Renewals',
         items: [
-          {
-            title: 'Auto-Renewal',
-            description: 'Subscriptions renew automatically unless cancelled before the billing date.',
-          },
-          {
-            title: 'Payment Processing',
-            description: 'Payments are processed via Paystack with fees split (5% Paystack, 10% Khabiteq retention on inspection/service transactions).',
-          },
-          {
-            title: 'Failed Payment',
-            description: 'Failed payments will result in immediate suspension of account access.',
-          },
+          { text: 'Subscriptions renew automatically unless cancelled before the billing date.' },
+          { text: 'Payments are processed via Paystack with fees split (5% Paystack, 10% Khabiteq retention on inspection/service transactions).' },
+          { text: 'Failed payments will result in immediate suspension of account access.' },
         ],
       },
       {
         sectionNumber: '5',
         title: 'Refunds & Cancellations',
         items: [
-          {
-            title: 'Non-Refundable',
-            description: 'Subscription fees are non-refundable, including partial months, even if the subscriber cancels before expiry.',
-          },
-          {
-            title: 'Legal Exceptions',
-            description: 'Refunds are only considered where legally mandated (e.g., billing error).',
-          },
+          { text: 'Subscription fees are non-refundable, including partial months, even if the subscriber cancels before expiry.' },
+          { text: 'Refunds are only considered where legally mandated (e.g., billing error).' },
         ],
       },
       {
         sectionNumber: '6',
         title: 'User Obligations',
         items: [
-          {
-            title: 'Accurate Listings',
-            description: 'Subscribers must ensure all listed properties are accurate and legally verifiable.',
-          },
-          {
-            title: 'Authority to List',
-            description: 'Agents must have the authority or ownership rights to list properties.',
-          },
-          {
-            title: 'Verification Compliance',
-            description: 'Subscriptions do not override property verification or due diligence requirements.',
-          },
+          { text: 'Subscribers must ensure all listed properties are accurate and legally verifiable.' },
+          { text: 'Agents must have the authority or ownership rights to list properties.' },
+          { text: 'Subscriptions do not override property verification or due diligence requirements.' },
         ],
       },
       {
         sectionNumber: '7',
         title: 'Limitations of Service',
         items: [
-          {
-            title: 'Scope',
-            description: 'Subscription covers platform access, tools, and visibility.',
-          },
-          {
-            title: 'Excluded Services',
-            description: 'It does not include external marketing services (e.g., social media ads, billboards) unless expressly offered in separate packages.',
-          },
+          { text: 'Subscription covers platform access, tools, and visibility.' },
+          { text: 'It does not include external marketing services (e.g., social media ads, billboards) unless expressly offered in separate packages.' },
         ],
       },
       {
         sectionNumber: '8',
         title: 'Account Use & Restrictions',
         items: [
-          {
-            title: 'Single User',
-            description: 'One subscription = one agent only. Accounts cannot be shared, transferred, or resold.',
-          },
-          {
-            title: 'Misuse',
-            description: 'Misuse (fraudulent listings, circumvention of Khabiteq fees, or multiple-user abuse) may lead to suspension or termination without refund.',
-          },
+          { text: 'One subscription = one agent only. Accounts cannot be shared, transferred, or resold.' },
+          { text: 'Misuse (fraudulent listings, circumvention of Khabiteq fees, or multiple-user abuse) may lead to suspension or termination without refund.' },
         ],
       },
       {
         sectionNumber: '9',
         title: 'Suspension & Termination',
         items: [
-          {
-            title: 'Suspension Grounds',
-            description: 'Accounts may be suspended or terminated for:',
-            details: ['Non-payment of subscription fees', 'Fraudulent or misleading property listings', 'Circumventing Khabiteq to avoid inspection or service fees'],
-          },
-          {
-            title: 'Pending Obligations',
-            description: 'Termination does not exempt the subscriber from pending obligations (fees, commissions, disputes).',
-          },
+          { text: 'Accounts may be suspended or terminated for non-payment of subscription fees.' },
+          { text: 'Accounts may be suspended or terminated for fraudulent or misleading property listings.' },
+          { text: 'Accounts may be suspended or terminated for circumventing Khabiteq to avoid inspection or service fees.' },
+          { text: 'Termination does not exempt the subscriber from pending obligations (fees, commissions, disputes).' },
         ],
       },
       {
         sectionNumber: '10',
         title: 'Data Protection & Privacy',
         items: [
-          {
-            title: 'Data Handling',
-            description: 'All subscriber data is handled per the Khabiteq Data Protection & Consent Policy.',
-          },
-          {
-            title: 'Consent to Processing',
-            description: 'By subscribing, users consent to the processing of personal and financial data for billing, compliance, and communication.',
-          },
+          { text: 'All subscriber data is handled per the Khabiteq Data Protection & Consent Policy.' },
+          { text: 'By subscribing, users consent to the processing of personal and financial data for billing, compliance, and communication.' },
         ],
       },
       {
         sectionNumber: '11',
         title: 'Dispute Resolution',
         items: [
-          {
-            title: 'First Contact',
-            description: 'Subscription disputes should first be reported to Khabiteq Support.',
-          },
-          {
-            title: 'Escalation',
-            description: 'If unresolved, disputes will follow the same escalation process in the Commission & Transaction Policy and Nigerian law.',
-          },
+          { text: 'Subscription disputes should first be reported to Khabiteq Support.' },
+          { text: 'If unresolved, disputes will follow the same escalation process in the Commission & Transaction Policy and Nigerian law.' },
         ],
       },
       {
         sectionNumber: '12',
         title: 'Policy Updates',
         items: [
-          {
-            title: 'Right to Update',
-            description: 'Khabiteq reserves the right to update this policy. Updates take effect once published. Continued use of the platform after updates indicates acceptance.',
-          },
+          { text: 'Khabiteq reserves the right to update this policy. Updates take effect once published. Continued use of the platform after updates indicates acceptance.' },
         ],
       },
     ],
@@ -1090,427 +673,230 @@ const POLICIES_DATA = [
     name: 'Commission & Transaction Policy',
     shortName: 'Commission',
     icon: <DollarSign className='w-4 h-4' />,
-    description: 'Explains commission, service fee, inspection fee, payment, and escrow rules for all transaction types on the platform.',
     content: [
       {
         sectionNumber: '1',
         title: 'Definitions',
         items: [
-          {
-            title: 'Standard Commission',
-            description: 'The professional fee due to an agent for facilitating a property transaction (typically a percentage of the transaction value).',
-          },
-          {
-            title: 'Agent Marketplace',
-            description: 'The page where client preferences and requests are posted; agents match clients\' needs with their listings.',
-          },
-          {
-            title: 'General Marketplace',
-            description: 'The page listing all properties on Khabiteq available to site visitors.',
-          },
-          {
-            title: 'Subscribed Agent',
-            description: 'An agent who has purchased any paid subscription plan that includes a public agent page and expanded access. Subscribed agents pay subscription fees (and do not pay commissions to Khabiteq).',
-          },
-          {
-            title: 'Non-Subscribed Agent',
-            description: 'An agent who has not purchased any subscription.',
-          },
-          {
-            title: 'Host & Guest',
-            description: 'Host: A person listing a shortlet property. Guest: A person booking a shortlet property.',
-          },
-          {
-            title: 'Joint Venture (JV)',
-            description: 'A formal partnership between a landowner and developer to develop property with a pre-agreed sharing ratio on completion.',
-          },
+          { text: 'Standard Commission: The professional fee due to an agent for facilitating a property transaction (typically a percentage of the transaction value).' },
+          { text: 'Agent Marketplace: The page where client preferences and requests are posted; agents match clients\' needs with their listings.' },
+          { text: 'General Marketplace: The page listing all properties on Khabiteq available to site visitors.' },
+          { text: 'Subscribed Agent: An agent who has purchased any paid subscription plan that includes a public agent page and expanded access. Subscribed agents pay subscription fees (and do not pay commissions to Khabiteq).' },
+          { text: 'Non-Subscribed Agent: An agent who has not purchased any subscription.' },
+          { text: 'Host: A person listing a shortlet property.' },
+          { text: 'Guest: A person booking a shortlet property.' },
+          { text: 'Joint Venture (JV): A formal partnership between a landowner and developer to develop property with a pre-agreed sharing ratio on completion.' },
         ],
       },
       {
         sectionNumber: '2',
         title: 'Commission Structure (Summary)',
         items: [
-          {
-            title: 'Agent Marketplace - Rent',
-            description: 'Khabiteq receives 25% of the standard commission.',
-          },
-          {
-            title: 'Agent Marketplace - Sale',
-            description: 'Commission is set by the Letter of Instructions (LOI) between parties.',
-          },
-          {
-            title: 'General Marketplace - Rent',
-            description: 'Khabiteq receives 50% of the standard commission.',
-          },
-          {
-            title: 'Subscribed Agents',
-            description: 'No commission payable to Khabiteq on transactions. Khabiteq collects 15% of the inspection fee set on the subscribed agent\'s public profile.',
-          },
-          {
-            title: 'Trial/Unsubscribed Agents',
-            description: 'Inspection fee is ₦5,000, payable to Khabiteq (Khabiteq coordinates the inspection as intermediary).',
-          },
-          {
-            title: 'Shortlet Fees',
-            description: '8% charged to guest and 7% charged to host (applies across all bookings).',
-          },
+          { text: 'Note: Shortlet service fees apply across all bookings (guest 8% service fee added at checkout; host 7% deducted at payout).' },
+          { text: 'A. Agent Marketplace (client-preference matches – unsubscribed agent):' },
+          { text: 'Rent: Khabiteq receives 25% of the standard commission.' },
+          { text: 'Sale: Commission is set by the Letter of Instructions (LOI) between parties.' },
+          { text: 'Where no LOI is signed, Khabiteq reserves the right to apply industry-standard sales commission as mutually agreed before closing.' },
+          { text: 'Shortlet: 8% charged to guest and 7% charged to host.' },
+          { text: 'Joint Venture (JV): Khabiteq receives 25% of the standard commission.' },
+          { text: 'B. General Marketplace (public listings – unsubscribed agent):' },
+          { text: 'Rent: Khabiteq receives 50% of the standard commission.' },
+          { text: 'Sale: Commission is set by the LOI.' },
+          { text: 'Where no LOI is signed, Khabiteq reserves the right to apply industry-standard sales commission as mutually agreed before closing.' },
+          { text: 'Shortlet: 8% charged to guest and 7% charged to host.' },
+          { text: 'Joint Venture (JV): Khabiteq receives 50% of the standard commission.' },
+          { text: 'C. Subscribed Agents (full subscribers with public page):' },
+          { text: 'No commission payable to Khabiteq on transactions.' },
+          { text: 'Khabiteq collects 15% of the inspection fee set on the subscribed agent\'s public profile (see Inspection Fees below).' },
+          { text: 'D. Trial/Unsubscribed Agents:' },
+          { text: 'Inspection fee is ₦5,000, payable to Khabiteq (Khabiteq coordinates the inspection as intermediary).' },
         ],
       },
       {
         sectionNumber: '3',
         title: 'Inspection Fees',
         items: [
-          {
-            title: 'Subscribed Agents',
-            description: 'May set their own inspection fee on their public page; Khabiteq collects 15% of that stated inspection fee.',
-          },
-          {
-            title: 'Unsubscribed Agents',
-            description: 'Inspection fee is ₦5,000, paid to Khabiteq.',
-          },
-          {
-            title: 'Refunds',
-            description: 'Inspection fees are non-refundable unless the failure was caused by Khabiteq, the seller, or landlord. If the buyer/tenant cancels or defaults, the fee is forfeited.',
-          },
+          { text: 'Subscribed agents may set their own inspection fee on their public page; Khabiteq collects 15% of that stated inspection fee.' },
+          { text: 'Trial & non-subscribed agents: inspection fee is ₦5,000, paid to Khabiteq.' },
+          { text: 'Refunds: Inspection fees are non-refundable unless the failure was caused by Khabiteq, the seller, or landlord. If the buyer/tenant cancels or defaults, the fee is forfeited.' },
         ],
       },
       {
         sectionNumber: '4',
         title: 'Shortlet (Booking) Rules & Disbursement',
         items: [
-          {
-            title: 'Guest Service Fee',
-            description: 'The guest service fee (8%) applies to all bookings regardless of source (subscribed agent, public page, agent marketplace, or general listing).',
-          },
-          {
-            title: 'Host Fee',
-            description: 'Hosts are also charged 7% per confirmed booking.',
-          },
-          {
-            title: 'Host Payout',
-            description: 'Disbursement: Host payout is released 12–24 hours after guest check-in confirmation.',
-          },
-          {
-            title: 'Guest Payment',
-            description: 'Guest payment (including service fee) is charged at booking per platform payment flow.',
-          },
+          { text: 'The guest service fee (8%) applies to all bookings regardless of source (subscribed agent, public page, agent marketplace, or general listing).' },
+          { text: 'Hosts are also charged 7% per confirmed booking.' },
+          { text: 'Disbursement: Host payout is released 12–24 hours after guest check-in confirmation.' },
+          { text: 'Guest payment (including service fee) is charged at booking per platform payment flow.' },
         ],
       },
       {
         sectionNumber: '5',
         title: 'Payment Flow, Escrow & Deductions',
         items: [
-          {
-            title: 'Automatic Calculation',
-            description: 'Commissions and service fees are automatically calculated and deducted at payment processing.',
-          },
-          {
-            title: 'Payment Responsibility',
-            description: 'Generally, agents or landlords pay commissions and platform fees, except shortlets, where the guest pays the guest service fee (8%) and the host is charged 7%.',
-          },
-          {
-            title: 'Escrow',
-            description: 'Khabiteq may hold funds in escrow for high-value deals, JV milestones, or as agreed. Escrow terms and fees are disclosed before funds are accepted. Funds in escrow are released only on milestone confirmation, mutual instruction, or dispute resolution.',
-          },
-          {
-            title: 'Digital Receipts',
-            description: 'Khabiteq issues digital receipts and statements for all deductions.',
-          },
+          { text: 'Commissions and service fees are automatically calculated and deducted at payment processing.' },
+          { text: 'Generally, agents or landlords pay commissions and platform fees, except shortlets, where the guest pays the guest service fee (8%) and the host is charged 7%.' },
+          { text: 'Escrow: Khabiteq may hold funds in escrow for high-value deals, JV milestones, or as agreed. Escrow terms and fees are disclosed before funds are accepted. Funds in escrow are released only on milestone confirmation, mutual instruction, or dispute resolution.' },
+          { text: 'Khabiteq issues digital receipts and statements for all deductions.' },
         ],
       },
       {
         sectionNumber: '6',
         title: 'Sales, Rent & JV Transactions',
         items: [
-          {
-            title: 'Khabiteq Involvement',
-            description: 'For transactions where Khabiteq is directly involved, commission terms are governed by the signed LOI.',
-          },
-          {
-            title: 'Direct Agent Deals',
-            description: 'Transactions completed via an agent\'s public page (without Khabiteq involvement) are direct agent-to-client deals. Khabiteq is not responsible for payments or disputes.',
-          },
-          {
-            title: 'Buyer Advice',
-            description: 'Buyers and tenants are strongly advised to use Khabiteq\'s document verification service before making payments or moving in.',
-          },
+          { text: 'For transactions where Khabiteq is directly involved, commission terms are governed by the signed LOI.' },
+          { text: 'Transactions completed via an agent\'s public page (without Khabiteq involvement) are direct agent-to-client deals. Khabiteq is not responsible for payments or disputes.' },
+          { text: 'Buyers and tenants are strongly advised to use Khabiteq\'s document verification service before making payments or moving in.' },
         ],
       },
       {
         sectionNumber: '7',
         title: 'Posting & Ownership Rules',
         items: [
-          {
-            title: 'Ownership Declaration',
-            description: 'All property owners, sellers, or landlord agents must sign an Ownership Declaration confirming they are authorized to post a listing.',
-          },
-          {
-            title: 'Media Rules',
-            description: 'Listings must not include watermarks, third-party branding, or misleading visuals. Breaches may lead to removal.',
-          },
+          { text: 'All property owners, sellers, or landlord agents must sign an Ownership Declaration confirming they are authorized to post a listing.' },
+          { text: 'Media Rules: Listings must not include watermarks, third-party branding, or misleading visuals. Breaches may lead to removal.' },
         ],
       },
       {
         sectionNumber: '8',
         title: 'Communication Rules',
         items: [
-          {
-            title: 'Subscribed Agents',
-            description: 'Subscribed agents with public pages may display their WhatsApp for direct communication.',
-          },
-          {
-            title: 'Unsubscribed Agents',
-            description: 'Non-subscribed or trial agents must transact via Khabiteq channels only.',
-          },
+          { text: 'Subscribed agents with public pages may display their WhatsApp for direct communication.' },
+          { text: 'Non-subscribed or trial agents must transact via Khabiteq channels only.' },
         ],
       },
       {
         sectionNumber: '9',
         title: 'Non-Circumvention',
         items: [
-          {
-            title: 'Bypass Prevention',
-            description: 'Users must not bypass Khabiteq to avoid commissions or fees after introductions or matches.',
-          },
-          {
-            title: 'Penalties',
-            description: 'Breaches may result in fee recovery, penalties, or account suspension/termination.',
-          },
+          { text: 'Users must not bypass Khabiteq to avoid commissions or fees after introductions or matches.' },
+          { text: 'Breaches may result in fee recovery, penalties, or account suspension/termination.' },
         ],
       },
       {
         sectionNumber: '10',
         title: 'Dispute Resolution & Escrow Claims',
         items: [
-          {
-            title: 'Report Disputes',
-            description: 'All disputes must be reported via Khabiteq\'s support channels.',
-          },
-          {
-            title: 'Mediation',
-            description: 'Khabiteq first mediates; unresolved disputes proceed under Nigerian law.',
-          },
-          {
-            title: 'Escrow Hold',
-            description: 'Funds may be held in escrow until resolution.',
-          },
+          { text: 'All disputes must be reported via Khabiteq\'s support channels.' },
+          { text: 'Khabiteq first mediates; unresolved disputes proceed under Nigerian law.' },
+          { text: 'Funds may be held in escrow until resolution.' },
         ],
       },
       {
         sectionNumber: '11',
         title: 'Taxes & Compliance',
         items: [
-          {
-            title: 'Tax Obligation',
-            description: 'All commissions and service fees are subject to applicable Nigerian taxes (VAT, WHT, stamp duties, etc.).',
-          },
-          {
-            title: 'Regulatory Compliance',
-            description: 'This policy complies with Nigerian property regulations, including LASRERA where applicable.',
-          },
+          { text: 'All commissions and service fees are subject to applicable Nigerian taxes (VAT, WHT, stamp duties, etc.).' },
+          { text: 'This policy complies with Nigerian property regulations, including LASRERA where applicable.' },
         ],
       },
       {
         sectionNumber: '12',
         title: 'Liability & Disclaimer',
         items: [
-          {
-            title: 'Platform Role',
-            description: 'Khabiteq acts as an intermediary/facilitator and is not responsible for third-party misrepresentations or default.',
-          },
-          {
-            title: 'User Diligence',
-            description: 'Users must perform due diligence (title, inspection, legal checks).',
-          },
-          {
-            title: 'Limited Liability',
-            description: 'Khabiteq\'s liability is limited to direct losses caused by proven negligence.',
-          },
+          { text: 'Khabiteq acts as an intermediary/facilitator and is not responsible for third-party misrepresentations or default.' },
+          { text: 'Users must perform due diligence (title, inspection, legal checks).' },
+          { text: 'Khabiteq\'s liability is limited to direct losses caused by proven negligence.' },
         ],
       },
       {
         sectionNumber: '13',
         title: 'Data Protection',
         items: [
-          {
-            title: 'Data Handling',
-            description: 'Personal/financial data for payments and escrow is handled per Khabiteq\'s Data Protection Policy.',
-          },
-          {
-            title: 'Consent',
-            description: 'By transacting, users consent to use of their data for compliance and communication.',
-          },
+          { text: 'Personal/financial data for payments and escrow is handled per Khabiteq\'s Data Protection Policy.' },
+          { text: 'By transacting, users consent to use of their data for compliance and communication.' },
         ],
       },
       {
         sectionNumber: '14',
         title: 'Policy Changes',
         items: [
-          {
-            title: 'Update Right',
-            description: 'Khabiteq may update this policy. Updates are effective upon publication.',
-          },
-          {
-            title: 'Acceptance',
-            description: 'Continued use of the platform means acceptance of changes.',
-          },
+          { text: 'Khabiteq may update this policy. Updates are effective upon publication.' },
+          { text: 'Continued use of the platform means acceptance of changes.' },
         ],
       },
     ],
   },
   {
     id: 'data-consent',
-    name: 'Agent Data Consent Policy',
+    name: 'Khabiteq Realty Data Consent Policy (Agents)',
     shortName: 'Data Consent',
     icon: <Shield className='w-4 h-4' />,
-    description: 'Explains how Khabiteq collects, uses, stores, and protects personal data provided by agents who register on the platform.',
     content: [
       {
         sectionNumber: '1',
         title: 'Personal Data We Collect',
         items: [
-          {
-            title: 'Identification Data',
-            description: 'Full name, date of birth, National Identification Number (NIN), valid government-issued ID.',
-          },
-          {
-            title: 'Contact Information',
-            description: 'Phone numbers, email addresses, residential/business addresses.',
-          },
-          {
-            title: 'Professional Information',
-            description: 'Licenses, certifications, proof of agency/ownership, and related documents.',
-          },
-          {
-            title: 'Financial Information',
-            description: 'Bank account details for payment of inspection fees, commissions, and related transactions.',
-          },
+          { text: 'Identification Data: Full name, date of birth, National Identification Number (NIN), valid government-issued ID.' },
+          { text: 'Contact Information: Phone numbers, email addresses, residential/business addresses.' },
+          { text: 'Professional Information: Licenses, certifications, proof of agency/ownership, and related documents.' },
+          { text: 'Financial Information: Bank account details for payment of inspection fees, commissions, and related transactions.' },
         ],
       },
       {
         sectionNumber: '2',
         title: 'Purpose of Data Collection',
         items: [
-          {
-            title: 'KYC Compliance',
-            description: 'Identity verification and Know Your Customer (KYC) compliance.',
-          },
-          {
-            title: 'Payment Processing',
-            description: 'Processing inspection fees, commissions, and other payments due to you.',
-          },
-          {
-            title: 'Communication',
-            description: 'Communicating updates about your listings, account, and transactions.',
-          },
-          {
-            title: 'Legal Compliance',
-            description: 'Compliance with applicable laws, including anti-fraud and anti-money laundering regulations.',
-          },
-          {
-            title: 'Record-Keeping',
-            description: 'Secure record-keeping of transactions performed on the platform.',
-          },
+          { text: 'Identity verification and Know Your Customer (KYC) compliance.' },
+          { text: 'Processing inspection fees, commissions, and other payments due to you.' },
+          { text: 'Communicating updates about your listings, account, and transactions.' },
+          { text: 'Compliance with applicable laws, including anti-fraud and anti-money laundering regulations.' },
+          { text: 'Secure record-keeping of transactions performed on the platform.' },
         ],
       },
       {
         sectionNumber: '3',
         title: 'Data Sharing',
         items: [
-          {
-            title: 'No Sales',
-            description: 'We will not sell your personal information.',
-          },
-          {
-            title: 'Authorized Partners',
-            description: 'Data may only be shared with: Authorized third-party service providers (e.g., payment processors, verification agencies). Regulatory authorities or law enforcement agencies, if required by law.',
-          },
+          { text: 'We will not sell your personal information. Data may only be shared with:' },
+          { text: 'Authorized third-party service providers (e.g., payment processors, verification agencies).' },
+          { text: 'Regulatory authorities or law enforcement agencies, if required by law.' },
         ],
       },
       {
         sectionNumber: '4',
         title: 'Data Security',
         items: [
-          {
-            title: 'Encryption',
-            description: 'All electronic records are encrypted during storage and transmission.',
-          },
-          {
-            title: 'Access Control',
-            description: 'Access to your data is restricted to authorized Khabiteq staff and approved third parties.',
-          },
-          {
-            title: 'Physical Security',
-            description: 'Physical records (if any) are kept in secure, access-controlled facilities.',
-          },
+          { text: 'All electronic records are encrypted during storage and transmission.' },
+          { text: 'Access to your data is restricted to authorized Khabiteq staff and approved third parties.' },
+          { text: 'Physical records (if any) are kept in secure, access-controlled facilities.' },
         ],
       },
       {
         sectionNumber: '5',
         title: 'Consent',
         items: [
-          {
-            title: 'Data Collection Consent',
-            description: 'By signing this document, you consent to: The collection, use, and storage of your personal and financial data for the purposes outlined above.',
-          },
-          {
-            title: 'Contact Consent',
-            description: 'Khabiteq contacting you by phone, email, or SMS regarding your account, payments, and services.',
-          },
-          {
-            title: 'Sharing Consent',
-            description: 'Khabiteq sharing your data with trusted partners solely for payment processing, KYC, or regulatory compliance.',
-          },
+          { text: 'By signing this document, you consent to:' },
+          { text: 'The collection, use, and storage of your personal and financial data for the purposes outlined above.' },
+          { text: 'Khabiteq contacting you by phone, email, or SMS regarding your account, payments, and services.' },
+          { text: 'Khabiteq sharing your data with trusted partners solely for payment processing, KYC, or regulatory compliance.' },
         ],
       },
       {
         sectionNumber: '6',
         title: 'Withdrawal of Consent',
         items: [
-          {
-            title: 'Withdrawal Process',
-            description: 'You may withdraw your consent at any time by sending a written request to privacy@khabiteqrealty.com.',
-          },
-          {
-            title: 'Service Impact',
-            description: 'Withdrawal of consent may limit or prevent you from continuing as an agent on the platform, as certain data (e.g., NIN, bank details) is mandatory for compliance.',
-          },
+          { text: 'You may withdraw your consent at any time by sending a written request to privacy@khabiteqrealty.com.' },
+          { text: 'Withdrawal of consent may limit or prevent you from continuing as an agent on the platform, as certain data (e.g., NIN, bank details) is mandatory for compliance.' },
         ],
       },
       {
         sectionNumber: '7',
         title: 'Data Retention',
         items: [
-          {
-            title: 'Retention Period',
-            description: 'Your personal data will be retained for up to five (5) years after account closure, or longer if required by law.',
-          },
-          {
-            title: 'Disposal',
-            description: 'After the retention period, your data will be securely deleted or anonymized.',
-          },
+          { text: 'Your personal data will be retained for up to five (5) years after account closure, or longer if required by law.' },
+          { text: 'After the retention period, your data will be securely deleted or anonymized.' },
         ],
       },
       {
         sectionNumber: '8',
         title: 'Your Rights',
         items: [
-          {
-            title: 'Access',
-            description: 'Access your personal data.',
-          },
-          {
-            title: 'Correction',
-            description: 'Request corrections or updates to inaccurate information.',
-          },
-          {
-            title: 'Deletion',
-            description: 'Request deletion of your data (subject to legal requirements).',
-          },
-          {
-            title: 'Portability',
-            description: 'Request a copy of your data in a machine-readable format.',
-          },
+          { text: 'Access your personal data.' },
+          { text: 'Request corrections or updates to inaccurate information.' },
+          { text: 'Request deletion of your data (subject to legal requirements).' },
+          { text: 'Request a copy of your data in a machine-readable format.' },
         ],
       },
     ],
@@ -1520,201 +906,97 @@ const POLICIES_DATA = [
     name: 'Data Protection & Privacy Policy',
     shortName: 'Privacy',
     icon: <Shield className='w-4 h-4' />,
-    description: 'Comprehensive policy outlining how Khabiteq prioritizes privacy and security of all personal data across all platform interactions.',
     content: [
       {
         sectionNumber: '1',
-        title: 'Personal Data Collection',
+        title: 'Personal Data We Collect',
         items: [
-          {
-            title: 'Contact Information',
-            description: 'Names, email addresses, phone numbers.',
-          },
-          {
-            title: 'Property Information',
-            description: 'Search preferences (location, type, budget), property details, agreements, and payment information.',
-          },
-          {
-            title: 'Business Information',
-            description: 'Certifications and addresses for agents and landlords.',
-          },
+          { text: 'As part of your registration and activities as an agent on Khabiteq, we may collect contact information: Phone numbers, email addresses, residential/business addresses.' },
+          { text: 'Property Preferences and Transactions: Search preferences (location, type, budget), property details, agreements, and payment information.' },
+          { text: 'Business Information: Certifications and addresses for agents and landlords.' },
         ],
       },
       {
         sectionNumber: '2',
-        title: 'Data Collection Methods',
+        title: 'Data Storage and Security',
         items: [
-          {
-            title: 'Collection Channels',
-            description: 'Through online forms, website interactions, emails, and phone communications.',
-          },
-          {
-            title: 'Onboarding Process',
-            description: 'During onboarding processes for agents and clients.',
-          },
+          { text: 'Digital Storage: Personal data is encrypted during storage and transit.' },
+          { text: 'Physical Records: Hard copies, if any, are stored in secure, restricted-access locations.' },
+          { text: 'Backups: Regular backups are performed to safeguard against data loss.' },
+          { text: 'System Security: Continuous updates and security patches are applied to protect against vulnerabilities.' },
         ],
       },
       {
         sectionNumber: '3',
-        title: 'Data Storage and Security',
+        title: 'Data Access',
         items: [
-          {
-            title: 'Digital Storage',
-            description: 'Personal data is encrypted during storage and transit.',
-          },
-          {
-            title: 'Physical Records',
-            description: 'Hard copies, if any, are stored in secure, restricted-access locations.',
-          },
-          {
-            title: 'Backups',
-            description: 'Regular backups are performed to safeguard against data loss.',
-          },
-          {
-            title: 'System Security',
-            description: 'Continuous updates and security patches are applied to protect against vulnerabilities.',
-          },
+          { text: 'Access is restricted to authorized personnel based on their roles.' },
+          { text: 'Third-party providers, such as payment processors, are given access only when necessary and under strict confidentiality agreements.' },
+          { text: 'All access is monitored to ensure compliance with data protection protocols.' },
         ],
       },
       {
         sectionNumber: '4',
-        title: 'Data Access',
+        title: 'Data Usage',
         items: [
-          {
-            title: 'Access Restriction',
-            description: 'Access is restricted to authorized personnel based on their roles.',
-          },
-          {
-            title: 'Third-Party Access',
-            description: 'Third-party providers, such as payment processors, are given access only when necessary and under strict confidentiality agreements.',
-          },
-          {
-            title: 'Monitoring',
-            description: 'All access is monitored to ensure compliance with data protection protocols.',
-          },
+          { text: 'Data is utilized solely for:' },
+          { text: 'Providing services, such as property matching, rent collection, and transaction facilitation.' },
+          { text: 'Communicating updates related to listings, inspections, or transactions.' },
+          { text: 'Marketing, but only with explicit consent from data owners.' },
+          { text: 'Prohibited Uses: Data is never sold or shared with unauthorized third parties.' },
         ],
       },
       {
         sectionNumber: '5',
-        title: 'Data Usage',
+        title: 'Data Sharing',
         items: [
-          {
-            title: 'Permitted Uses',
-            description: 'Data is utilized solely for:',
-            details: [
-              'Providing services, such as property matching, rent collection, and transaction facilitation',
-              'Communicating updates related to listings, inspections, or transactions',
-              'Marketing, but only with explicit consent from data owners'
-            ],
-          },
-          {
-            title: 'Prohibited Uses',
-            description: 'Data is never sold or shared with unauthorized third parties.',
-          },
+          { text: 'Data is shared only with trusted third parties under confidentiality agreements (e.g., payment processors or legal service providers).' },
+          { text: 'When possible, data is anonymized before sharing to safeguard privacy.' },
         ],
       },
       {
         sectionNumber: '6',
-        title: 'Data Sharing',
+        title: 'Data Retention and Disposal',
         items: [
-          {
-            title: 'Trusted Partners',
-            description: 'Data is shared only with trusted third parties under confidentiality agreements (e.g., payment processors or legal service providers).',
-          },
-          {
-            title: 'Anonymization',
-            description: 'When possible, data is anonymized before sharing to safeguard privacy.',
-          },
+          { text: 'Retention Period: Personal and transactional data is kept for up to five years or as required by law.' },
+          { text: 'Secure Disposal: Digital data is deleted using certified data-wiping software and Physical records are securely shredded before disposal.' },
         ],
       },
       {
         sectionNumber: '7',
-        title: 'Data Retention and Disposal',
+        title: 'Breach Management',
         items: [
-          {
-            title: 'Retention Period',
-            description: 'Personal and transactional data is kept for up to five years or as required by law.',
-          },
-          {
-            title: 'Digital Disposal',
-            description: 'Digital data is deleted using certified data-wiping software and Physical records are securely shredded before disposal.',
-          },
+          { text: 'In the event of a data breach:' },
+          { text: 'All affected parties will be notified within 72 hours.' },
+          { text: 'Authorities will be informed as required by law.' },
+          { text: 'An internal review will be conducted, and measures will be implemented to prevent future breaches.' },
         ],
       },
       {
         sectionNumber: '8',
-        title: 'Breach Management',
+        title: 'Data Owner Rights',
         items: [
-          {
-            title: 'Notification',
-            description: 'All affected parties will be notified within 72 hours.',
-          },
-          {
-            title: 'Authority Notification',
-            description: 'Authorities will be informed as required by law.',
-          },
-          {
-            title: 'Internal Review',
-            description: 'An internal review will be conducted, and measures will be implemented to prevent future breaches.',
-          },
+          { text: 'Access: Request access to their personal data.' },
+          { text: 'Correction: Request corrections or updates to inaccurate data.' },
+          { text: 'Erasure: Request the deletion of personal data, subject to legal or contractual obligations.' },
+          { text: 'Restriction: Restrict how their data is processed.' },
+          { text: 'Objection: Object to specific types of data processing.' },
+          { text: 'Portability: Request a copy of their data in a machine-readable format.' },
         ],
       },
       {
         sectionNumber: '9',
-        title: 'Data Owner Rights',
+        title: 'Monitoring and Compliance',
         items: [
-          {
-            title: 'Access Right',
-            description: 'Request access to their personal data.',
-          },
-          {
-            title: 'Correction Right',
-            description: 'Request corrections or updates to inaccurate data.',
-          },
-          {
-            title: 'Erasure Right',
-            description: 'Request the deletion of personal data, subject to legal or contractual obligations.',
-          },
-          {
-            title: 'Restriction Right',
-            description: 'Restrict how their data is processed.',
-          },
-          {
-            title: 'Objection Right',
-            description: 'Object to specific types of data processing.',
-          },
-          {
-            title: 'Portability Right',
-            description: 'Request a copy of their data in a machine-readable format.',
-          },
+          { text: 'Regular audits ensure adherence to this policy and compliance with data protection regulations.' },
+          { text: 'Non-compliance by employees or third-party providers will result in corrective actions, including termination of agreements if necessary.' },
         ],
       },
       {
         sectionNumber: '10',
-        title: 'Monitoring and Compliance',
-        items: [
-          {
-            title: 'Regular Audits',
-            description: 'Regular audits ensure adherence to this policy and compliance with data protection regulations.',
-          },
-          {
-            title: 'Non-Compliance Actions',
-            description: 'Non-compliance by employees or third-party providers will result in corrective actions, including termination of agreements if necessary.',
-          },
-        ],
-      },
-      {
-        sectionNumber: '11',
         title: 'Policy Updates',
         items: [
-          {
-            title: 'Regular Review',
-            description: 'This policy is reviewed regularly to reflect changes in regulations or company practices.',
-          },
-          {
-            title: 'Notification',
-            description: 'Updates will be posted on our website and will take effect immediately.',
-          },
+          { text: 'This policy is reviewed regularly to reflect changes in regulations or company practices. Updates will be posted on our website and will take effect immediately.' },
         ],
       },
     ],
