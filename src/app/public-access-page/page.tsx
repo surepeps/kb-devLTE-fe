@@ -541,6 +541,8 @@ export default function DealSitePage() {
       paymentDetails: (ds as any).paymentDetails || prev.paymentDetails,
       about: (ds as any).about || prev.about,
       contactUs: (ds as any).contactUs || prev.contactUs,
+      homeSettings: (ds as any).homeSettings || prev.homeSettings,
+      subscribeSettings: (ds as any).subscribeSettings || prev.subscribeSettings,
     }));
 
     if (ds.publicSlug && !slugLocked) {
