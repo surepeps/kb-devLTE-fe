@@ -3177,11 +3177,11 @@ export default function DealSitePage() {
                   Back
                 </button>
 
-                {setupStep < 3 ? (
+                {setupStep < 4 ? (
                   (setupStep === 0 || setupStep === 1) ? null : (
                     <button
                       type="button"
-                      onClick={() => setSetupStep((s) => Math.min(3, s + 1))}
+                      onClick={() => setSetupStep((s) => Math.min(4, s + 1))}
                       className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg"
                     >
                       Next
