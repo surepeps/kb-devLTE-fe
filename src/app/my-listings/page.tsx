@@ -8,7 +8,7 @@ import { GET_REQUEST, PUT_REQUEST, DELETE_REQUEST, PATCH_REQUEST } from "@/utils
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading-component/loading";
 import toast from "react-hot-toast";
-import { Plus, Grid } from "lucide-react";
+import { Plus, Grid, ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import CollapsibleMyListingFilters from "@/components/mylisting/filters/CollapsibleMyListingFilters";
 import MyListingPropertyCard from "@/components/mylisting/MyListingPropertyCard";
@@ -298,6 +298,12 @@ const MyListingPage = () => {
         />
 
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <Link href="/dashboard" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors">
+              <ArrowLeftIcon size={20} />
+              Back to Dashboard
+            </Link>
+          </div>
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 sm:mb-8 gap-4">
             <div className="flex-1">

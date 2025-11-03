@@ -427,7 +427,7 @@ export default function MyInspectionRequestsPage() {
 
   const listTotalCount = activeTab === "inspections" ? filteredInspections.length : filteredBookings.length;
 
-
+ 
   return (
     <CombinedAuthGuard requireAuth={true} allowedUserTypes={["Agent", "Landowners"]} requireAgentOnboarding={false} requireAgentApproval={false} requireActiveSubscription={true} agentCustomMessage="You must complete onboarding and be approved before you view inspection requests.">
       <div className="min-h-screen bg-[#EEF1F1]">

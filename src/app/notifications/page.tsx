@@ -13,6 +13,7 @@ import {
   MoreVertical,
   ArrowLeft,
   Search,
+  ArrowLeftIcon,
 } from "lucide-react";
 import { GET_REQUEST, PUT_REQUEST, DELETE_REQUEST } from "@/utils/requests";
 import { URLS } from "@/utils/URLS";
@@ -23,6 +24,7 @@ import { useUserContext } from "@/context/user-context";
 import Loading from "@/components/loading-component/loading";
 import NotificationCardSkeleton from "@/components/loading-component/NotificationCardSkeleton";
 import CombinedAuthGuard from "@/logic/combinedAuthGuard";
+import Link from "next/link";
 
 interface Notification {
   _id: string;
@@ -279,6 +281,14 @@ const NotificationsPage: React.FC = () => {
     >
       <div className="min-h-screen bg-[#EEF1F1] py-4 md:py-8">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl">
+
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <Link href="/dashboard" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors">
+              <ArrowLeftIcon size={20} />
+              Back to Dashboard
+            </Link>
+          </div>
+          
           {/* Header */}
           <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-4">

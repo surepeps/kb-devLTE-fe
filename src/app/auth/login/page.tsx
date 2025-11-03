@@ -219,7 +219,7 @@ const Login: FC = () => {
             window.FB.api(
               "/me",
               { fields: "name,email,first_name,last_name" },
-              async (userInfo: any) => {
+              async (userInfo: any) => { 
                 try {
                   const url = URLS.BASE + URLS.authFacebook;
                   const payload = {
