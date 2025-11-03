@@ -1143,27 +1143,51 @@ export default function DealSitePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                   <div>
                     <label className="block text-xs text-gray-700 mb-1">Rating (1-5)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="5"
-                      value={testimonial.rating || 5}
-                      onChange={(e) => {
-                        const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
-                        updated[idx].rating = Number(e.target.value);
-                        setForm(prev => ({
-                          ...prev,
-                          homeSettings: {
-                            ...(prev.homeSettings || {}),
-                            testimonials: {
-                              ...(prev.homeSettings?.testimonials || {}),
-                              testimonials: updated,
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                          updated[idx].rating = Math.max(1, (updated[idx].rating || 5) - 1);
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              testimonials: {
+                                ...(prev.homeSettings?.testimonials || {}),
+                                testimonials: updated,
+                              },
                             },
-                          },
-                        }));
-                      }}
-                      className={`${inputBase} text-sm`}
-                    />
+                          }));
+                        }}
+                        className="px-2 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100"
+                      >
+                        −
+                      </button>
+                      <span className="px-3 py-1 border border-gray-300 rounded text-sm font-medium w-12 text-center bg-gray-50">
+                        {testimonial.rating || 5}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                          updated[idx].rating = Math.min(5, (updated[idx].rating || 5) + 1);
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              testimonials: {
+                                ...(prev.homeSettings?.testimonials || {}),
+                                testimonials: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className="px-2 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs text-gray-700 mb-1">Name</label>
