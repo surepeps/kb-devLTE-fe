@@ -143,9 +143,6 @@ export default function ProfileSettingsPage() {
           lastName: values.lastName,
           phoneNumber: values.phoneNumber,
           address: values.address,
-          businessName: values.businessName,
-          settlementBank: values.settlementBank,
-          accountNumber: values.accountNumber,
         };
 
         const response = await api.patch("/account/updateAccount", updatePayload);
