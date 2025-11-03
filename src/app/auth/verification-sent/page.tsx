@@ -19,15 +19,21 @@ const VerificationSent = () => {
   const { isContactUsClicked } = usePageContext();
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [userType, setUserType] = useState<"Agent" | "Landowners" | null>(null);
   const [isResending, setIsResending] = useState(false);
+
+  const isAgent = userType === "Agent";
+  const isLandowner = userType === "Landowners";
 
   useEffect(() => {
     const userEmail = localStorage.getItem("email");
+    const storedUserType = localStorage.getItem("userType");
     if (!userEmail) {
       router.push("/auth/register");
       return;
     }
     setEmail(userEmail);
+    setUserType((storedUserType as "Agent" | "Landowners") || "Landowners");
   }, [router]);
 
   const handleResendVerification = async () => {
