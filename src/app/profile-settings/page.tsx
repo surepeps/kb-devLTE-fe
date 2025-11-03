@@ -53,6 +53,7 @@ export default function ProfileSettingsPage() {
     "profile" | "password" | "account"
   >("profile");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isUploadingProfileImage, setIsUploadingProfileImage] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
