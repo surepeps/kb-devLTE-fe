@@ -3143,10 +3143,14 @@ export default function DealSitePage() {
                 <div className="space-y-6">
                   {renderMarketplaceDefaults}
                   {renderContactVisibility}
-                  {renderBankDetails}
                 </div>
               )}
               {setupStep === 3 && (
+                <div className="space-y-6">
+                  {renderBankDetails}
+                </div>
+              )}
+              {setupStep === 4 && (
                 <div className="space-y-6">
                   <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <h2 className="text-lg font-semibold text-[#09391C] mb-2">Review</h2>
@@ -3156,6 +3160,8 @@ export default function DealSitePage() {
                       <div><span className="text-gray-500">Title:</span> {form.title || "Untitled"}</div>
                       <div><span className="text-gray-500">Listings Limit:</span> {form.listingsLimit}</div>
                       <div><span className="text-gray-500">Default Tab:</span> {form.marketplaceDefaults.defaultTab}</div>
+                      <div><span className="text-gray-500">Business Name:</span> {form.paymentDetails?.businessName || "Not set"}</div>
+                      <div><span className="text-gray-500">Account Number:</span> {form.paymentDetails?.accountNumber ? "●●●●●●●●" + form.paymentDetails.accountNumber.slice(-2) : "Not set"}</div>
                     </div>
                   </div>
                 </div>
