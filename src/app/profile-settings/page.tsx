@@ -124,9 +124,6 @@ export default function ProfileSettingsPage() {
       email: userProfile?.email || "",
       phoneNumber: userProfile?.phoneNumber || "",
       address: userProfile?.address || "",
-      businessName: userProfile?.businessName || "",
-      settlementBank: userProfile?.settlementBank || "",
-      accountNumber: userProfile?.accountNumber || "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
