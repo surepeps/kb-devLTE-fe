@@ -26,7 +26,8 @@ const publicRoutes = [
   "/referral",
   "/secure-seller-response",
   "/secure-buyer-response",
-  "/continue-inspection"
+  "/continue-inspection",
+  "/update-preference"
 ];
 
 
@@ -38,7 +39,6 @@ const userProtectedRoutes = [
   "/payment-details",
   "/my-inspection-requests",
   "/update-property",
-  "/update-preference",
   "/referral",
   "/post-property-by-preference",
   "/profile-settings",
