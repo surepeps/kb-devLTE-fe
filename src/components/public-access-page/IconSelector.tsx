@@ -103,7 +103,6 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   Compass,
   Crown,
   Database,
-  Fastforward,
   Gift,
   Globe,
   Headphones,
