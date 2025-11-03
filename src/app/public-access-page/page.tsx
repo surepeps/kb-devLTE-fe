@@ -881,7 +881,8 @@ export default function DealSitePage() {
     { label: "Public Link", status: setupStep > 0 ? "completed" : "active" },
     { label: "Design", status: setupStep > 1 ? "completed" : setupStep === 1 ? "active" : "pending" },
     { label: "Marketplace", status: setupStep > 2 ? "completed" : setupStep === 2 ? "active" : "pending" },
-    { label: "Review", status: setupStep === 3 ? "active" : "pending" },
+    { label: "Payment", status: setupStep > 3 ? "completed" : setupStep === 3 ? "active" : "pending" },
+    { label: "Review", status: setupStep === 4 ? "active" : "pending" },
   ] as const;
 
   const renderBrandingSeo = (
@@ -3142,10 +3143,14 @@ export default function DealSitePage() {
                 <div className="space-y-6">
                   {renderMarketplaceDefaults}
                   {renderContactVisibility}
-                  {renderBankDetails}
                 </div>
               )}
               {setupStep === 3 && (
+                <div className="space-y-6">
+                  {renderBankDetails}
+                </div>
+              )}
+              {setupStep === 4 && (
                 <div className="space-y-6">
                   <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <h2 className="text-lg font-semibold text-[#09391C] mb-2">Review</h2>
@@ -3155,6 +3160,8 @@ export default function DealSitePage() {
                       <div><span className="text-gray-500">Title:</span> {form.title || "Untitled"}</div>
                       <div><span className="text-gray-500">Listings Limit:</span> {form.listingsLimit}</div>
                       <div><span className="text-gray-500">Default Tab:</span> {form.marketplaceDefaults.defaultTab}</div>
+                      <div><span className="text-gray-500">Business Name:</span> {form.paymentDetails?.businessName || "Not set"}</div>
+                      <div><span className="text-gray-500">Account Number:</span> {form.paymentDetails?.accountNumber ? "●●●●●●●●" + form.paymentDetails.accountNumber.slice(-2) : "Not set"}</div>
                     </div>
                   </div>
                 </div>
@@ -3170,11 +3177,11 @@ export default function DealSitePage() {
                   Back
                 </button>
 
-                {setupStep < 3 ? (
+                {setupStep < 4 ? (
                   (setupStep === 0 || setupStep === 1) ? null : (
                     <button
                       type="button"
-                      onClick={() => setSetupStep((s) => Math.min(3, s + 1))}
+                      onClick={() => setSetupStep((s) => Math.min(4, s + 1))}
                       className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg"
                     >
                       Next
