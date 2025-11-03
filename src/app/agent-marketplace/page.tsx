@@ -877,7 +877,7 @@ const AgentMarketplace = () => {
               if (totalPages > 1) {
                 pageButtons.push(
                   <button
-                    key={totalPages}
+                    key={`page-${totalPages}`}
                     onClick={() => {
                       if (currentPage !== totalPages) {
                         setIsPaginationLoading(true);
