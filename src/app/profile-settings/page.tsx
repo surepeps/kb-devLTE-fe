@@ -1096,6 +1096,18 @@ export default function ProfileSettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Processing Preloaders */}
+        <ProcessingRequest
+          isVisible={isUpdatingProfile}
+          title="Updating Profile"
+          message="Please wait while we update your profile details..."
+        />
+        <ProcessingRequest
+          isVisible={isUploadingProfileImage}
+          title="Uploading Profile Picture"
+          message="Please wait while we upload your profile picture..."
+        />
       </div>
     </div>
   );
