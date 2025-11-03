@@ -1666,13 +1666,12 @@ export default function DealSitePage() {
                   </div>
                   <div className="space-y-2">
                     <div>
-                      <label className="block text-xs text-gray-700 mb-1">Icon (icon class/name)</label>
-                      <input
-                        type="text"
-                        value={item.icon || ''}
-                        onChange={(e) => {
+                      <label className="block text-xs text-gray-700 mb-1">Icon</label>
+                      <IconSelector
+                        value={item.icon}
+                        onChange={(iconName) => {
                           const updated = [...(form.homeSettings?.readyToFind?.items || [])];
-                          updated[idx].icon = e.target.value;
+                          updated[idx].icon = iconName;
                           setForm(prev => ({
                             ...prev,
                             homeSettings: {
@@ -1684,8 +1683,7 @@ export default function DealSitePage() {
                             },
                           }));
                         }}
-                        className={`${inputBase} text-sm`}
-                        placeholder="e.g., Home, MapPin, Shield"
+                        className="text-sm"
                       />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
