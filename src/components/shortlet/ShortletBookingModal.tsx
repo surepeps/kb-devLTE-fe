@@ -271,10 +271,9 @@ const ShortletBookingModal: React.FC<ShortletBookingModalProps> = ({ isOpen, onC
 
         if (authUrl && typeof authUrl === "string") {
           setIsRedirectingToPayment(true)
-          onClose();
           setTimeout(() => {
             window.location.href = authUrl as string;
-          }, 50);
+          }, 2000);
           return;
         }
         onClose();
