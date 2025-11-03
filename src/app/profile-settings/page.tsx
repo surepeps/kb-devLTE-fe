@@ -137,9 +137,6 @@ export default function ProfileSettingsPage() {
         .required("Email is required"),
       phoneNumber: Yup.string(),
       address: Yup.string(),
-      businessName: Yup.string().required("Business Name is required"),
-      settlementBank: Yup.string().required("Settlement Bank is required"),
-      accountNumber: Yup.string().required("Account Number is required"),
     }),
     onSubmit: async (values) => {
       setIsUpdatingProfile(true);
