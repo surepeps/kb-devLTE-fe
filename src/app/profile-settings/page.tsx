@@ -272,13 +272,15 @@ export default function ProfileSettingsPage() {
 
   const handleCancelAccountDeletion = async () => {
     try {
-      // Mock API call - replace with actual endpoint
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await api.post("/accounts/cancelAccountDeletion");
 
-      setIsDeletionRequested(false);
-      setDeletionDate(null);
-
-      toast.success("Account deletion request cancelled");
+      if (response.data.success) {
+        setIsDeletionRequested(false);
+        setDeletionDate(null);
+        toast.success("Account deletion request cancelled");
+      } else {
+        throw new Error("Failed to cancel account deletion");
+      }
     } catch (error) {
       console.error("Failed to cancel account deletion:", error);
       toast.error("Failed to cancel account deletion");
