@@ -22,6 +22,7 @@ import {
 import Loading from "@/components/loading-component/loading";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import api from "@/utils/axiosConfig";
 
 interface UserProfile {
   _id: string;
