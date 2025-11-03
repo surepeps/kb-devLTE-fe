@@ -903,7 +903,7 @@ const UpdatePreferenceFormContent: React.FC = () => {
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
             >
-              Update Your Property Preference
+              Update Your {PREFERENCE_CONFIGS[selectedPreferenceType].label}
             </motion.h1>
             <motion.p
               className="text-base sm:text-xl text-gray-600"
@@ -911,7 +911,7 @@ const UpdatePreferenceFormContent: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              Modify your preferences to get better property matches
+              Revise your preferences to get better matches
             </motion.p>
           </motion.div>
         </motion.div>
