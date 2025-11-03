@@ -3444,6 +3444,7 @@ export default function DealSitePage() {
               <Tabs
                 active={activeTab}
                 onChange={(id) => setActiveTab(id as ManageTabId)}
+                disabled={isOnHold}
                 tabs={[
                   { id: "overview", label: "Overview", icon: <BarChart2 size={16} /> },
                   { id: "branding", label: "Branding & SEO" },
