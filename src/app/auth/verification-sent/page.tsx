@@ -96,7 +96,7 @@ const VerificationSent = () => {
 
             {/* Title */}
             <h2 className="text-[32px] lg:text-[28px] font-display leading-[38.4px] font-semibold text-[#09391C]">
-              Verification Email Sent!
+              {isAgent ? "Agent Registration Verification" : "Account Registration Verification"}
             </h2>
           </div>
 
