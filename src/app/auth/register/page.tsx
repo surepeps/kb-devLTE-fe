@@ -126,6 +126,7 @@ const Register = () => {
               `${formik.values.firstName} ${formik.values.lastName}`
             );
             localStorage.setItem("email", `${formik.values.email}`);
+            localStorage.setItem("userType", `${formik.values.userType}`);
 
             setIsSuccess(true);
             formik.resetForm();
