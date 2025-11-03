@@ -201,6 +201,8 @@ interface DealSiteSettings {
   about?: AboutSection;
   contactUs?: ContactUsSection;
   paymentDetails?: BankDetails;
+  homeSettings?: HomeSettings;
+  subscribeSettings?: SubscribeSettings;
   status?: string;
 }
 
