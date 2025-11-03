@@ -3186,9 +3186,151 @@ export default function DealSitePage() {
                 </div>
               )}
               {setupStep === 3 && (
-                <div className="space-y-6">
-                  {renderBankDetails}
-                </div>
+                <Formik
+                  initialValues={{
+                    businessName: form.paymentDetails?.businessName || "",
+                    accountNumber: form.paymentDetails?.accountNumber || "",
+                    sortCode: form.paymentDetails?.sortCode || "",
+                    primaryContactEmail: form.paymentDetails?.primaryContactEmail || "",
+                    primaryContactName: form.paymentDetails?.primaryContactName || "",
+                    primaryContactPhone: form.paymentDetails?.primaryContactPhone || "",
+                  }}
+                  validationSchema={PaymentDetailsSchema}
+                  onSubmit={(values) => {
+                    setForm(prev => ({
+                      ...prev,
+                      paymentDetails: {
+                        businessName: values.businessName,
+                        accountNumber: values.accountNumber,
+                        sortCode: values.sortCode,
+                        primaryContactEmail: values.primaryContactEmail,
+                        primaryContactName: values.primaryContactName,
+                        primaryContactPhone: values.primaryContactPhone,
+                      }
+                    }));
+                    setSetupStep(4);
+                  }}
+                  enableReinitialize
+                >
+                  {({ values, errors, touched, handleChange, handleBlur, isValid, isSubmitting }) => (
+                    <Form className="space-y-6">
+                      <div className="bg-white rounded-lg border border-gray-200 p-6">
+                        <h2 className="text-lg font-semibold text-[#09391C] mb-4">Bank Details</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Business Name <span className="text-red-500">*</span></label>
+                            <input
+                              type="text"
+                              name="businessName"
+                              value={values.businessName}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, businessName: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="Registered business name"
+                              className={`${inputBase} ${touched.businessName && errors.businessName ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            />
+                            {touched.businessName && errors.businessName && (
+                              <p className="text-red-500 text-sm mt-1">{errors.businessName}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Account Number <span className="text-red-500">*</span></label>
+                            <input
+                              type="text"
+                              name="accountNumber"
+                              value={values.accountNumber}
+                              onChange={(e) => {
+                                const cleaned = e.target.value.replace(/\D/g, '');
+                                handleChange({ target: { name: 'accountNumber', value: cleaned } } as any);
+                                setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, accountNumber: cleaned } }));
+                              }}
+                              onBlur={handleBlur}
+                              placeholder="10-digit account number"
+                              className={`${inputBase} ${touched.accountNumber && errors.accountNumber ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            />
+                            {touched.accountNumber && errors.accountNumber && (
+                              <p className="text-red-500 text-sm mt-1">{errors.accountNumber}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Settlement Bank <span className="text-red-500">*</span></label>
+                            <select
+                              name="sortCode"
+                              value={values.sortCode}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, sortCode: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              className={`${selectBase} ${touched.sortCode && errors.sortCode ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            >
+                              <option value="" disabled>{banksLoading ? "Loading banks..." : "Select bank"}</option>
+                              {bankList.map((b) => (
+                                <option key={b.code} value={b.code}>{b.name}</option>
+                              ))}
+                            </select>
+                            {touched.sortCode && errors.sortCode && (
+                              <p className="text-red-500 text-sm mt-1">{errors.sortCode}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Primary Contact Email (optional)</label>
+                            <input
+                              type="email"
+                              name="primaryContactEmail"
+                              value={values.primaryContactEmail}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactEmail: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="email@example.com"
+                              className={`${inputBase} ${touched.primaryContactEmail && errors.primaryContactEmail ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            />
+                            {touched.primaryContactEmail && errors.primaryContactEmail && (
+                              <p className="text-red-500 text-sm mt-1">{errors.primaryContactEmail}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Primary Contact Name (optional)</label>
+                            <input
+                              type="text"
+                              name="primaryContactName"
+                              value={values.primaryContactName}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactName: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="Full name"
+                              className={inputBase}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Primary Contact Phone (optional)</label>
+                            <input
+                              type="tel"
+                              name="primaryContactPhone"
+                              value={values.primaryContactPhone}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactPhone: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="e.g. +2348012345678"
+                              className={inputBase}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-6">
+                        <button
+                          type="button"
+                          onClick={() => setSetupStep(2)}
+                          className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-[#0B572B] border-[#8DDB90] disabled:opacity-50"
+                        >
+                          Back
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={!isValid || isSubmitting}
+                          className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg disabled:opacity-60"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
               )}
               {setupStep === 4 && (
                 <div className="space-y-6">
