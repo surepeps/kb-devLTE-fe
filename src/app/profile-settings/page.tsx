@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import Loading from "@/components/loading-component/loading";
+import ProcessingRequest from "@/components/loading-component/ProcessingRequest";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import api from "@/utils/axiosConfig";
@@ -52,6 +53,7 @@ export default function ProfileSettingsPage() {
     "profile" | "password" | "account"
   >("profile");
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [isUploadingProfileImage, setIsUploadingProfileImage] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -122,6 +124,9 @@ export default function ProfileSettingsPage() {
       email: userProfile?.email || "",
       phoneNumber: userProfile?.phoneNumber || "",
       address: userProfile?.address || "",
+      businessName: userProfile?.businessName || "",
+      settlementBank: userProfile?.settlementBank || "",
+      accountNumber: userProfile?.accountNumber || "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -132,21 +137,36 @@ export default function ProfileSettingsPage() {
         .required("Email is required"),
       phoneNumber: Yup.string(),
       address: Yup.string(),
+      businessName: Yup.string().required("Business Name is required"),
+      settlementBank: Yup.string().required("Settlement Bank is required"),
+      accountNumber: Yup.string().required("Account Number is required"),
     }),
     onSubmit: async (values) => {
       setIsUpdatingProfile(true);
       try {
-        // Mock API call - replace with actual endpoint
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const updatePayload = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          phoneNumber: values.phoneNumber,
+          address: values.address,
+          businessName: values.businessName,
+          settlementBank: values.settlementBank,
+          accountNumber: values.accountNumber,
+        };
 
-        const updatedProfile = { ...userProfile, ...values };
-        setUserProfile(updatedProfile as UserProfile);
-        setUser({ ...user, ...values } as any);
+        const response = await api.patch("/account/updateAccount", updatePayload);
 
-        toast.success("Profile updated successfully");
+        if (response.data.success) {
+          const updatedProfile = { ...userProfile, ...values };
+          setUserProfile(updatedProfile as UserProfile);
+          setUser({ ...user, ...values } as any);
+          toast.success("Profile updated successfully");
+        } else {
+          throw new Error(response.data.message || "Failed to update profile");
+        }
       } catch (error) {
         console.error("Failed to update profile:", error);
-        toast.error("Failed to update profile");
+        toast.error(error instanceof Error ? error.message : "Failed to update profile");
       } finally {
         setIsUpdatingProfile(false);
       }
@@ -202,6 +222,7 @@ export default function ProfileSettingsPage() {
   const handleUploadProfileImage = async () => {
     if (!profileImageFile) return;
 
+    setIsUploadingProfileImage(true);
     try {
       const formData = new FormData();
       formData.append("file", profileImageFile);
@@ -236,6 +257,8 @@ export default function ProfileSettingsPage() {
     } catch (error) {
       console.error("Failed to upload profile image:", error);
       toast.error("Failed to upload profile image");
+    } finally {
+      setIsUploadingProfileImage(false);
     }
   };
 
@@ -607,6 +630,89 @@ export default function ProfileSettingsPage() {
                           {profileFormik.errors.address}
                         </p>
                       )}
+                  </div>
+
+                  {/* Bank Details Section */}
+                  <div className="border-t border-gray-200 pt-6 mt-6">
+                    <h3 className="text-lg font-semibold text-[#09391C] mb-4">
+                      Bank Details
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Business Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="businessName"
+                          value={profileFormik.values.businessName}
+                          onChange={profileFormik.handleChange}
+                          onBlur={profileFormik.handleBlur}
+                          placeholder="Registered business name"
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent ${
+                            profileFormik.touched.businessName && profileFormik.errors.businessName
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+                        {profileFormik.touched.businessName &&
+                          profileFormik.errors.businessName && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {profileFormik.errors.businessName}
+                            </p>
+                          )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Settlement Bank <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="settlementBank"
+                          value={profileFormik.values.settlementBank}
+                          onChange={profileFormik.handleChange}
+                          onBlur={profileFormik.handleBlur}
+                          placeholder="Settlement bank name"
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent ${
+                            profileFormik.touched.settlementBank && profileFormik.errors.settlementBank
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+                        {profileFormik.touched.settlementBank &&
+                          profileFormik.errors.settlementBank && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {profileFormik.errors.settlementBank}
+                            </p>
+                          )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-[#09391C] mb-2">
+                          Account Number <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="accountNumber"
+                          value={profileFormik.values.accountNumber}
+                          onChange={profileFormik.handleChange}
+                          onBlur={profileFormik.handleBlur}
+                          placeholder="10-digit account number"
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#8DDB90] focus:border-transparent ${
+                            profileFormik.touched.accountNumber && profileFormik.errors.accountNumber
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+                        {profileFormik.touched.accountNumber &&
+                          profileFormik.errors.accountNumber && (
+                            <p className="text-red-500 text-sm mt-1">
+                              {profileFormik.errors.accountNumber}
+                            </p>
+                          )}
+                      </div>
+                    </div>
                   </div>
 
                   <button
@@ -990,6 +1096,18 @@ export default function ProfileSettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Processing Preloaders */}
+        <ProcessingRequest
+          isVisible={isUpdatingProfile}
+          title="Updating Profile"
+          message="Please wait while we update your profile details..."
+        />
+        <ProcessingRequest
+          isVisible={isUploadingProfileImage}
+          title="Uploading Profile Picture"
+          message="Please wait while we upload your profile picture..."
+        />
       </div>
     </div>
   );
