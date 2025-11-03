@@ -66,6 +66,8 @@ export default function ProfileSettingsPage() {
   const [newEmailRequest, setNewEmailRequest] = useState<string>("");
   const [isRequestingEmailChange, setIsRequestingEmailChange] = useState(false);
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
+  const [showDeletionConfirmModal, setShowDeletionConfirmModal] = useState(false);
+  const [isDeletionLoading, setIsDeletionLoading] = useState(false);
 
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const urlTab = (searchParams.get('tab') || undefined) as ("profile" | "password" | "account") | undefined;
