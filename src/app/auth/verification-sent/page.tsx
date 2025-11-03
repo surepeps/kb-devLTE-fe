@@ -189,12 +189,24 @@ const VerificationSent = () => {
             />
           </div>
 
+          {/* Additional Info Card for Agents */}
+          {isAgent && (
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-[20px] max-w-[480px] w-full">
+              <h4 className="font-semibold text-[14px] text-[#09391C] mb-[12px]">
+                About KYC Verification
+              </h4>
+              <p className="text-[13px] leading-[20px] text-[#1E1E1E]">
+                KYC verification is a required security step that helps us verify your identity. You'll need to provide valid identification documents. The process usually takes 24-48 hours for approval.
+              </p>
+            </div>
+          )}
+
           {/* Footer Links */}
           <div className="flex flex-col items-center gap-[16px] text-center">
             <p className="text-[16px] leading-[25.6px] font-normal text-[#1E1E1E]">
               Already verified?{" "}
-              <Link 
-                className="font-semibold text-[#09391C] hover:underline transition-all duration-300" 
+              <Link
+                className="font-semibold text-[#09391C] hover:underline transition-all duration-300"
                 href="/auth/login"
               >
                 Sign in to your account
