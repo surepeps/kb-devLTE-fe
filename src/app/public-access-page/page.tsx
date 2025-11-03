@@ -108,6 +108,67 @@ interface ContactUsSection {
   faqs?: { question: string; answer: string }[];
 }
 
+interface Testimonial {
+  rating: number;
+  description: string;
+  image?: string;
+  name: string;
+  company: string;
+}
+
+interface TestimonialsSection {
+  title: string;
+  subTitle: string;
+  testimonials: Testimonial[];
+}
+
+interface WhyChooseUsItem {
+  icon?: string;
+  title: string;
+  content: string;
+}
+
+interface ReadyToFindCTA {
+  bgColor: string;
+  text: string;
+  actionLink: string;
+}
+
+interface ReadyToFindItem {
+  icon?: string;
+  title: string;
+  subTitle: string;
+  content: string;
+}
+
+interface ReadyToFindSection {
+  title: string;
+  subTitle: string;
+  ctas: ReadyToFindCTA[];
+  items: ReadyToFindItem[];
+}
+
+interface HomeSettings {
+  testimonials?: TestimonialsSection;
+  whyChooseUs?: {
+    title: string;
+    subTitle: string;
+    items: WhyChooseUsItem[];
+  };
+  readyToFind?: ReadyToFindSection;
+}
+
+interface SubscribeSettings {
+  title: string;
+  subTitle: string;
+  miniTitle: string;
+  backgroundColor: string;
+  cta: {
+    text: string;
+    color: string;
+  };
+}
+
 interface FooterDetails {
   shortDescription: string;
   copyrightText: string;
