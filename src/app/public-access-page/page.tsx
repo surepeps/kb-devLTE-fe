@@ -254,6 +254,8 @@ type ManageTabId =
   | "payment"
   | "featured"
   | "listings"
+  | "home-settings"
+  | "subscribe-settings"
   | "security"
   | "service-logger";
 
