@@ -2945,11 +2945,11 @@ export default function DealSitePage() {
           </div>
           <div className="flex items-center gap-2">
             {!isPaused ? (
-              <button onClick={pauseDealSite} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm"><Pause size={16} /> Pause</button>
+              <button onClick={pauseDealSite} disabled={isOnHold} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"><Pause size={16} /> Pause</button>
             ) : (
-              <button onClick={resumeDealSite} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm"><Play size={16} /> Resume</button>
+              <button onClick={resumeDealSite} disabled={isOnHold} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"><Play size={16} /> Resume</button>
             )}
-            <button onClick={() => setActiveTab("branding")} className="px-4 py-2 border rounded-lg text-sm">Edit Settings</button>
+            <button onClick={() => setActiveTab("branding")} disabled={isOnHold} className="px-4 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">Edit Settings</button>
           </div>
         </div>
       </div>
