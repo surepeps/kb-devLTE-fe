@@ -28,6 +28,7 @@ import {
 import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
 import Stepper from "@/components/post-property-components/Stepper";
+import IconSelector from "@/components/public-access-page/IconSelector";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -108,6 +109,67 @@ interface ContactUsSection {
   faqs?: { question: string; answer: string }[];
 }
 
+interface Testimonial {
+  rating: number;
+  description: string;
+  image?: string;
+  name: string;
+  company: string;
+}
+
+interface TestimonialsSection {
+  title: string;
+  subTitle: string;
+  testimonials: Testimonial[];
+}
+
+interface WhyChooseUsItem {
+  icon?: string;
+  title: string;
+  content: string;
+}
+
+interface ReadyToFindCTA {
+  bgColor: string;
+  text: string;
+  actionLink: string;
+}
+
+interface ReadyToFindItem {
+  icon?: string;
+  title: string;
+  subTitle: string;
+  content: string;
+}
+
+interface ReadyToFindSection {
+  title: string;
+  subTitle: string;
+  ctas: ReadyToFindCTA[];
+  items: ReadyToFindItem[];
+}
+
+interface HomeSettings {
+  testimonials?: TestimonialsSection;
+  whyChooseUs?: {
+    title: string;
+    subTitle: string;
+    items: WhyChooseUsItem[];
+  };
+  readyToFind?: ReadyToFindSection;
+}
+
+interface SubscribeSettings {
+  title: string;
+  subTitle: string;
+  miniTitle: string;
+  backgroundColor: string;
+  cta: {
+    text: string;
+    color: string;
+  };
+}
+
 interface FooterDetails {
   shortDescription: string;
   copyrightText: string;
@@ -140,6 +202,8 @@ interface DealSiteSettings {
   about?: AboutSection;
   contactUs?: ContactUsSection;
   paymentDetails?: BankDetails;
+  homeSettings?: HomeSettings;
+  subscribeSettings?: SubscribeSettings;
   status?: string;
 }
 
@@ -191,6 +255,8 @@ type ManageTabId =
   | "payment"
   | "featured"
   | "listings"
+  | "home-settings"
+  | "subscribe-settings"
   | "security"
   | "service-logger";
 
@@ -209,6 +275,8 @@ const updatableTabSet = new Set<UpdatableSectionId>([
   "payment",
   "featured",
   "listings",
+  "home-settings",
+  "subscribe-settings",
 ]);
 
 const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
@@ -224,6 +292,8 @@ const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
   payment: "Payment",
   featured: "Featured Listings",
   listings: "Listings",
+  "home-settings": "Home Settings",
+  "subscribe-settings": "Subscribe Settings",
 };
 
 const isUpdatableTab = (tab: ManageTabId): tab is UpdatableSectionId => updatableTabSet.has(tab as UpdatableSectionId);
@@ -298,6 +368,18 @@ export default function DealSitePage() {
     paymentDetails: { businessName: "", accountNumber: "", sortCode: "", primaryContactEmail: "", primaryContactName: "", primaryContactPhone: "" },
     about: { title: "", subTitle: "", heroImageUrl: "", ctaButtons: [], mission: "", vision: "", howItWorks: "", ourValues: [] },
     contactUs: { officeHours: "", faqs: [] },
+    homeSettings: {
+      testimonials: { title: "", subTitle: "", testimonials: [] },
+      whyChooseUs: { title: "", subTitle: "", items: [] },
+      readyToFind: { title: "", subTitle: "", ctas: [], items: [] },
+    },
+    subscribeSettings: {
+      title: "",
+      subTitle: "",
+      miniTitle: "",
+      backgroundColor: "#8DDB90",
+      cta: { text: "Subscribe Now", color: "#09391C" },
+    },
   });
 
   const previewUrl = useMemo(() => {
@@ -405,6 +487,8 @@ export default function DealSitePage() {
             paymentDetails: (s as any).paymentDetails || prev.paymentDetails,
             about: (s as any).about || prev.about,
             contactUs: (s as any).contactUs || prev.contactUs,
+            homeSettings: (s as any).homeSettings || prev.homeSettings,
+            subscribeSettings: (s as any).subscribeSettings || prev.subscribeSettings,
           }));
           if (typeof s.paused === "boolean") setIsPaused(s.paused);
           if (s.status === "on-hold") setIsOnHold(true);
@@ -460,6 +544,8 @@ export default function DealSitePage() {
       paymentDetails: (ds as any).paymentDetails || prev.paymentDetails,
       about: (ds as any).about || prev.about,
       contactUs: (ds as any).contactUs || prev.contactUs,
+      homeSettings: (ds as any).homeSettings || prev.homeSettings,
+      subscribeSettings: (ds as any).subscribeSettings || prev.subscribeSettings,
     }));
 
     if (ds.publicSlug && !slugLocked) {
@@ -951,6 +1037,904 @@ export default function DealSitePage() {
     }
   };
 
+  const handleUploadTestimonialImage = async (file: File, index: number) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("for", "public-testimonial");
+    const token = Cookies.get("token");
+
+    showPreloader("Uploading testimonial image...");
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm((prev) => {
+        const testimonials = { ...(prev.homeSettings || {}).testimonials } || { title: "", subTitle: "", testimonials: [] };
+        if (testimonials.testimonials && testimonials.testimonials[index]) {
+          testimonials.testimonials[index].image = (res.data as any).url;
+        }
+        return {
+          ...prev,
+          homeSettings: { ...(prev.homeSettings || {}), testimonials },
+        };
+      });
+      toast.success("Image uploaded");
+    } else {
+      toast.error(res?.message || "Upload failed");
+    }
+  };
+
+  const renderHomeSettings = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-8">
+      <div>
+        <h2 className="text-lg font-semibold text-[#09391C] mb-6">Home Settings</h2>
+
+        {/* Testimonials Section */}
+        <div className="mb-8 pb-8 border-b border-gray-200">
+          <h3 className="text-base font-semibold text-[#09391C] mb-4">Testimonials</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Title</label>
+              <input
+                type="text"
+                value={form.homeSettings?.testimonials?.title || ''}
+                onChange={(e) => setForm(prev => ({
+                  ...prev,
+                  homeSettings: {
+                    ...(prev.homeSettings || {}),
+                    testimonials: {
+                      title: e.target.value,
+                      subTitle: form.homeSettings?.testimonials?.subTitle || '',
+                      testimonials: form.homeSettings?.testimonials?.testimonials || [],
+                    },
+                  },
+                }))}
+                className={inputBase}
+                placeholder="What Our Clients Say"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+              <input
+                type="text"
+                value={form.homeSettings?.testimonials?.subTitle || ''}
+                onChange={(e) => setForm(prev => ({
+                  ...prev,
+                  homeSettings: {
+                    ...(prev.homeSettings || {}),
+                    testimonials: {
+                      title: form.homeSettings?.testimonials?.title || '',
+                      subTitle: e.target.value,
+                      testimonials: form.homeSettings?.testimonials?.testimonials || [],
+                    },
+                  },
+                }))}
+                className={inputBase}
+                placeholder="Real feedback from real clients"
+              />
+            </div>
+          </div>
+
+          {/* Testimonial Items */}
+          <div className="space-y-4">
+            {form.homeSettings?.testimonials?.testimonials?.map((testimonial, idx) => (
+              <div key={idx} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="font-medium text-sm text-[#09391C]">Testimonial {idx + 1}</h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm(prev => ({
+                        ...prev,
+                        homeSettings: {
+                          ...(prev.homeSettings || {}),
+                          testimonials: {
+                            ...(prev.homeSettings?.testimonials || {}),
+                            testimonials: form.homeSettings?.testimonials?.testimonials?.filter((_, i) => i !== idx) || [],
+                          },
+                        },
+                      }));
+                    }}
+                    className="text-red-500 hover:text-red-700 text-sm flex items-center gap-1"
+                  >
+                    <Trash2 size={14} /> Remove
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label className="block text-xs text-gray-700 mb-1">Rating (1-5)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="5"
+                      value={testimonial.rating || 5}
+                      onChange={(e) => {
+                        const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                        updated[idx].rating = Number(e.target.value);
+                        setForm(prev => ({
+                          ...prev,
+                          homeSettings: {
+                            ...(prev.homeSettings || {}),
+                            testimonials: {
+                              ...(prev.homeSettings?.testimonials || {}),
+                              testimonials: updated,
+                            },
+                          },
+                        }));
+                      }}
+                      className={`${inputBase} text-sm`}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-700 mb-1">Name</label>
+                    <input
+                      type="text"
+                      value={testimonial.name || ''}
+                      onChange={(e) => {
+                        const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                        updated[idx].name = e.target.value;
+                        setForm(prev => ({
+                          ...prev,
+                          homeSettings: {
+                            ...(prev.homeSettings || {}),
+                            testimonials: {
+                              ...(prev.homeSettings?.testimonials || {}),
+                              testimonials: updated,
+                            },
+                          },
+                        }));
+                      }}
+                      className={`${inputBase} text-sm`}
+                      placeholder="John Doe"
+                    />
+                  </div>
+                </div>
+                <div className="mb-3">
+                  <label className="block text-xs text-gray-700 mb-1">Company</label>
+                  <input
+                    type="text"
+                    value={testimonial.company || ''}
+                    onChange={(e) => {
+                      const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                      updated[idx].company = e.target.value;
+                      setForm(prev => ({
+                        ...prev,
+                        homeSettings: {
+                          ...(prev.homeSettings || {}),
+                          testimonials: {
+                            ...(prev.homeSettings?.testimonials || {}),
+                            testimonials: updated,
+                          },
+                        },
+                      }));
+                    }}
+                    className={`${inputBase} text-sm`}
+                    placeholder="Company name"
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-xs text-gray-700 mb-1">Description</label>
+                  <textarea
+                    value={testimonial.description || ''}
+                    onChange={(e) => {
+                      const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                      updated[idx].description = e.target.value;
+                      setForm(prev => ({
+                        ...prev,
+                        homeSettings: {
+                          ...(prev.homeSettings || {}),
+                          testimonials: {
+                            ...(prev.homeSettings?.testimonials || {}),
+                            testimonials: updated,
+                          },
+                        },
+                      }));
+                    }}
+                    className={`${inputBase} text-sm min-h-[60px]`}
+                    placeholder="Share your experience..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-2">Image</label>
+                  {testimonial.image ? (
+                    <div className="flex items-center gap-2">
+                      <img src={testimonial.image} alt="Testimonial" className="h-12 w-12 rounded object-cover border" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                          updated[idx].image = undefined;
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              testimonials: {
+                                ...(prev.homeSettings?.testimonials || {}),
+                                testimonials: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className="text-xs px-2 py-1 border rounded hover:bg-gray-100"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex items-center justify-center gap-1 px-2 py-2 border-2 border-dashed rounded-lg text-xs cursor-pointer hover:bg-gray-50">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => e.target.files && handleUploadTestimonialImage(e.target.files[0], idx)}
+                      />
+                      <ImageIcon size={14} /> Upload
+                    </label>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setForm(prev => ({
+                ...prev,
+                homeSettings: {
+                  ...(prev.homeSettings || {}),
+                  testimonials: {
+                    ...(prev.homeSettings?.testimonials || {}),
+                    testimonials: [
+                      ...(prev.homeSettings?.testimonials?.testimonials || []),
+                      { rating: 5, description: '', name: '', company: '', image: '' },
+                    ],
+                  },
+                },
+              }));
+            }}
+            className="mt-3 px-3 py-2 text-sm border border-emerald-500 text-emerald-600 rounded-lg hover:bg-emerald-50"
+          >
+            + Add Testimonial
+          </button>
+        </div>
+
+        {/* Why Choose Us Section */}
+        <div className="mb-8 pb-8 border-b border-gray-200">
+          <h3 className="text-base font-semibold text-[#09391C] mb-4">Why Choose Us</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Title</label>
+              <input
+                type="text"
+                value={form.homeSettings?.whyChooseUs?.title || ''}
+                onChange={(e) => setForm(prev => ({
+                  ...prev,
+                  homeSettings: {
+                    ...(prev.homeSettings || {}),
+                    whyChooseUs: {
+                      title: e.target.value,
+                      subTitle: form.homeSettings?.whyChooseUs?.subTitle || '',
+                      items: form.homeSettings?.whyChooseUs?.items || [],
+                    },
+                  },
+                }))}
+                className={inputBase}
+                placeholder="Why Choose Us"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+              <input
+                type="text"
+                value={form.homeSettings?.whyChooseUs?.subTitle || ''}
+                onChange={(e) => setForm(prev => ({
+                  ...prev,
+                  homeSettings: {
+                    ...(prev.homeSettings || {}),
+                    whyChooseUs: {
+                      title: form.homeSettings?.whyChooseUs?.title || '',
+                      subTitle: e.target.value,
+                      items: form.homeSettings?.whyChooseUs?.items || [],
+                    },
+                  },
+                }))}
+                className={inputBase}
+                placeholder="We stand out from the rest"
+              />
+            </div>
+          </div>
+
+          {/* Why Choose Us Items */}
+          <div className="space-y-3">
+            {form.homeSettings?.whyChooseUs?.items?.map((item, idx) => (
+              <div key={idx} className="border border-gray-300 rounded-lg p-3 bg-gray-50">
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-medium text-sm text-[#09391C]">Item {idx + 1}</h4>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm(prev => ({
+                        ...prev,
+                        homeSettings: {
+                          ...(prev.homeSettings || {}),
+                          whyChooseUs: {
+                            ...(prev.homeSettings?.whyChooseUs || {}),
+                            items: form.homeSettings?.whyChooseUs?.items?.filter((_, i) => i !== idx) || [],
+                          },
+                        },
+                      }));
+                    }}
+                    className="text-red-500 hover:text-red-700 text-sm flex items-center gap-1"
+                  >
+                    <Trash2 size={14} /> Remove
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+                  <div>
+                    <label className="block text-xs text-gray-700 mb-1">Icon</label>
+                    <IconSelector
+                      value={item.icon}
+                      onChange={(iconName) => {
+                        const updated = [...(form.homeSettings?.whyChooseUs?.items || [])];
+                        updated[idx].icon = iconName;
+                        setForm(prev => ({
+                          ...prev,
+                          homeSettings: {
+                            ...(prev.homeSettings || {}),
+                            whyChooseUs: {
+                              ...(prev.homeSettings?.whyChooseUs || {}),
+                              items: updated,
+                            },
+                          },
+                        }));
+                      }}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-700 mb-1">Title</label>
+                    <input
+                      type="text"
+                      value={item.title || ''}
+                      onChange={(e) => {
+                        const updated = [...(form.homeSettings?.whyChooseUs?.items || [])];
+                        updated[idx].title = e.target.value;
+                        setForm(prev => ({
+                          ...prev,
+                          homeSettings: {
+                            ...(prev.homeSettings || {}),
+                            whyChooseUs: {
+                              ...(prev.homeSettings?.whyChooseUs || {}),
+                              items: updated,
+                            },
+                          },
+                        }));
+                      }}
+                      className={`${inputBase} text-sm`}
+                      placeholder="Feature title"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-700 mb-1">Content</label>
+                  <textarea
+                    value={item.content || ''}
+                    onChange={(e) => {
+                      const updated = [...(form.homeSettings?.whyChooseUs?.items || [])];
+                      updated[idx].content = e.target.value;
+                      setForm(prev => ({
+                        ...prev,
+                        homeSettings: {
+                          ...(prev.homeSettings || {}),
+                          whyChooseUs: {
+                            ...(prev.homeSettings?.whyChooseUs || {}),
+                            items: updated,
+                          },
+                        },
+                      }));
+                    }}
+                    className={`${inputBase} text-sm min-h-[60px]`}
+                    placeholder="Describe this feature..."
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setForm(prev => ({
+                ...prev,
+                homeSettings: {
+                  ...(prev.homeSettings || {}),
+                  whyChooseUs: {
+                    ...(prev.homeSettings?.whyChooseUs || {}),
+                    items: [
+                      ...(prev.homeSettings?.whyChooseUs?.items || []),
+                      { icon: '', title: '', content: '' },
+                    ],
+                  },
+                },
+              }));
+            }}
+            className="mt-2 px-3 py-2 text-sm border border-emerald-500 text-emerald-600 rounded-lg hover:bg-emerald-50"
+          >
+            + Add Item
+          </button>
+        </div>
+
+        {/* Ready to Find Section */}
+        <div>
+          <h3 className="text-base font-semibold text-[#09391C] mb-4">Ready to Find Your Perfect Property?</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Title</label>
+              <input
+                type="text"
+                value={form.homeSettings?.readyToFind?.title || ''}
+                onChange={(e) => setForm(prev => ({
+                  ...prev,
+                  homeSettings: {
+                    ...(prev.homeSettings || {}),
+                    readyToFind: {
+                      title: e.target.value,
+                      subTitle: form.homeSettings?.readyToFind?.subTitle || '',
+                      ctas: form.homeSettings?.readyToFind?.ctas || [],
+                      items: form.homeSettings?.readyToFind?.items || [],
+                    },
+                  },
+                }))}
+                className={inputBase}
+                placeholder="Ready to Find Your Perfect Property?"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+              <input
+                type="text"
+                value={form.homeSettings?.readyToFind?.subTitle || ''}
+                onChange={(e) => setForm(prev => ({
+                  ...prev,
+                  homeSettings: {
+                    ...(prev.homeSettings || {}),
+                    readyToFind: {
+                      title: form.homeSettings?.readyToFind?.title || '',
+                      subTitle: e.target.value,
+                      ctas: form.homeSettings?.readyToFind?.ctas || [],
+                      items: form.homeSettings?.readyToFind?.items || [],
+                    },
+                  },
+                }))}
+                className={inputBase}
+                placeholder="Start your journey today"
+              />
+            </div>
+          </div>
+
+          {/* CTAs Section - Max 2 */}
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-[#09391C] mb-2">Call-to-Action Buttons (Max 2)</h4>
+            <div className="space-y-3">
+              {form.homeSettings?.readyToFind?.ctas?.slice(0, 2).map((cta, idx) => (
+                <div key={idx} className="border border-gray-300 rounded-lg p-3 bg-gray-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <h5 className="font-medium text-sm text-[#09391C]">CTA {idx + 1}</h5>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm(prev => ({
+                          ...prev,
+                          homeSettings: {
+                            ...(prev.homeSettings || {}),
+                            readyToFind: {
+                              ...(prev.homeSettings?.readyToFind || {}),
+                              ctas: form.homeSettings?.readyToFind?.ctas?.filter((_, i) => i !== idx) || [],
+                            },
+                          },
+                        }));
+                      }}
+                      className="text-red-500 hover:text-red-700 text-sm flex items-center gap-1"
+                    >
+                      <Trash2 size={14} /> Remove
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Button Text</label>
+                      <input
+                        type="text"
+                        value={cta.text || ''}
+                        onChange={(e) => {
+                          const updated = [...(form.homeSettings?.readyToFind?.ctas || [])];
+                          updated[idx].text = e.target.value;
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              readyToFind: {
+                                ...(prev.homeSettings?.readyToFind || {}),
+                                ctas: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className={`${inputBase} text-sm`}
+                        placeholder="Browse Properties"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Button Color (Hex)</label>
+                      <input
+                        type="color"
+                        value={cta.bgColor || '#8DDB90'}
+                        onChange={(e) => {
+                          const updated = [...(form.homeSettings?.readyToFind?.ctas || [])];
+                          updated[idx].bgColor = e.target.value;
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              readyToFind: {
+                                ...(prev.homeSettings?.readyToFind || {}),
+                                ctas: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className="w-full h-9 border rounded cursor-pointer"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Link/Route</label>
+                      <input
+                        type="text"
+                        value={cta.actionLink || ''}
+                        onChange={(e) => {
+                          const updated = [...(form.homeSettings?.readyToFind?.ctas || [])];
+                          updated[idx].actionLink = e.target.value;
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              readyToFind: {
+                                ...(prev.homeSettings?.readyToFind || {}),
+                                ctas: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className={`${inputBase} text-sm`}
+                        placeholder="/market-place"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {(form.homeSettings?.readyToFind?.ctas?.length || 0) < 2 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setForm(prev => ({
+                    ...prev,
+                    homeSettings: {
+                      ...(prev.homeSettings || {}),
+                      readyToFind: {
+                        ...(prev.homeSettings?.readyToFind || {}),
+                        ctas: [
+                          ...(prev.homeSettings?.readyToFind?.ctas || []),
+                          { text: '', bgColor: '#8DDB90', actionLink: '' },
+                        ],
+                      },
+                    },
+                  }));
+                }}
+                className="mt-2 px-3 py-2 text-sm border border-emerald-500 text-emerald-600 rounded-lg hover:bg-emerald-50"
+              >
+                + Add CTA
+              </button>
+            )}
+          </div>
+
+          {/* Ready to Find Items - Max 2 */}
+          <div>
+            <h4 className="text-sm font-medium text-[#09391C] mb-2">Feature Items (Max 2)</h4>
+            <div className="space-y-3">
+              {form.homeSettings?.readyToFind?.items?.slice(0, 2).map((item, idx) => (
+                <div key={idx} className="border border-gray-300 rounded-lg p-3 bg-gray-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <h5 className="font-medium text-sm text-[#09391C]">Item {idx + 1}</h5>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm(prev => ({
+                          ...prev,
+                          homeSettings: {
+                            ...(prev.homeSettings || {}),
+                            readyToFind: {
+                              ...(prev.homeSettings?.readyToFind || {}),
+                              items: form.homeSettings?.readyToFind?.items?.filter((_, i) => i !== idx) || [],
+                            },
+                          },
+                        }));
+                      }}
+                      className="text-red-500 hover:text-red-700 text-sm flex items-center gap-1"
+                    >
+                      <Trash2 size={14} /> Remove
+                    </button>
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Icon</label>
+                      <IconSelector
+                        value={item.icon}
+                        onChange={(iconName) => {
+                          const updated = [...(form.homeSettings?.readyToFind?.items || [])];
+                          updated[idx].icon = iconName;
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              readyToFind: {
+                                ...(prev.homeSettings?.readyToFind || {}),
+                                items: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className="text-sm"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">Title</label>
+                        <input
+                          type="text"
+                          value={item.title || ''}
+                          onChange={(e) => {
+                            const updated = [...(form.homeSettings?.readyToFind?.items || [])];
+                            updated[idx].title = e.target.value;
+                            setForm(prev => ({
+                              ...prev,
+                              homeSettings: {
+                                ...(prev.homeSettings || {}),
+                                readyToFind: {
+                                  ...(prev.homeSettings?.readyToFind || {}),
+                                  items: updated,
+                                },
+                              },
+                            }));
+                          }}
+                          className={`${inputBase} text-sm`}
+                          placeholder="Feature title"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-700 mb-1">Subtitle</label>
+                        <input
+                          type="text"
+                          value={item.subTitle || ''}
+                          onChange={(e) => {
+                            const updated = [...(form.homeSettings?.readyToFind?.items || [])];
+                            updated[idx].subTitle = e.target.value;
+                            setForm(prev => ({
+                              ...prev,
+                              homeSettings: {
+                                ...(prev.homeSettings || {}),
+                                readyToFind: {
+                                  ...(prev.homeSettings?.readyToFind || {}),
+                                  items: updated,
+                                },
+                              },
+                            }));
+                          }}
+                          className={`${inputBase} text-sm`}
+                          placeholder="Feature subtitle"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Content</label>
+                      <textarea
+                        value={item.content || ''}
+                        onChange={(e) => {
+                          const updated = [...(form.homeSettings?.readyToFind?.items || [])];
+                          updated[idx].content = e.target.value;
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              readyToFind: {
+                                ...(prev.homeSettings?.readyToFind || {}),
+                                items: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className={`${inputBase} text-sm min-h-[50px]`}
+                        placeholder="Describe this feature..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {(form.homeSettings?.readyToFind?.items?.length || 0) < 2 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setForm(prev => ({
+                    ...prev,
+                    homeSettings: {
+                      ...(prev.homeSettings || {}),
+                      readyToFind: {
+                        ...(prev.homeSettings?.readyToFind || {}),
+                        items: [
+                          ...(prev.homeSettings?.readyToFind?.items || []),
+                          { icon: '', title: '', subTitle: '', content: '' },
+                        ],
+                      },
+                    },
+                  }));
+                }}
+                className="mt-2 px-3 py-2 text-sm border border-emerald-500 text-emerald-600 rounded-lg hover:bg-emerald-50"
+              >
+                + Add Item
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSubscribeSettings = (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <h2 className="text-lg font-semibold text-[#09391C] mb-4">Subscribe Settings</h2>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Title</label>
+          <input
+            type="text"
+            value={form.subscribeSettings?.title || ''}
+            onChange={(e) => setForm(prev => ({
+              ...prev,
+              subscribeSettings: {
+                ...(prev.subscribeSettings || {}),
+                title: e.target.value,
+              },
+            }))}
+            className={inputBase}
+            placeholder="Subscribe to Our Newsletter"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+          <input
+            type="text"
+            value={form.subscribeSettings?.subTitle || ''}
+            onChange={(e) => setForm(prev => ({
+              ...prev,
+              subscribeSettings: {
+                ...(prev.subscribeSettings || {}),
+                subTitle: e.target.value,
+              },
+            }))}
+            className={inputBase}
+            placeholder="Get the latest updates and offers"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Mini Title</label>
+          <input
+            type="text"
+            value={form.subscribeSettings?.miniTitle || ''}
+            onChange={(e) => setForm(prev => ({
+              ...prev,
+              subscribeSettings: {
+                ...(prev.subscribeSettings || {}),
+                miniTitle: e.target.value,
+              },
+            }))}
+            className={inputBase}
+            placeholder="Stay Updated"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Background Color</label>
+          <div className="flex items-center gap-3">
+            <input
+              type="color"
+              value={form.subscribeSettings?.backgroundColor || '#8DDB90'}
+              onChange={(e) => setForm(prev => ({
+                ...prev,
+                subscribeSettings: {
+                  ...(prev.subscribeSettings || {}),
+                  backgroundColor: e.target.value,
+                },
+              }))}
+              className="h-10 w-20 border rounded cursor-pointer"
+            />
+            <input
+              type="text"
+              value={form.subscribeSettings?.backgroundColor || '#8DDB90'}
+              onChange={(e) => setForm(prev => ({
+                ...prev,
+                subscribeSettings: {
+                  ...(prev.subscribeSettings || {}),
+                  backgroundColor: e.target.value,
+                },
+              }))}
+              className={`${inputBase} w-32`}
+              placeholder="#8DDB90"
+            />
+          </div>
+        </div>
+        <div className="border-t border-gray-200 pt-4">
+          <h3 className="text-sm font-medium text-[#09391C] mb-3">CTA Button</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Button Text</label>
+              <input
+                type="text"
+                value={form.subscribeSettings?.cta?.text || 'Subscribe Now'}
+                onChange={(e) => setForm(prev => ({
+                  ...prev,
+                  subscribeSettings: {
+                    ...(prev.subscribeSettings || {}),
+                    cta: {
+                      ...(prev.subscribeSettings?.cta || {}),
+                      text: e.target.value,
+                    },
+                  },
+                }))}
+                className={inputBase}
+                placeholder="Subscribe Now"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Button Color</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={form.subscribeSettings?.cta?.color || '#09391C'}
+                  onChange={(e) => setForm(prev => ({
+                    ...prev,
+                    subscribeSettings: {
+                      ...(prev.subscribeSettings || {}),
+                      cta: {
+                        ...(prev.subscribeSettings?.cta || {}),
+                        color: e.target.value,
+                      },
+                    },
+                  }))}
+                  className="h-10 w-20 border rounded cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={form.subscribeSettings?.cta?.color || '#09391C'}
+                  onChange={(e) => setForm(prev => ({
+                    ...prev,
+                    subscribeSettings: {
+                      ...(prev.subscribeSettings || {}),
+                      cta: {
+                        ...(prev.subscribeSettings?.cta || {}),
+                        color: e.target.value,
+                      },
+                    },
+                  }))}
+                  className={`${inputBase} w-32`}
+                  placeholder="#09391C"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderTheme = (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold text-[#09391C] mb-4">Theme</h2>
@@ -1272,6 +2256,10 @@ export default function DealSitePage() {
             },
           ];
         }
+        case "home-settings":
+          return [{ path: "homeSettings", body: { ...form.homeSettings } }];
+        case "subscribe-settings":
+          return [{ path: "subscribeSettings", body: { ...form.subscribeSettings } }];
         default:
           return [];
       }
@@ -2252,6 +3240,8 @@ export default function DealSitePage() {
                   { id: "payment", label: "Payment" },
                   { id: "featured", label: "Featured Listings" },
                   { id: "listings", label: "Listings" },
+                  { id: "home-settings", label: "Home Settings" },
+                  { id: "subscribe-settings", label: "Subscribe Settings" },
                   { id: "service-logger", label: "Service Logger", icon: <History size={16} /> },
                   { id: "security", label: "Security Settings", icon: <Shield size={14} /> },
                 ]}
@@ -2276,6 +3266,8 @@ export default function DealSitePage() {
                 {activeTab === "payment" && renderBankDetails}
                 {activeTab === "featured" && renderFeaturedListings}
                 {activeTab === "listings" && renderListingsLimit}
+                {activeTab === "home-settings" && renderHomeSettings}
+                {activeTab === "subscribe-settings" && renderSubscribeSettings}
                 {activeTab === "service-logger" && renderServiceLogger}
                 {activeTab === "security" && renderSecuritySettings}
 

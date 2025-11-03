@@ -22,6 +22,7 @@ import {
 import Loading from "@/components/loading-component/loading";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import api from "@/utils/axiosConfig";
 
 interface UserProfile {
   _id: string;
@@ -65,6 +66,8 @@ export default function ProfileSettingsPage() {
   const [newEmailRequest, setNewEmailRequest] = useState<string>("");
   const [isRequestingEmailChange, setIsRequestingEmailChange] = useState(false);
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
+  const [showDeletionConfirmModal, setShowDeletionConfirmModal] = useState(false);
+  const [isDeletionLoading, setIsDeletionLoading] = useState(false);
 
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const urlTab = (searchParams.get('tab') || undefined) as ("profile" | "password" | "account") | undefined;
@@ -200,52 +203,84 @@ export default function ProfileSettingsPage() {
     if (!profileImageFile) return;
 
     try {
-      // Mock upload - replace with actual upload logic
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const formData = new FormData();
+      formData.append("file", profileImageFile);
 
-      const imageUrl = profileImagePreview; // In real implementation, this would be the uploaded URL
-      const updatedProfile = { ...userProfile, profileImage: imageUrl };
-      setUserProfile(updatedProfile as UserProfile);
-      setUser({ ...user, profileImage: imageUrl } as any);
+      const uploadResponse = await api.post("/upload-single-file", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      setProfileImageFile(null);
-      setProfileImagePreview(null);
-      toast.success("Profile image updated successfully");
+      if (!uploadResponse.data.success) {
+        throw new Error("Upload failed");
+      }
+
+      const imageUrl = uploadResponse.data.data.url;
+
+      const updateResponse = await api.patch("/accounts/updateProfilePicture", {
+        profile_picture: imageUrl,
+      });
+
+      if (updateResponse.data.success) {
+        const updatedProfile = { ...userProfile, profileImage: imageUrl };
+        setUserProfile(updatedProfile as UserProfile);
+        setUser({ ...user, profile_picture: imageUrl } as any);
+
+        setProfileImageFile(null);
+        setProfileImagePreview(null);
+        toast.success("Profile image updated successfully");
+      } else {
+        throw new Error("Failed to update profile picture");
+      }
     } catch (error) {
       console.error("Failed to upload profile image:", error);
       toast.error("Failed to upload profile image");
     }
   };
 
-  const handleRequestAccountDeletion = async () => {
+  const handleRequestAccountDeletion = () => {
+    setShowDeletionConfirmModal(true);
+  };
+
+  const handleConfirmAccountDeletion = async () => {
+    setIsDeletionLoading(true);
     try {
-      // Mock API call - replace with actual endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await api.delete("/accounts/requestAccountDeletion");
 
-      const deletionDate = new Date();
-      deletionDate.setDate(deletionDate.getDate() + 7);
+      if (response.data.success) {
+        const deletionDate = new Date();
+        deletionDate.setDate(deletionDate.getDate() + 7);
 
-      setIsDeletionRequested(true);
-      setDeletionDate(deletionDate.toLocaleDateString());
+        setIsDeletionRequested(true);
+        setDeletionDate(deletionDate.toLocaleDateString());
+        setShowDeletionConfirmModal(false);
 
-      toast.success(
-        "Account deletion request submitted. Your account will be deleted in 7 days.",
-      );
+        toast.success(
+          "Account deletion request submitted. Your account will be deleted in 7 days.",
+        );
+      } else {
+        throw new Error("Failed to request account deletion");
+      }
     } catch (error) {
       console.error("Failed to request account deletion:", error);
       toast.error("Failed to request account deletion");
+    } finally {
+      setIsDeletionLoading(false);
     }
   };
 
   const handleCancelAccountDeletion = async () => {
     try {
-      // Mock API call - replace with actual endpoint
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await api.post("/accounts/cancelAccountDeletion");
 
-      setIsDeletionRequested(false);
-      setDeletionDate(null);
-
-      toast.success("Account deletion request cancelled");
+      if (response.data.success) {
+        setIsDeletionRequested(false);
+        setDeletionDate(null);
+        toast.success("Account deletion request cancelled");
+      } else {
+        throw new Error("Failed to cancel account deletion");
+      }
     } catch (error) {
       console.error("Failed to cancel account deletion:", error);
       toast.error("Failed to cancel account deletion");
@@ -896,6 +931,59 @@ export default function ProfileSettingsPage() {
                   >
                     <MailIcon size={16} />
                     {isRequestingEmailChange ? "Sending..." : "Send Request"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Account Deletion Confirmation Modal */}
+        {showDeletionConfirmModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-red-600">
+                  Confirm Account Deletion
+                </h3>
+                <button
+                  onClick={() => setShowDeletionConfirmModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-sm text-red-800 mb-3">
+                    <strong>Are you sure you want to delete your account?</strong>
+                  </p>
+                  <p className="text-sm text-red-700">
+                    Once you delete your account, there is no going back. Your account will be permanently deleted in 7 days. You can cancel this request at any time before the deletion date.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> You will be able to cancel this deletion request within the next 7 days. After 7 days, your account and all associated data will be permanently removed.
+                  </p>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => setShowDeletionConfirmModal(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmAccountDeletion}
+                    disabled={isDeletionLoading}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <Trash2Icon size={16} />
+                    {isDeletionLoading ? "Deleting..." : "Delete Account"}
                   </button>
                 </div>
               </div>
