@@ -274,6 +274,8 @@ const updatableTabSet = new Set<UpdatableSectionId>([
   "payment",
   "featured",
   "listings",
+  "home-settings",
+  "subscribe-settings",
 ]);
 
 const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
