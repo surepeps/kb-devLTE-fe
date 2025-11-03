@@ -201,17 +201,36 @@ export default function ProfileSettingsPage() {
     if (!profileImageFile) return;
 
     try {
-      // Mock upload - replace with actual upload logic
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const formData = new FormData();
+      formData.append("file", profileImageFile);
 
-      const imageUrl = profileImagePreview; // In real implementation, this would be the uploaded URL
-      const updatedProfile = { ...userProfile, profileImage: imageUrl };
-      setUserProfile(updatedProfile as UserProfile);
-      setUser({ ...user, profileImage: imageUrl } as any);
+      const uploadResponse = await api.post("/upload-single-file", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      setProfileImageFile(null);
-      setProfileImagePreview(null);
-      toast.success("Profile image updated successfully");
+      if (!uploadResponse.data.success) {
+        throw new Error("Upload failed");
+      }
+
+      const imageUrl = uploadResponse.data.data.url;
+
+      const updateResponse = await api.patch("/accounts/updateProfilePicture", {
+        profile_picture: imageUrl,
+      });
+
+      if (updateResponse.data.success) {
+        const updatedProfile = { ...userProfile, profileImage: imageUrl };
+        setUserProfile(updatedProfile as UserProfile);
+        setUser({ ...user, profile_picture: imageUrl } as any);
+
+        setProfileImageFile(null);
+        setProfileImagePreview(null);
+        toast.success("Profile image updated successfully");
+      } else {
+        throw new Error("Failed to update profile picture");
+      }
     } catch (error) {
       console.error("Failed to upload profile image:", error);
       toast.error("Failed to upload profile image");
