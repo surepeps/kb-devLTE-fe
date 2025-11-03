@@ -486,6 +486,8 @@ export default function DealSitePage() {
             paymentDetails: (s as any).paymentDetails || prev.paymentDetails,
             about: (s as any).about || prev.about,
             contactUs: (s as any).contactUs || prev.contactUs,
+            homeSettings: (s as any).homeSettings || prev.homeSettings,
+            subscribeSettings: (s as any).subscribeSettings || prev.subscribeSettings,
           }));
           if (typeof s.paused === "boolean") setIsPaused(s.paused);
           if (s.status === "on-hold") setIsOnHold(true);
