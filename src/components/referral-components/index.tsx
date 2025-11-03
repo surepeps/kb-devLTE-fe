@@ -15,8 +15,10 @@ import {
   TrendingUp,
   Award,
   UserPlus,
-  CheckCircle
+  CheckCircle,
+  ArrowLeftIcon
 } from 'lucide-react';
+import Link from "next/link";
 import toast from 'react-hot-toast';
 import Cookies from 'js-cookie';
 import { GET_REQUEST } from '@/utils/requests';
@@ -485,6 +487,12 @@ const ReferralPage = () => {
   return (
     <div className="w-full min-h-screen bg-[#EEF1F1] py-8">
       <div className="container mx-auto px-4 max-w-6xl">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors">
+            <ArrowLeftIcon size={20} />
+            Back to Dashboard
+          </Link>
+        </div>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

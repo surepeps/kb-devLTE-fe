@@ -235,7 +235,7 @@ const Register = () => {
       return;
     }
 
-    if (typeof window !== "undefined" && window.FB) {
+    if (typeof window !== "undefined" && window.FB) { 
       window.FB.login(
         (response: any) => {
           if (response.authResponse) {
@@ -246,11 +246,7 @@ const Register = () => {
                 try {
                   const url = URLS.BASE + URLS.authFacebook;
                   const payload = {
-                    accessToken: response.authResponse.accessToken,
-                    userID: response.authResponse.userID,
-                    email: userInfo.email,
-                    firstName: userInfo.first_name,
-                    lastName: userInfo.last_name,
+                    idToken: response.authResponse.accessToken,
                     userType: formik.values.userType,
                     ...(formik.values.referralCode ? { referralCode: formik.values.referralCode } : {}),
                   };
@@ -264,7 +260,7 @@ const Register = () => {
                     setUser(result.data.user);
 
                     toast.success("Authentication successful via Facebook!");
-
+ 
                     setSocialProcessing(false);
                     router.push("/dashboard");
 

@@ -103,7 +103,7 @@ const TransactionsPage = () => {
           </p>
         </div>
 
-        {transactions.length === 0 ? (
+        {transactions && transactions.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <div className="text-gray-400 text-6xl mb-4">💳</div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
@@ -117,7 +117,7 @@ const TransactionsPage = () => {
           <>
             <div className="bg-white shadow overflow-hidden sm:rounded-md">
               <ul className="divide-y divide-gray-200">
-                {transactions.map((transaction) => (
+                {transactions && transactions.map((transaction) => (
                   <li key={transaction._id}>
                     <div className="px-4 py-4 sm:px-6 hover:bg-gray-50">
                       <div className="flex items-center justify-between">
@@ -176,7 +176,7 @@ const TransactionsPage = () => {
             </div>
 
             {/* Pagination */}
-            {pagination.totalPages > 1 && (
+            {pagination && pagination.totalPages > 1 && (
               <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-b-lg">
                 <div className="flex-1 flex justify-between sm:hidden">
                   <button

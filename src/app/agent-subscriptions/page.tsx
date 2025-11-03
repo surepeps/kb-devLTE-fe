@@ -16,7 +16,8 @@ import {
   Plus,
   Eye,
   Download,
-  CheckCircle2
+  CheckCircle2,
+  ArrowLeftIcon
 } from 'lucide-react';
 import { GET_REQUEST, POST_REQUEST } from '@/utils/requests';
 import { URLS } from '@/utils/URLS';
@@ -25,6 +26,7 @@ import { AgentSubscription, SubscriptionPlan, SubscriptionTransaction } from '@/
 import { format } from 'date-fns';
 import { getCookie } from 'cookies-next';
 import Block from '@/components/access/Block';
+import Link from 'next/link';
 
 export default function AgentSubscriptionsPage() {
   const router = useRouter();
@@ -56,7 +58,7 @@ export default function AgentSubscriptionsPage() {
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const urlTab = (searchParams.get('tab') || undefined) as ("subscriptions" | "plans" | "transactions") | undefined;
 
-
+ 
   // Apply URL tab if provided
   useEffect(() => {
     if (urlTab) {
@@ -317,6 +319,12 @@ export default function AgentSubscriptionsPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors">
+            <ArrowLeftIcon size={20} />
+            Back to Dashboard
+          </Link>
+        </div>
         {/* Header */}
         <div className="mb-8 space-y-4">
           <div>

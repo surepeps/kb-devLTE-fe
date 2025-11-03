@@ -1,6 +1,6 @@
 /** @format */
 
-"use client";
+"use client"; 
 import React, { useState } from "react";
 import { useGlobalPropertyActions } from "@/context/global-property-actions-context";
 import GlobalPropertyCard from "./GlobalPropertyCard";

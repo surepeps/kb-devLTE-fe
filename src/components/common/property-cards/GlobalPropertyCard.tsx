@@ -212,6 +212,12 @@ const GlobalPropertyCard: React.FC<GlobalPropertyCardProps> = ({
               </>
             ) : (
               <>
+                <Button
+                  value="View Details"
+                  type="button"
+                  onClick={onPropertyClick || (() => {})}
+                  className="min-h-[40px] py-[8px] px-[16px] bg-[#1976D2] text-[#FFFFFF] text-sm leading-[20px] font-bold hover:bg-[#1565C0] transition-colors rounded"
+                />
                 {/* Price Negotiation Button - disabled */}
                 {/**
                 {hasNegotiatedPrice && isSelected ? (

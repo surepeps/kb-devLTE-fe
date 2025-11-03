@@ -30,6 +30,7 @@ interface UserProfile {
   email: string;
   phoneNumber?: string;
   address?: string;
+  accountId?: string;
   profileImage?: string;
   userType: "Agent" | "Landowners" | "FieldAgent";
   accountApproved?: boolean;
@@ -65,6 +66,20 @@ export default function ProfileSettingsPage() {
   const [isRequestingEmailChange, setIsRequestingEmailChange] = useState(false);
   const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
 
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const urlTab = (searchParams.get('tab') || undefined) as ("profile" | "password" | "account") | undefined;
+
+  // Apply URL tab if provided
+  useEffect(() => {
+    if (urlTab) {
+      // Validate and set
+      const allowed = ['profile', 'password', 'account'];
+      if (allowed.includes(urlTab)) {
+        setActiveTab(urlTab as any);
+      }
+    }
+  }, [urlTab, setActiveTab]);
+
   useEffect(() => {
     fetchUserProfile();
   }, []);
@@ -80,11 +95,12 @@ export default function ProfileSettingsPage() {
         lastName: user?.lastName || "Doe",
         email: user?.email || "john.doe@email.com",
         phoneNumber: user?.phoneNumber || "+234 803 123 4567",
-        address: "123 Victoria Island, Lagos State",
+        address: user?.address?.street || "123 Victoria Island, Lagos State",
         profileImage: user?.profile_picture,
         userType: user?.userType || "Agent",
         accountApproved: user?.accountApproved || true,
-        createdAt: "2024-01-01T00:00:00.000Z",
+        createdAt: user?.createdAt || "2024-01-01T00:00:00.000Z",
+        accountId: user?.accountId || '2345532',
       };
 
       setUserProfile(mockProfile);
@@ -288,9 +304,6 @@ export default function ProfileSettingsPage() {
     return null;
   }
 
-  const dashboardRoute =
-    user.userType === "Agent" ? "/dashboard" : "/dashboard";
-
   return (
     <div className="min-h-screen bg-[#EEF1F1] py-8">
       <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
@@ -298,7 +311,7 @@ export default function ProfileSettingsPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
             <Link
-              href={dashboardRoute}
+              href={'/dashboard'}
               className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#7BC87F] font-medium"
             >
               <ArrowLeftIcon size={20} />
@@ -351,9 +364,9 @@ export default function ProfileSettingsPage() {
                 <tab.icon size={20} />
                 <span className="hidden sm:inline">{tab.label}</span>
               </button>
-            ))}
+            ))} 
           </div>
-
+ 
           <div className="p-6">
             {/* Profile Details Tab */}
             {activeTab === "profile" && (
@@ -747,7 +760,7 @@ export default function ProfileSettingsPage() {
                     <div>
                       <p className="text-sm text-[#5A5D63]">Account ID</p>
                       <p className="font-medium text-[#09391C] text-xs">
-                        {userProfile._id}
+                        {userProfile.accountId}
                       </p>
                     </div>
                   </div>

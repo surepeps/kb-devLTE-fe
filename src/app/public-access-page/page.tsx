@@ -23,11 +23,11 @@ import {
   Shield,
   Check,
   Mail,
+  ArrowLeftIcon,
 } from "lucide-react";
 import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
 import Stepper from "@/components/post-property-components/Stepper";
-import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -43,6 +43,7 @@ import ModalWrapper from "@/components/general-components/modal-wrapper";
 import ConfirmationModal from "@/components/modals/confirmation-modal";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
+import Link from "next/link";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -84,7 +85,7 @@ interface PublicPageDesign {
 
 interface InspectionDesignSettings {
   allowPublicBooking: boolean;
-  defaultInspectionFee: number;
+  defaultInspectionFee: number | "";
   inspectionStatus?: string;
   negotiationEnabled?: boolean;
 }
@@ -783,7 +784,7 @@ export default function DealSitePage() {
   const ManageHeader = (
     <div className="mb-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#09391C]">Deal Site</h1>
+        <h1 className="text-2xl font-bold text-[#09391C]">Public Access Page</h1>
         {statusBadge}
       </div>
       <p className="text-sm text-[#5A5D63] mt-1">Your public access page settings and analytics.</p>
@@ -1817,8 +1818,32 @@ export default function DealSitePage() {
           Allow Public Booking
         </label>
         <div>
-          <label className="block text-sm text-gray-700 mb-1">Default Inspection Fee</label>
-          <input type="number" min={0} value={form.inspectionSettings.defaultInspectionFee} onChange={(e) => setForm({ ...form, inspectionSettings: { ...form.inspectionSettings, defaultInspectionFee: Math.max(0, Number(e.target.value || 0)) } })} className={inputBase} />
+          <label className="block text-sm text-gray-700 mb-1">
+            Default Inspection Fee
+          </label>
+          <input
+            type="text"
+            value={
+              form.inspectionSettings.defaultInspectionFee
+                ? form.inspectionSettings.defaultInspectionFee.toLocaleString()
+                : ""
+            }
+            onChange={(e) => {
+              // Remove all non-numeric characters (including commas)
+              const numericValue = e.target.value.replace(/\D/g, "");
+
+              // Update state with the raw number (not formatted)
+              setForm({
+                ...form,
+                inspectionSettings: {
+                  ...form.inspectionSettings,
+                  defaultInspectionFee: numericValue === "" ? "" : Number(numericValue),
+                },
+              });
+            }}
+            className={inputBase}
+            placeholder="5000"
+          />
         </div>
         <div>
           <label className="block text-sm text-gray-700 mb-1">Inspection Status</label>
@@ -1918,7 +1943,13 @@ export default function DealSitePage() {
   return (
     <CombinedAuthGuard requireAuth allowedUserTypes={["Agent"]} requireActiveSubscription>
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <Link href="/dashboard" className="inline-flex items-center gap-2 text-[#8DDB90] hover:text-[#09391C] font-medium transition-colors">
+              <ArrowLeftIcon size={20} />
+              Back to Dashboard
+            </Link>
+          </div>
           {activeView === "setup" ? (
             <>
               {SetupHeader}

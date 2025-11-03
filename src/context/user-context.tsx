@@ -29,6 +29,7 @@ export interface User {
   accountId?: string;
   profile_picture?: string;
   referralCode?: string;
+  createdAt?: string;
   isAccountVerified?: boolean;
   activeSubscription?: {
     _id: string;
