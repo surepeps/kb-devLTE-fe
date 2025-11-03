@@ -349,7 +349,7 @@ const UpdatePreferenceFormContent: React.FC = () => {
         setIsLoading(true);
         setLoadingError(null);
 
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/get-preferenceByBuyer/${buyerId}/${preferenceId}`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/preferences/getByBuyer/${buyerId}/${preferenceId}`;
         const response = await axios.get(url);
 
         if (response.data && response.data.success) {
@@ -752,7 +752,7 @@ const UpdatePreferenceFormContent: React.FC = () => {
         console.log("Generated Update Payload:", JSON.stringify(payload, null, 2));
       }
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/update-preference/${preferenceId}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/preferences/update/${buyerId}/${preferenceId}`;
 
       const response = await axios.put(url, payload);
 
@@ -903,7 +903,7 @@ const UpdatePreferenceFormContent: React.FC = () => {
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
             >
-              Update Your Property Preference
+              Update Your {PREFERENCE_CONFIGS[selectedPreferenceType].label}
             </motion.h1>
             <motion.p
               className="text-base sm:text-xl text-gray-600"
@@ -911,19 +911,11 @@ const UpdatePreferenceFormContent: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
             >
-              Modify your preferences to get better property matches
+              Revise your preferences to get better matches
             </motion.p>
           </motion.div>
         </motion.div>
 
-        {/* Preference Type Selector */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-        >
-          {renderPreferenceTypeSelector}
-        </motion.div>
 
         {/* Step Progress */}
         <motion.div

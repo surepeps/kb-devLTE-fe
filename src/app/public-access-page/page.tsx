@@ -320,14 +320,18 @@ const Tabs: React.FC<{
   tabs: { id: string; label: string; icon?: React.ReactNode }[];
   active: string;
   onChange: (id: string) => void;
-}> = ({ tabs, active, onChange }) => (
+  disabled?: boolean;
+}> = ({ tabs, active, onChange, disabled = false }) => (
   <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-2">
     {tabs.map((t) => (
       <button
         key={t.id}
-        onClick={() => onChange(t.id)}
+        onClick={() => !disabled && onChange(t.id)}
+        disabled={disabled}
         className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
-          active === t.id
+          disabled
+            ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+            : active === t.id
             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
             : "bg-white text-[#5A5D63] hover:bg-gray-50 border-gray-200"
         }`}
@@ -1143,27 +1147,51 @@ export default function DealSitePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                   <div>
                     <label className="block text-xs text-gray-700 mb-1">Rating (1-5)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="5"
-                      value={testimonial.rating || 5}
-                      onChange={(e) => {
-                        const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
-                        updated[idx].rating = Number(e.target.value);
-                        setForm(prev => ({
-                          ...prev,
-                          homeSettings: {
-                            ...(prev.homeSettings || {}),
-                            testimonials: {
-                              ...(prev.homeSettings?.testimonials || {}),
-                              testimonials: updated,
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                          updated[idx].rating = Math.max(1, (updated[idx].rating || 5) - 1);
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              testimonials: {
+                                ...(prev.homeSettings?.testimonials || {}),
+                                testimonials: updated,
+                              },
                             },
-                          },
-                        }));
-                      }}
-                      className={`${inputBase} text-sm`}
-                    />
+                          }));
+                        }}
+                        className="px-2 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100"
+                      >
+                        −
+                      </button>
+                      <span className="px-3 py-1 border border-gray-300 rounded text-sm font-medium w-12 text-center bg-gray-50">
+                        {testimonial.rating || 5}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(form.homeSettings?.testimonials?.testimonials || [])];
+                          updated[idx].rating = Math.min(5, (updated[idx].rating || 5) + 1);
+                          setForm(prev => ({
+                            ...prev,
+                            homeSettings: {
+                              ...(prev.homeSettings || {}),
+                              testimonials: {
+                                ...(prev.homeSettings?.testimonials || {}),
+                                testimonials: updated,
+                              },
+                            },
+                          }));
+                        }}
+                        className="px-2 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs text-gray-700 mb-1">Name</label>
@@ -2046,102 +2074,143 @@ export default function DealSitePage() {
     </div>
   );
 
+  const PaymentDetailsSchema = Yup.object({
+    businessName: Yup.string().required("Business Name is required"),
+    accountNumber: Yup.string().required("Account Number is required"),
+    sortCode: Yup.string().required("Settlement Bank is required"),
+    primaryContactEmail: Yup.string().email("Invalid email format").optional(),
+    primaryContactName: Yup.string().optional(),
+    primaryContactPhone: Yup.string().optional(),
+  });
+
   const renderBankDetails = (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold text-[#09391C] mb-4">Bank Details</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <Formik
+      initialValues={{
+        businessName: form.paymentDetails?.businessName || "",
+        accountNumber: form.paymentDetails?.accountNumber || "",
+        sortCode: form.paymentDetails?.sortCode || "",
+        primaryContactEmail: form.paymentDetails?.primaryContactEmail || "",
+        primaryContactName: form.paymentDetails?.primaryContactName || "",
+        primaryContactPhone: form.paymentDetails?.primaryContactPhone || "",
+      }}
+      validationSchema={PaymentDetailsSchema}
+      onSubmit={(values) => {
+        setForm(prev => ({
+          ...prev,
+          paymentDetails: {
+            businessName: values.businessName,
+            accountNumber: values.accountNumber,
+            sortCode: values.sortCode,
+            primaryContactEmail: values.primaryContactEmail,
+            primaryContactName: values.primaryContactName,
+            primaryContactPhone: values.primaryContactPhone,
+          }
+        }));
+      }}
+      enableReinitialize
+    >
+      {({ values, errors, touched, handleChange, handleBlur }) => (
         <div>
-          <label className="block text-sm text-gray-700 mb-1">Business Name</label>
-          <input type="text" value={form.paymentDetails?.businessName || ""} onChange={(e) => setForm(prev => ({
-            ...prev,
-            paymentDetails: {
-              businessName: e.target.value,
-              accountNumber: prev.paymentDetails?.accountNumber ?? "",
-              sortCode: prev.paymentDetails?.sortCode ?? "",
-              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
-              primaryContactName: prev.paymentDetails?.primaryContactName,
-              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
-            }
-          }))} className={inputBase} placeholder="Registered business name" />
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-[#09391C] mb-4">Bank Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Business Name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  name="businessName"
+                  value={values.businessName}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, businessName: e.target.value } })); }}
+                  onBlur={handleBlur}
+                  placeholder="Registered business name"
+                  className={`${inputBase} ${touched.businessName && errors.businessName ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                />
+                {touched.businessName && errors.businessName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.businessName}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Account Number <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  name="accountNumber"
+                  value={values.accountNumber}
+                  onChange={(e) => {
+                    const cleaned = e.target.value.replace(/\D/g, '');
+                    handleChange({ target: { name: 'accountNumber', value: cleaned } } as any);
+                    setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, accountNumber: cleaned } }));
+                  }}
+                  onBlur={handleBlur}
+                  placeholder="10-digit account number"
+                  className={`${inputBase} ${touched.accountNumber && errors.accountNumber ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                />
+                {touched.accountNumber && errors.accountNumber && (
+                  <p className="text-red-500 text-sm mt-1">{errors.accountNumber}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Settlement Bank <span className="text-red-500">*</span></label>
+                <select
+                  name="sortCode"
+                  value={values.sortCode}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, sortCode: e.target.value } })); }}
+                  onBlur={handleBlur}
+                  className={`${selectBase} ${touched.sortCode && errors.sortCode ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                >
+                  <option value="" disabled>{banksLoading ? "Loading banks..." : "Select bank"}</option>
+                  {bankList.map((b) => (
+                    <option key={b.code} value={b.code}>{b.name}</option>
+                  ))}
+                </select>
+                {touched.sortCode && errors.sortCode && (
+                  <p className="text-red-500 text-sm mt-1">{errors.sortCode}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Primary Contact Email (optional)</label>
+                <input
+                  type="email"
+                  name="primaryContactEmail"
+                  value={values.primaryContactEmail}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactEmail: e.target.value } })); }}
+                  onBlur={handleBlur}
+                  placeholder="email@example.com"
+                  className={`${inputBase} ${touched.primaryContactEmail && errors.primaryContactEmail ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                />
+                {touched.primaryContactEmail && errors.primaryContactEmail && (
+                  <p className="text-red-500 text-sm mt-1">{errors.primaryContactEmail}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Primary Contact Name (optional)</label>
+                <input
+                  type="text"
+                  name="primaryContactName"
+                  value={values.primaryContactName}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactName: e.target.value } })); }}
+                  onBlur={handleBlur}
+                  placeholder="Full name"
+                  className={inputBase}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 mb-1">Primary Contact Phone (optional)</label>
+                <input
+                  type="tel"
+                  name="primaryContactPhone"
+                  value={values.primaryContactPhone}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactPhone: e.target.value } })); }}
+                  onBlur={handleBlur}
+                  placeholder="e.g. +2348012345678"
+                  className={inputBase}
+                />
+              </div>
+            </div>
+            <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Account Number</label>
-          <input type="text" value={form.paymentDetails?.accountNumber || ""} onChange={(e) => setForm(prev => ({
-            ...prev,
-            paymentDetails: {
-              businessName: prev.paymentDetails?.businessName ?? "",
-              accountNumber: e.target.value.replace(/\D/g, ''),
-              sortCode: prev.paymentDetails?.sortCode ?? "",
-              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
-              primaryContactName: prev.paymentDetails?.primaryContactName,
-              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
-            }
-          }))} className={inputBase} placeholder="10-digit account number" />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Settlement Bank</label>
-          <select value={form.paymentDetails?.sortCode || ""} onChange={(e) => setForm(prev => ({
-            ...prev,
-            paymentDetails: {
-              businessName: prev.paymentDetails?.businessName ?? "",
-              accountNumber: prev.paymentDetails?.accountNumber ?? "",
-              sortCode: e.target.value,
-              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
-              primaryContactName: prev.paymentDetails?.primaryContactName,
-              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
-            }
-          }))} className={selectBase}>
-            <option value="" disabled>{banksLoading ? "Loading banks..." : "Select bank"}</option>
-            {bankList.map((b) => (
-              <option key={b.code} value={b.code}>{b.name}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Primary Contact Email (optional)</label>
-          <input type="email" value={form.paymentDetails?.primaryContactEmail || ""} onChange={(e) => setForm(prev => ({
-            ...prev,
-            paymentDetails: {
-              businessName: prev.paymentDetails?.businessName ?? "",
-              accountNumber: prev.paymentDetails?.accountNumber ?? "",
-              sortCode: prev.paymentDetails?.sortCode ?? "",
-              primaryContactEmail: e.target.value,
-              primaryContactName: prev.paymentDetails?.primaryContactName,
-              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
-            }
-          }))} className={inputBase} placeholder="email@example.com" />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Primary Contact Name (optional)</label>
-          <input type="text" value={form.paymentDetails?.primaryContactName || ""} onChange={(e) => setForm(prev => ({
-            ...prev,
-            paymentDetails: {
-              businessName: prev.paymentDetails?.businessName ?? "",
-              accountNumber: prev.paymentDetails?.accountNumber ?? "",
-              sortCode: prev.paymentDetails?.sortCode ?? "",
-              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
-              primaryContactName: e.target.value,
-              primaryContactPhone: prev.paymentDetails?.primaryContactPhone,
-            }
-          }))} className={inputBase} placeholder="Full name" />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Primary Contact Phone (optional)</label>
-          <input type="tel" value={form.paymentDetails?.primaryContactPhone || ""} onChange={(e) => setForm(prev => ({
-            ...prev,
-            paymentDetails: {
-              businessName: prev.paymentDetails?.businessName ?? "",
-              accountNumber: prev.paymentDetails?.accountNumber ?? "",
-              sortCode: prev.paymentDetails?.sortCode ?? "",
-              primaryContactEmail: prev.paymentDetails?.primaryContactEmail,
-              primaryContactName: prev.paymentDetails?.primaryContactName,
-              primaryContactPhone: e.target.value,
-            }
-          }))} className={inputBase} placeholder="e.g. +2348012345678" />
-        </div>
-      </div>
-      <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
-    </div>
+      )}
+    </Formik>
   );
 
   const toggleSelect = (id: string) => {
@@ -2876,11 +2945,11 @@ export default function DealSitePage() {
           </div>
           <div className="flex items-center gap-2">
             {!isPaused ? (
-              <button onClick={pauseDealSite} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm"><Pause size={16} /> Pause</button>
+              <button onClick={pauseDealSite} disabled={isOnHold} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"><Pause size={16} /> Pause</button>
             ) : (
-              <button onClick={resumeDealSite} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm"><Play size={16} /> Resume</button>
+              <button onClick={resumeDealSite} disabled={isOnHold} className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed"><Play size={16} /> Resume</button>
             )}
-            <button onClick={() => setActiveTab("branding")} className="px-4 py-2 border rounded-lg text-sm">Edit Settings</button>
+            <button onClick={() => setActiveTab("branding")} disabled={isOnHold} className="px-4 py-2 border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed">Edit Settings</button>
           </div>
         </div>
       </div>
@@ -3146,9 +3215,151 @@ export default function DealSitePage() {
                 </div>
               )}
               {setupStep === 3 && (
-                <div className="space-y-6">
-                  {renderBankDetails}
-                </div>
+                <Formik
+                  initialValues={{
+                    businessName: form.paymentDetails?.businessName || "",
+                    accountNumber: form.paymentDetails?.accountNumber || "",
+                    sortCode: form.paymentDetails?.sortCode || "",
+                    primaryContactEmail: form.paymentDetails?.primaryContactEmail || "",
+                    primaryContactName: form.paymentDetails?.primaryContactName || "",
+                    primaryContactPhone: form.paymentDetails?.primaryContactPhone || "",
+                  }}
+                  validationSchema={PaymentDetailsSchema}
+                  onSubmit={(values) => {
+                    setForm(prev => ({
+                      ...prev,
+                      paymentDetails: {
+                        businessName: values.businessName,
+                        accountNumber: values.accountNumber,
+                        sortCode: values.sortCode,
+                        primaryContactEmail: values.primaryContactEmail,
+                        primaryContactName: values.primaryContactName,
+                        primaryContactPhone: values.primaryContactPhone,
+                      }
+                    }));
+                    setSetupStep(4);
+                  }}
+                  enableReinitialize
+                >
+                  {({ values, errors, touched, handleChange, handleBlur, isValid, isSubmitting }) => (
+                    <Form className="space-y-6">
+                      <div className="bg-white rounded-lg border border-gray-200 p-6">
+                        <h2 className="text-lg font-semibold text-[#09391C] mb-4">Bank Details</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Business Name <span className="text-red-500">*</span></label>
+                            <input
+                              type="text"
+                              name="businessName"
+                              value={values.businessName}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, businessName: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="Registered business name"
+                              className={`${inputBase} ${touched.businessName && errors.businessName ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            />
+                            {touched.businessName && errors.businessName && (
+                              <p className="text-red-500 text-sm mt-1">{errors.businessName}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Account Number <span className="text-red-500">*</span></label>
+                            <input
+                              type="text"
+                              name="accountNumber"
+                              value={values.accountNumber}
+                              onChange={(e) => {
+                                const cleaned = e.target.value.replace(/\D/g, '');
+                                handleChange({ target: { name: 'accountNumber', value: cleaned } } as any);
+                                setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, accountNumber: cleaned } }));
+                              }}
+                              onBlur={handleBlur}
+                              placeholder="10-digit account number"
+                              className={`${inputBase} ${touched.accountNumber && errors.accountNumber ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            />
+                            {touched.accountNumber && errors.accountNumber && (
+                              <p className="text-red-500 text-sm mt-1">{errors.accountNumber}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Settlement Bank <span className="text-red-500">*</span></label>
+                            <select
+                              name="sortCode"
+                              value={values.sortCode}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, sortCode: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              className={`${selectBase} ${touched.sortCode && errors.sortCode ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            >
+                              <option value="" disabled>{banksLoading ? "Loading banks..." : "Select bank"}</option>
+                              {bankList.map((b) => (
+                                <option key={b.code} value={b.code}>{b.name}</option>
+                              ))}
+                            </select>
+                            {touched.sortCode && errors.sortCode && (
+                              <p className="text-red-500 text-sm mt-1">{errors.sortCode}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Primary Contact Email (optional)</label>
+                            <input
+                              type="email"
+                              name="primaryContactEmail"
+                              value={values.primaryContactEmail}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactEmail: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="email@example.com"
+                              className={`${inputBase} ${touched.primaryContactEmail && errors.primaryContactEmail ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
+                            />
+                            {touched.primaryContactEmail && errors.primaryContactEmail && (
+                              <p className="text-red-500 text-sm mt-1">{errors.primaryContactEmail}</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Primary Contact Name (optional)</label>
+                            <input
+                              type="text"
+                              name="primaryContactName"
+                              value={values.primaryContactName}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactName: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="Full name"
+                              className={inputBase}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-700 mb-1">Primary Contact Phone (optional)</label>
+                            <input
+                              type="tel"
+                              name="primaryContactPhone"
+                              value={values.primaryContactPhone}
+                              onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactPhone: e.target.value } })); }}
+                              onBlur={handleBlur}
+                              placeholder="e.g. +2348012345678"
+                              className={inputBase}
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-6">
+                        <button
+                          type="button"
+                          onClick={() => setSetupStep(2)}
+                          className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg text-[#0B572B] border-[#8DDB90] disabled:opacity-50"
+                        >
+                          Back
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={!isValid || isSubmitting}
+                          className="inline-flex items-center gap-2 px-6 py-2 bg-[#0B572B] text-white rounded-lg disabled:opacity-60"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </Form>
+                  )}
+                </Formik>
               )}
               {setupStep === 4 && (
                 <div className="space-y-6">
@@ -3233,6 +3444,7 @@ export default function DealSitePage() {
               <Tabs
                 active={activeTab}
                 onChange={(id) => setActiveTab(id as ManageTabId)}
+                disabled={isOnHold}
                 tabs={[
                   { id: "overview", label: "Overview", icon: <BarChart2 size={16} /> },
                   { id: "branding", label: "Branding & SEO" },
@@ -3280,9 +3492,10 @@ export default function DealSitePage() {
 
                 {isUpdatableTab(activeTab) && (
                   <div className="flex items-center gap-3">
-                    <button onClick={() => saveSection(activeTab)} disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60">
+                    <button onClick={() => saveSection(activeTab)} disabled={saving || isOnHold} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60">
                       <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
                     </button>
+                    {isOnHold && <span className="text-sm text-red-600">Changes disabled while on hold</span>}
                   </div>
                 )}
               </div>
