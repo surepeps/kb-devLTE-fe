@@ -752,7 +752,7 @@ const UpdatePreferenceFormContent: React.FC = () => {
         console.log("Generated Update Payload:", JSON.stringify(payload, null, 2));
       }
 
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/update-preference/${preferenceId}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/preferences/update/${buyerId}/${preferenceId}`;
 
       const response = await axios.put(url, payload);
 
