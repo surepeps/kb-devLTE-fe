@@ -239,23 +239,34 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  const handleRequestAccountDeletion = async () => {
+  const handleRequestAccountDeletion = () => {
+    setShowDeletionConfirmModal(true);
+  };
+
+  const handleConfirmAccountDeletion = async () => {
+    setIsDeletionLoading(true);
     try {
-      // Mock API call - replace with actual endpoint
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await api.delete("/accounts/requestAccountDeletion");
 
-      const deletionDate = new Date();
-      deletionDate.setDate(deletionDate.getDate() + 7);
+      if (response.data.success) {
+        const deletionDate = new Date();
+        deletionDate.setDate(deletionDate.getDate() + 7);
 
-      setIsDeletionRequested(true);
-      setDeletionDate(deletionDate.toLocaleDateString());
+        setIsDeletionRequested(true);
+        setDeletionDate(deletionDate.toLocaleDateString());
+        setShowDeletionConfirmModal(false);
 
-      toast.success(
-        "Account deletion request submitted. Your account will be deleted in 7 days.",
-      );
+        toast.success(
+          "Account deletion request submitted. Your account will be deleted in 7 days.",
+        );
+      } else {
+        throw new Error("Failed to request account deletion");
+      }
     } catch (error) {
       console.error("Failed to request account deletion:", error);
       toast.error("Failed to request account deletion");
+    } finally {
+      setIsDeletionLoading(false);
     }
   };
 
