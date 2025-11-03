@@ -1353,6 +1353,10 @@ export default function DealSitePage() {
             },
           ];
         }
+        case "home-settings":
+          return [{ path: "homeSettings", body: { ...form.homeSettings } }];
+        case "subscribe-settings":
+          return [{ path: "subscribeSettings", body: { ...form.subscribeSettings } }];
         default:
           return [];
       }
