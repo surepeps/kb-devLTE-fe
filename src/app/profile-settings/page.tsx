@@ -937,6 +937,59 @@ export default function ProfileSettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Account Deletion Confirmation Modal */}
+        {showDeletionConfirmModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-red-600">
+                  Confirm Account Deletion
+                </h3>
+                <button
+                  onClick={() => setShowDeletionConfirmModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-sm text-red-800 mb-3">
+                    <strong>Are you sure you want to delete your account?</strong>
+                  </p>
+                  <p className="text-sm text-red-700">
+                    Once you delete your account, there is no going back. Your account will be permanently deleted in 7 days. You can cancel this request at any time before the deletion date.
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> You will be able to cancel this deletion request within the next 7 days. After 7 days, your account and all associated data will be permanently removed.
+                  </p>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => setShowDeletionConfirmModal(false)}
+                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmAccountDeletion}
+                    disabled={isDeletionLoading}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <Trash2Icon size={16} />
+                    {isDeletionLoading ? "Deleting..." : "Delete Account"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
