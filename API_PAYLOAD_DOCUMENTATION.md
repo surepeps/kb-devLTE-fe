@@ -9,6 +9,7 @@ This document outlines the payload structure for the new Home Settings and Subsc
 ## 1. Home Settings Payload
 
 ### Endpoint
+
 - **PUT** `/account/dealSite/{publicSlug}/homeSettings/update`
 
 ### Complete Payload Structure
@@ -95,49 +96,50 @@ This document outlines the payload structure for the new Home Settings and Subsc
 
 #### Testimonials Section
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `title` | string | Yes | Main heading for testimonials section |
-| `subTitle` | string | Yes | Subtitle for testimonials section |
-| `testimonials` | array | Yes | Array of testimonial objects (unlimited items) |
-| `testimonials[].rating` | number | Yes | Star rating from 1-5 |
-| `testimonials[].description` | string | Yes | Testimonial text/content |
-| `testimonials[].image` | string | No | URL of testimonial image (uploaded via /upload-single-file) |
-| `testimonials[].name` | string | Yes | Name of person giving testimonial |
-| `testimonials[].company` | string | Yes | Company/organization of testimonial person |
+| Field                        | Type   | Required | Description                                                 |
+| ---------------------------- | ------ | -------- | ----------------------------------------------------------- |
+| `title`                      | string | Yes      | Main heading for testimonials section                       |
+| `subTitle`                   | string | Yes      | Subtitle for testimonials section                           |
+| `testimonials`               | array  | Yes      | Array of testimonial objects (unlimited items)              |
+| `testimonials[].rating`      | number | Yes      | Star rating from 1-5                                        |
+| `testimonials[].description` | string | Yes      | Testimonial text/content                                    |
+| `testimonials[].image`       | string | No       | URL of testimonial image (uploaded via /upload-single-file) |
+| `testimonials[].name`        | string | Yes      | Name of person giving testimonial                           |
+| `testimonials[].company`     | string | Yes      | Company/organization of testimonial person                  |
 
 #### Why Choose Us Section
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `title` | string | Yes | Main heading for section |
-| `subTitle` | string | Yes | Subtitle for section |
-| `items` | array | Yes | Array of feature items (unlimited items) |
-| `items[].icon` | string | Yes | Lucide React icon name (e.g., "Check", "Shield", "Award") |
-| `items[].title` | string | Yes | Feature title |
-| `items[].content` | string | Yes | Feature description/content |
+| Field             | Type   | Required | Description                                               |
+| ----------------- | ------ | -------- | --------------------------------------------------------- |
+| `title`           | string | Yes      | Main heading for section                                  |
+| `subTitle`        | string | Yes      | Subtitle for section                                      |
+| `items`           | array  | Yes      | Array of feature items (unlimited items)                  |
+| `items[].icon`    | string | Yes      | Lucide React icon name (e.g., "Check", "Shield", "Award") |
+| `items[].title`   | string | Yes      | Feature title                                             |
+| `items[].content` | string | Yes      | Feature description/content                               |
 
 #### Ready to Find Section
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `title` | string | Yes | Main heading for section |
-| `subTitle` | string | Yes | Subtitle for section |
-| `ctas` | array | Yes | Array of CTA buttons (max 2 items) |
-| `ctas[].bgColor` | string | Yes | Button background color in hex format (e.g., "#8DDB90") |
-| `ctas[].text` | string | Yes | Button text/label |
-| `ctas[].actionLink` | string | Yes | Link/route button navigates to (e.g., "/market-place") |
-| `items` | array | Yes | Array of feature items (max 2 items) |
-| `items[].icon` | string | Yes | Lucide React icon name |
-| `items[].title` | string | Yes | Feature title |
-| `items[].subTitle` | string | Yes | Feature subtitle |
-| `items[].content` | string | Yes | Feature description/content |
+| Field               | Type   | Required | Description                                             |
+| ------------------- | ------ | -------- | ------------------------------------------------------- |
+| `title`             | string | Yes      | Main heading for section                                |
+| `subTitle`          | string | Yes      | Subtitle for section                                    |
+| `ctas`              | array  | Yes      | Array of CTA buttons (max 2 items)                      |
+| `ctas[].bgColor`    | string | Yes      | Button background color in hex format (e.g., "#8DDB90") |
+| `ctas[].text`       | string | Yes      | Button text/label                                       |
+| `ctas[].actionLink` | string | Yes      | Link/route button navigates to (e.g., "/market-place")  |
+| `items`             | array  | Yes      | Array of feature items (max 2 items)                    |
+| `items[].icon`      | string | Yes      | Lucide React icon name                                  |
+| `items[].title`     | string | Yes      | Feature title                                           |
+| `items[].subTitle`  | string | Yes      | Feature subtitle                                        |
+| `items[].content`   | string | Yes      | Feature description/content                             |
 
 ---
 
 ## 2. Subscribe Settings Payload
 
 ### Endpoint
+
 - **PUT** `/account/dealSite/{publicSlug}/subscribeSettings/update`
 
 ### Complete Payload Structure
@@ -159,14 +161,14 @@ This document outlines the payload structure for the new Home Settings and Subsc
 
 ### Field Descriptions
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `title` | string | Yes | Main heading of the subscribe section |
-| `subTitle` | string | Yes | Subtitle/description of the section |
-| `miniTitle` | string | Yes | Small/secondary title text |
-| `backgroundColor` | string | Yes | Section background color in hex format (e.g., "#8DDB90") |
-| `cta.text` | string | Yes | Subscribe button text (e.g., "Subscribe Now", "Join Now") |
-| `cta.color` | string | Yes | Subscribe button color in hex format (e.g., "#09391C") |
+| Field             | Type   | Required | Description                                               |
+| ----------------- | ------ | -------- | --------------------------------------------------------- |
+| `title`           | string | Yes      | Main heading of the subscribe section                     |
+| `subTitle`        | string | Yes      | Subtitle/description of the section                       |
+| `miniTitle`       | string | Yes      | Small/secondary title text                                |
+| `backgroundColor` | string | Yes      | Section background color in hex format (e.g., "#8DDB90")  |
+| `cta.text`        | string | Yes      | Subscribe button text (e.g., "Subscribe Now", "Join Now") |
+| `cta.color`       | string | Yes      | Subscribe button color in hex format (e.g., "#09391C")    |
 
 ---
 
@@ -266,7 +268,7 @@ If updating both sections in a single request:
 - **Color values**: Must be valid hex color codes (e.g., "#8DDB90")
 - **Rating**: Must be a number between 1 and 5
 - **Links**: Must be valid internal routes or absolute URLs
-- **Max items**: 
+- **Max items**:
   - `whyChooseUs.items`: Unlimited
   - `testimonials.testimonials`: Unlimited
   - `readyToFind.ctas`: Maximum 2 items
@@ -293,7 +295,7 @@ interface HomeSettings {
       company: string;
     }>;
   };
-  
+
   whyChooseUs?: {
     title: string;
     subTitle: string;
@@ -303,7 +305,7 @@ interface HomeSettings {
       content: string;
     }>;
   };
-  
+
   readyToFind?: {
     title: string;
     subTitle: string;

@@ -1855,7 +1855,7 @@ export default function DealSitePage() {
                 },
               }))}
               className="h-10 w-20 border rounded cursor-pointer"
-            />
+            /> 
             <input
               type="text"
               value={form.subscribeSettings?.backgroundColor || '#8DDB90'}
