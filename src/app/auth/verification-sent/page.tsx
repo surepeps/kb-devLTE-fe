@@ -138,14 +138,37 @@ const VerificationSent = () => {
                 <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
                 <span>Click the verification link in the email</span>
               </li>
-              <li className="flex items-start gap-[8px]">
-                <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
-                <span>Complete your agent profile setup</span>
-              </li>
-              <li className="flex items-start gap-[8px]">
-                <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
-                <span>Start browsing client briefs</span>
-              </li>
+              {isAgent ? (
+                <>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Complete your agent profile setup</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Submit KYC (Know Your Customer) verification</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Wait for approval and start browsing client briefs</span>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Start using the platform immediately</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Browse and post properties without restrictions</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Complete your profile to improve visibility</span>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 
