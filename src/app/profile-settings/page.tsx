@@ -222,6 +222,7 @@ export default function ProfileSettingsPage() {
   const handleUploadProfileImage = async () => {
     if (!profileImageFile) return;
 
+    setIsUploadingProfileImage(true);
     try {
       const formData = new FormData();
       formData.append("file", profileImageFile);
@@ -256,6 +257,8 @@ export default function ProfileSettingsPage() {
     } catch (error) {
       console.error("Failed to upload profile image:", error);
       toast.error("Failed to upload profile image");
+    } finally {
+      setIsUploadingProfileImage(false);
     }
   };
 
