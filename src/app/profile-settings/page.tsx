@@ -124,6 +124,9 @@ export default function ProfileSettingsPage() {
       email: userProfile?.email || "",
       phoneNumber: userProfile?.phoneNumber || "",
       address: userProfile?.address || "",
+      businessName: userProfile?.businessName || "",
+      settlementBank: userProfile?.settlementBank || "",
+      accountNumber: userProfile?.accountNumber || "",
     },
     enableReinitialize: true,
     validationSchema: Yup.object({
@@ -134,21 +137,36 @@ export default function ProfileSettingsPage() {
         .required("Email is required"),
       phoneNumber: Yup.string(),
       address: Yup.string(),
+      businessName: Yup.string().required("Business Name is required"),
+      settlementBank: Yup.string().required("Settlement Bank is required"),
+      accountNumber: Yup.string().required("Account Number is required"),
     }),
     onSubmit: async (values) => {
       setIsUpdatingProfile(true);
       try {
-        // Mock API call - replace with actual endpoint
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const updatePayload = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          phoneNumber: values.phoneNumber,
+          address: values.address,
+          businessName: values.businessName,
+          settlementBank: values.settlementBank,
+          accountNumber: values.accountNumber,
+        };
 
-        const updatedProfile = { ...userProfile, ...values };
-        setUserProfile(updatedProfile as UserProfile);
-        setUser({ ...user, ...values } as any);
+        const response = await api.patch("/account/updateAccount", updatePayload);
 
-        toast.success("Profile updated successfully");
+        if (response.data.success) {
+          const updatedProfile = { ...userProfile, ...values };
+          setUserProfile(updatedProfile as UserProfile);
+          setUser({ ...user, ...values } as any);
+          toast.success("Profile updated successfully");
+        } else {
+          throw new Error(response.data.message || "Failed to update profile");
+        }
       } catch (error) {
         console.error("Failed to update profile:", error);
-        toast.error("Failed to update profile");
+        toast.error(error instanceof Error ? error.message : "Failed to update profile");
       } finally {
         setIsUpdatingProfile(false);
       }
