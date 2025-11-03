@@ -103,19 +103,24 @@ const VerificationSent = () => {
           {/* Content Section */}
           <div className="max-w-[500px] space-y-[20px]">
             <p className="text-[18px] leading-[28px] font-medium text-[#09391C]">
-              Congratulations! Your agent registration was successful.
+              {isAgent
+                ? "Congratulations! Your agent registration was successful."
+                : "Congratulations! Your account registration was successful."
+              }
             </p>
-            
+
             <p className="text-[16px] leading-[25.6px] text-[#1E1E1E]">
               We've sent a verification email to{" "}
               <span className="font-semibold text-[#09391C]">{email}</span>.
               Please check your email and click the verification link to
               activate your account.
             </p>
-            
+
             <p className="text-[14px] leading-[22px] text-[#5A5D63]">
-              Once verified, you'll be able to access all agent features
-              and start connecting with potential clients.
+              {isAgent
+                ? "Once verified, you'll need to complete your KYC (Know Your Customer) verification before you can start posting properties and connecting with clients."
+                : "Once verified, you can immediately start browsing properties and listing your properties on our platform."
+              }
             </p>
           </div>
 
