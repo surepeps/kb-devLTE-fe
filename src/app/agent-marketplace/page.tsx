@@ -830,7 +830,7 @@ const AgentMarketplace = () => {
               // Always show first page
               pageButtons.push(
                 <button
-                  key={1}
+                  key="page-1"
                   onClick={() => {
                     if (currentPage !== 1) {
                       setIsPaginationLoading(true);
