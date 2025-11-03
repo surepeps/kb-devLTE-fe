@@ -31,7 +31,6 @@ import {
   Compass,
   Crown,
   Database,
-  Fastforward,
   Gift,
   Globe,
   Headphones,
