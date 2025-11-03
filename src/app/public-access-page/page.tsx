@@ -2082,7 +2082,7 @@ export default function DealSitePage() {
       enableReinitialize
     >
       {({ values, errors, touched, handleChange, handleBlur }) => (
-        <Form>
+        <div>
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-[#09391C] mb-4">Bank Details</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2092,7 +2092,7 @@ export default function DealSitePage() {
                   type="text"
                   name="businessName"
                   value={values.businessName}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, businessName: e.target.value } })); }}
                   onBlur={handleBlur}
                   placeholder="Registered business name"
                   className={`${inputBase} ${touched.businessName && errors.businessName ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
@@ -2110,6 +2110,7 @@ export default function DealSitePage() {
                   onChange={(e) => {
                     const cleaned = e.target.value.replace(/\D/g, '');
                     handleChange({ target: { name: 'accountNumber', value: cleaned } } as any);
+                    setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, accountNumber: cleaned } }));
                   }}
                   onBlur={handleBlur}
                   placeholder="10-digit account number"
@@ -2124,7 +2125,7 @@ export default function DealSitePage() {
                 <select
                   name="sortCode"
                   value={values.sortCode}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, sortCode: e.target.value } })); }}
                   onBlur={handleBlur}
                   className={`${selectBase} ${touched.sortCode && errors.sortCode ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
                 >
@@ -2143,7 +2144,7 @@ export default function DealSitePage() {
                   type="email"
                   name="primaryContactEmail"
                   value={values.primaryContactEmail}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactEmail: e.target.value } })); }}
                   onBlur={handleBlur}
                   placeholder="email@example.com"
                   className={`${inputBase} ${touched.primaryContactEmail && errors.primaryContactEmail ? 'border-red-500 focus:ring-red-200 focus:border-red-400' : ''}`}
@@ -2158,7 +2159,7 @@ export default function DealSitePage() {
                   type="text"
                   name="primaryContactName"
                   value={values.primaryContactName}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactName: e.target.value } })); }}
                   onBlur={handleBlur}
                   placeholder="Full name"
                   className={inputBase}
@@ -2170,7 +2171,7 @@ export default function DealSitePage() {
                   type="tel"
                   name="primaryContactPhone"
                   value={values.primaryContactPhone}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e); setForm(prev => ({ ...prev, paymentDetails: { ...prev.paymentDetails, primaryContactPhone: e.target.value } })); }}
                   onBlur={handleBlur}
                   placeholder="e.g. +2348012345678"
                   className={inputBase}
@@ -2179,7 +2180,7 @@ export default function DealSitePage() {
             </div>
             <p className="text-xs text-[#5A5D63] mt-3">These details are used for settlements.</p>
           </div>
-        </Form>
+        </div>
       )}
     </Formik>
   );
