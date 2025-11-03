@@ -19,15 +19,21 @@ const VerificationSent = () => {
   const { isContactUsClicked } = usePageContext();
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [userType, setUserType] = useState<"Agent" | "Landowners" | null>(null);
   const [isResending, setIsResending] = useState(false);
+
+  const isAgent = userType === "Agent";
+  const isLandowner = userType === "Landowners";
 
   useEffect(() => {
     const userEmail = localStorage.getItem("email");
+    const storedUserType = localStorage.getItem("userType");
     if (!userEmail) {
       router.push("/auth/register");
       return;
     }
     setEmail(userEmail);
+    setUserType((storedUserType as "Agent" | "Landowners") || "Landowners");
   }, [router]);
 
   const handleResendVerification = async () => {
@@ -90,26 +96,31 @@ const VerificationSent = () => {
 
             {/* Title */}
             <h2 className="text-[32px] lg:text-[28px] font-display leading-[38.4px] font-semibold text-[#09391C]">
-              Verification Email Sent!
+              {isAgent ? "Agent Registration Verification" : "Account Registration Verification"}
             </h2>
           </div>
 
           {/* Content Section */}
           <div className="max-w-[500px] space-y-[20px]">
             <p className="text-[18px] leading-[28px] font-medium text-[#09391C]">
-              Congratulations! Your agent registration was successful.
+              {isAgent
+                ? "Congratulations! Your agent registration was successful."
+                : "Congratulations! Your account registration was successful."
+              }
             </p>
-            
+
             <p className="text-[16px] leading-[25.6px] text-[#1E1E1E]">
               We've sent a verification email to{" "}
               <span className="font-semibold text-[#09391C]">{email}</span>.
               Please check your email and click the verification link to
               activate your account.
             </p>
-            
+
             <p className="text-[14px] leading-[22px] text-[#5A5D63]">
-              Once verified, you'll be able to access all agent features
-              and start connecting with potential clients.
+              {isAgent
+                ? "Once verified, you'll need to complete your KYC (Know Your Customer) verification before you can start posting properties and connecting with clients."
+                : "Once verified, you can immediately start browsing properties and listing your properties on our platform."
+              }
             </p>
           </div>
 
@@ -127,14 +138,37 @@ const VerificationSent = () => {
                 <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
                 <span>Click the verification link in the email</span>
               </li>
-              <li className="flex items-start gap-[8px]">
-                <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
-                <span>Complete your agent profile setup</span>
-              </li>
-              <li className="flex items-start gap-[8px]">
-                <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
-                <span>Start browsing client briefs</span>
-              </li>
+              {isAgent ? (
+                <>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Complete your agent profile setup</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Submit KYC (Know Your Customer) verification</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Wait for approval and start browsing client briefs</span>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Start using the platform immediately</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Browse and post properties without restrictions</span>
+                  </li>
+                  <li className="flex items-start gap-[8px]">
+                    <span className="text-[#8DDB90] font-bold mt-[2px]">•</span>
+                    <span>Complete your profile to improve visibility</span>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -155,12 +189,24 @@ const VerificationSent = () => {
             />
           </div>
 
+          {/* Additional Info Card for Agents */}
+          {isAgent && (
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-[20px] max-w-[480px] w-full">
+              <h4 className="font-semibold text-[14px] text-[#09391C] mb-[12px]">
+                About KYC Verification
+              </h4>
+              <p className="text-[13px] leading-[20px] text-[#1E1E1E]">
+                KYC verification is a required security step that helps us verify your identity. You'll need to provide valid identification documents. The process usually takes 24-48 hours for approval.
+              </p>
+            </div>
+          )}
+
           {/* Footer Links */}
           <div className="flex flex-col items-center gap-[16px] text-center">
             <p className="text-[16px] leading-[25.6px] font-normal text-[#1E1E1E]">
               Already verified?{" "}
-              <Link 
-                className="font-semibold text-[#09391C] hover:underline transition-all duration-300" 
+              <Link
+                className="font-semibold text-[#09391C] hover:underline transition-all duration-300"
                 href="/auth/login"
               >
                 Sign in to your account
