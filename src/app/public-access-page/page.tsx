@@ -881,7 +881,8 @@ export default function DealSitePage() {
     { label: "Public Link", status: setupStep > 0 ? "completed" : "active" },
     { label: "Design", status: setupStep > 1 ? "completed" : setupStep === 1 ? "active" : "pending" },
     { label: "Marketplace", status: setupStep > 2 ? "completed" : setupStep === 2 ? "active" : "pending" },
-    { label: "Review", status: setupStep === 3 ? "active" : "pending" },
+    { label: "Payment", status: setupStep > 3 ? "completed" : setupStep === 3 ? "active" : "pending" },
+    { label: "Review", status: setupStep === 4 ? "active" : "pending" },
   ] as const;
 
   const renderBrandingSeo = (
