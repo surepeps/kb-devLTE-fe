@@ -291,6 +291,8 @@ const SECTION_FRIENDLY_LABELS: Record<UpdatableSectionId, string> = {
   payment: "Payment",
   featured: "Featured Listings",
   listings: "Listings",
+  "home-settings": "Home Settings",
+  "subscribe-settings": "Subscribe Settings",
 };
 
 const isUpdatableTab = (tab: ManageTabId): tab is UpdatableSectionId => updatableTabSet.has(tab as UpdatableSectionId);
