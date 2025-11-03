@@ -367,6 +367,18 @@ export default function DealSitePage() {
     paymentDetails: { businessName: "", accountNumber: "", sortCode: "", primaryContactEmail: "", primaryContactName: "", primaryContactPhone: "" },
     about: { title: "", subTitle: "", heroImageUrl: "", ctaButtons: [], mission: "", vision: "", howItWorks: "", ourValues: [] },
     contactUs: { officeHours: "", faqs: [] },
+    homeSettings: {
+      testimonials: { title: "", subTitle: "", testimonials: [] },
+      whyChooseUs: { title: "", subTitle: "", items: [] },
+      readyToFind: { title: "", subTitle: "", ctas: [], items: [] },
+    },
+    subscribeSettings: {
+      title: "",
+      subTitle: "",
+      miniTitle: "",
+      backgroundColor: "#8DDB90",
+      cta: { text: "Subscribe Now", color: "#09391C" },
+    },
   });
 
   const previewUrl = useMemo(() => {
