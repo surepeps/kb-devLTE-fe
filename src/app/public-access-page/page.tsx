@@ -3492,9 +3492,10 @@ export default function DealSitePage() {
 
                 {isUpdatableTab(activeTab) && (
                   <div className="flex items-center gap-3">
-                    <button onClick={() => saveSection(activeTab)} disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60">
+                    <button onClick={() => saveSection(activeTab)} disabled={saving || isOnHold} className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-60">
                       <Save size={16} /> {saving ? "Saving..." : "Save Settings"}
                     </button>
+                    {isOnHold && <span className="text-sm text-red-600">Changes disabled while on hold</span>}
                   </div>
                 )}
               </div>
