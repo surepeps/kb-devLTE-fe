@@ -291,13 +291,13 @@ interface HomeSettings {
 }
 
 interface SubscribeSettings {
-  title: string;
-  subTitle: string;
-  miniTitle: string;
-  backgroundColor: string;
-  cta: {
-    text: string;
-    color: string;
+  title?: string;
+  subTitle?: string;
+  miniTitle?: string;
+  backgroundColor?: string;
+  cta?: {
+    text?: string;
+    color?: string;
   };
 }
 
