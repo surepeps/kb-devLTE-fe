@@ -4604,7 +4604,7 @@ export default function DealSitePage() {
               )}
 
 
-              <Tabs
+              <TabsHeader
                 active={activeTab}
                 onChange={(id) => setActiveTab(id as ManageTabId)}
                 disabled={isOnHold}
