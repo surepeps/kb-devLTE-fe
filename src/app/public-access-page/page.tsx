@@ -2913,29 +2913,148 @@ export default function DealSitePage() {
   );
 
   const renderContactUs = (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
       <h2 className="text-lg font-semibold text-[#09391C]">Contact Us</h2>
 
+      {/* Hero */}
       <div>
-        <label className="block text-sm text-gray-700 mb-1">Import contact settings (paste JSON)</label>
-        <textarea className={inputBase + " min-h-[200px]"} value={contactJson} onChange={(e) => setContactJson(e.target.value)} />
-        <div className="flex items-center gap-2 mt-2">
-          <button type="button" onClick={() => {
-            try {
-              const parsed = JSON.parse(contactJson);
-              setForm(prev => ({ ...prev, contactUs: parsed }));
-              toast.success("Contact settings imported");
-            } catch (err) {
-              toast.error("Invalid JSON. Please fix and try again.");
-            }
-          }} className="px-3 py-2 border rounded bg-emerald-50 text-emerald-700">Import JSON</button>
-          <button type="button" onClick={() => setContactJson(JSON.stringify(form.contactUs || {}, null, 2))} className="px-3 py-2 border rounded">Reset</button>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Hero</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.hero?.title || ""} onChange={(e) => updateHeroField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.hero?.subTitle || ""} onChange={(e) => updateHeroField('subTitle', e.target.value)} />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-1">Description</label>
+            <textarea className={inputBase + " min-h-[80px]"} value={form.contactUs?.hero?.description || ""} onChange={(e) => updateHeroField('description', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Background Image</label>
+            <input className={inputBase} value={form.contactUs?.hero?.backgroundImage || ""} onChange={(e) => updateHeroField('backgroundImage', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Background Video</label>
+            <input className={inputBase} value={form.contactUs?.hero?.backgroundVideo || ""} onChange={(e) => updateHeroField('backgroundVideo', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Overlay Color</label>
+            <input className={inputBase} value={form.contactUs?.hero?.overlayColor || ""} onChange={(e) => updateHeroField('overlayColor', e.target.value)} />
+          </div>
+          <div className="md:col-span-1">
+            <label className="block text-sm text-gray-700 mb-1">CTA Text</label>
+            <input className={inputBase} value={form.contactUs?.hero?.cta?.text || ""} onChange={(e) => updateHeroCta('text', e.target.value)} />
+          </div>
+          <div className="md:col-span-1">
+            <label className="block text-sm text-gray-700 mb-1">CTA Link</label>
+            <input className={inputBase} value={form.contactUs?.hero?.cta?.link || ""} onChange={(e) => updateHeroCta('link', e.target.value)} />
+          </div>
+          <div className="md:col-span-1">
+            <label className="block text-sm text-gray-700 mb-1">CTA Style</label>
+            <input className={inputBase} value={form.contactUs?.hero?.cta?.style || ""} onChange={(e) => updateHeroCta('style', e.target.value)} />
+          </div>
         </div>
       </div>
 
-      <div className="mt-4">
-        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Preview</h3>
-        <pre className="text-xs bg-gray-50 p-3 rounded">{JSON.stringify(form.contactUs || {}, null, 2)}</pre>
+      {/* Contact Info */}
+      <div>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Contact Info</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.contactInfo?.title || ""} onChange={(e) => updateContactInfoField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.contactInfo?.subTitle || ""} onChange={(e) => updateContactInfoField('subTitle', e.target.value)} />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {(form.contactUs?.contactInfo?.items || []).map((it, idx) => (
+            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
+              <input className={"md:col-span-2 " + inputBase} placeholder="Icon" value={it.icon || ""} onChange={(e) => updateContactInfoItem(idx, 'icon', e.target.value)} />
+              <input className={"md:col-span-4 " + inputBase} placeholder="Label" value={it.label || ""} onChange={(e) => updateContactInfoItem(idx, 'label', e.target.value)} />
+              <input className={"md:col-span-5 " + inputBase} placeholder="Value" value={it.value || ""} onChange={(e) => updateContactInfoItem(idx, 'value', e.target.value)} />
+              <div className={"md:col-span-1 flex items-center gap-2"}>
+                <button type="button" onClick={() => removeContactInfoItem(idx)} className="text-xs px-2 py-1 border rounded-lg">Remove</button>
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <button type="button" onClick={addContactInfoItem} className="text-xs px-2 py-1 border rounded-lg">Add Contact Item</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Map Section */}
+      <div>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Map Section</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.mapSection?.title || ""} onChange={(e) => updateMapField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.mapSection?.subTitle || ""} onChange={(e) => updateMapField('subTitle', e.target.value)} />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {(form.contactUs?.mapSection?.locations || []).map((loc, idx) => (
+            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
+              <input className={"md:col-span-3 " + inputBase} placeholder="City" value={loc.city || ""} onChange={(e) => updateMapLocation(idx, { city: e.target.value })} />
+              <input className={"md:col-span-5 " + inputBase} placeholder="Address" value={loc.address || ""} onChange={(e) => updateMapLocation(idx, { address: e.target.value })} />
+              <input className={"md:col-span-2 " + inputBase} placeholder="Latitude" value={loc.coordinates ? String(loc.coordinates[0]) : ""} onChange={(e) => {
+                const lat = parseFloat(e.target.value || '0');
+                updateMapLocation(idx, { coordinates: [isNaN(lat) ? 0 : lat, loc.coordinates ? loc.coordinates[1] : 0] });
+              }} />
+              <input className={"md:col-span-1 " + inputBase} placeholder="Longitude" value={loc.coordinates ? String(loc.coordinates[1]) : ""} onChange={(e) => {
+                const lng = parseFloat(e.target.value || '0');
+                updateMapLocation(idx, { coordinates: [loc.coordinates ? loc.coordinates[0] : 0, isNaN(lng) ? 0 : lng] });
+              }} />
+              <div className={"md:col-span-1 flex items-center gap-2"}>
+                <button type="button" onClick={() => removeMapLocation(idx)} className="text-xs px-2 py-1 border rounded-lg">Remove</button>
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <button type="button" onClick={addMapLocation} className="text-xs px-2 py-1 border rounded-lg">Add Location</button>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">CTA Section</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.cta?.title || ""} onChange={(e) => updateCtaField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.cta?.subTitle || ""} onChange={(e) => updateCtaField('subTitle', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Button Text</label>
+            <input className={inputBase} value={form.contactUs?.cta?.buttonText || ""} onChange={(e) => updateCtaField('buttonText', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Button Link</label>
+            <input className={inputBase} value={form.contactUs?.cta?.link || ""} onChange={(e) => updateCtaField('link', e.target.value)} />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-1">Background Gradient</label>
+            <input className={inputBase} value={form.contactUs?.cta?.backgroundGradient || ""} onChange={(e) => updateCtaField('backgroundGradient', e.target.value)} />
+          </div>
+        </div>
       </div>
     </div>
   );
