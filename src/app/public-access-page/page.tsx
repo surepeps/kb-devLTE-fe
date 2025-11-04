@@ -931,6 +931,79 @@ export default function DealSitePage() {
   const checkboxBase = "h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500";
   const selectBase = inputBase;
 
+  // Helper functions to update nested contactUs structure
+  const updateHeroField = (key: keyof NonNullable<ContactUsSection['hero']>, value: any) => {
+    setForm(prev => ({
+      ...prev,
+      contactUs: {
+        ...(prev.contactUs || {}),
+        hero: {
+          ...(prev.contactUs?.hero || {}),
+          [key]: value,
+        },
+      },
+    }));
+  };
+
+  const updateHeroCta = (key: keyof NonNullable<ContactUsSection['hero']>['cta'], value: any) => {
+    setForm(prev => ({
+      ...prev,
+      contactUs: {
+        ...(prev.contactUs || {}),
+        hero: {
+          ...(prev.contactUs?.hero || {}),
+          cta: {
+            ...(prev.contactUs?.hero?.cta || {}),
+            [key]: value,
+          },
+        },
+      },
+    }));
+  };
+
+  const updateContactInfoField = (key: keyof NonNullable<ContactUsSection['contactInfo']>, value: any) => {
+    setForm(prev => ({
+      ...prev,
+      contactUs: {
+        ...(prev.contactUs || {}),
+        contactInfo: {
+          ...(prev.contactUs?.contactInfo || {}),
+          [key]: value,
+        },
+      },
+    }));
+  };
+
+  const updateContactInfoItem = (index: number, key: keyof { icon?: string; label?: string; value?: string }, value: any) => {
+    setForm(prev => {
+      const items = [...(prev.contactUs?.contactInfo?.items || [])];
+      items[index] = { ...(items[index] || {}), [key]: value };
+      return { ...prev, contactUs: { ...(prev.contactUs || {}), contactInfo: { ...(prev.contactUs?.contactInfo || {}), items } } };
+    });
+  };
+
+  const addContactInfoItem = () => setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), contactInfo: { ...(prev.contactUs?.contactInfo || {}), items: [ ...(prev.contactUs?.contactInfo?.items || []), { icon: "", label: "", value: "" } ] } } }));
+  const removeContactInfoItem = (index: number) => setForm(prev => { const items = [...(prev.contactUs?.contactInfo?.items || [])]; items.splice(index, 1); return { ...prev, contactUs: { ...(prev.contactUs || {}), contactInfo: { ...(prev.contactUs?.contactInfo || {}), items } } }; });
+
+  const updateMapField = (key: keyof NonNullable<ContactUsSection['mapSection']>, value: any) => {
+    setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), [key]: value } } }));
+  };
+
+  const updateMapLocation = (index: number, data: Partial<{ city?: string; address?: string; coordinates?: [number, number] }>) => {
+    setForm(prev => {
+      const locations = [...(prev.contactUs?.mapSection?.locations || [])];
+      locations[index] = { ...(locations[index] || { city: "", address: "", coordinates: [0,0] }), ...(data as any) };
+      return { ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), locations } } };
+    });
+  };
+
+  const addMapLocation = () => setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), locations: [ ...(prev.contactUs?.mapSection?.locations || []), { city: "", address: "", coordinates: [0,0] } ] } } }));
+  const removeMapLocation = (index: number) => setForm(prev => { const list = [...(prev.contactUs?.mapSection?.locations || [])]; list.splice(index,1); return { ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), locations: list } } }; });
+
+  const updateCtaField = (key: keyof NonNullable<ContactUsSection['cta']>, value: any) => {
+    setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), cta: { ...(prev.contactUs?.cta || {}), [key]: value } } }));
+  };
+
   const SetupHeader = (
     <div className="mb-6">
       <div className="flex items-center justify-between">
