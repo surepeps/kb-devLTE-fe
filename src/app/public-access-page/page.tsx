@@ -3261,8 +3261,21 @@ export default function DealSitePage() {
             <input className={inputBase} value={form.contactUs?.cta?.link || ""} onChange={(e) => updateCtaField('link', e.target.value)} />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm text-gray-700 mb-1">Background Gradient</label>
-            <input className={inputBase} value={form.contactUs?.cta?.backgroundGradient || ""} onChange={(e) => updateCtaField('backgroundGradient', e.target.value)} />
+            <label className="block text-sm text-gray-700 mb-1">Background Gradient (pick two colors)</label>
+            <div className="flex items-center gap-2">
+              <input type="color" className="h-9 w-12 p-0 border rounded" value={(form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[0] || '#09391C') : '#09391C'} onChange={(e) => {
+                const end = (form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[1] || '#4BA678') : '#4BA678';
+                setContactCtaGradient(e.target.value, end);
+              }} />
+              <input type="color" className="h-9 w-12 p-0 border rounded" value={(form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[1] || '#4BA678') : '#4BA678'} onChange={(e) => {
+                const start = (form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[0] || '#09391C') : '#09391C';
+                setContactCtaGradient(start, e.target.value);
+              }} />
+              <div className="flex-1">
+                <input className={inputBase} value={form.contactUs?.cta?.backgroundGradient || ''} onChange={(e) => updateCtaField('backgroundGradient', e.target.value)} />
+              </div>
+            </div>
+            <div className="h-8 mt-2 rounded" style={{ background: form.contactUs?.cta?.backgroundGradient || 'linear-gradient(90deg, #09391C 0%, #4BA678 100%)' }} />
           </div>
         </div>
       </div>
