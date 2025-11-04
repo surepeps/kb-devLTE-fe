@@ -3105,13 +3105,13 @@ export default function DealSitePage() {
             <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
               <input className={"md:col-span-3 " + inputBase} placeholder="City" value={loc.city || ""} onChange={(e) => updateMapLocation(idx, { city: e.target.value })} />
               <input className={"md:col-span-5 " + inputBase} placeholder="Address" value={loc.address || ""} onChange={(e) => updateMapLocation(idx, { address: e.target.value })} />
-              <input className={"md:col-span-2 " + inputBase} placeholder="Latitude" value={loc.coordinates ? String(loc.coordinates[0]) : ""} onChange={(e) => {
-                const lat = parseFloat(e.target.value || '0');
-                updateMapLocation(idx, { coordinates: [isNaN(lat) ? 0 : lat, loc.coordinates ? loc.coordinates[1] : 0] });
+              <input className={"md:col-span-2 " + inputBase} placeholder={loc.coordinates ? String(loc.coordinates[0]) : "e.g. 6.4281 or 'Near Lekki'"} value={loc.coordinates ? String(loc.coordinates[0]) : ""} onChange={(e) => {
+                const newLat = e.target.value;
+                updateMapLocation(idx, { coordinates: [newLat, loc.coordinates ? String(loc.coordinates[1]) : ""] });
               }} />
-              <input className={"md:col-span-1 " + inputBase} placeholder="Longitude" value={loc.coordinates ? String(loc.coordinates[1]) : ""} onChange={(e) => {
-                const lng = parseFloat(e.target.value || '0');
-                updateMapLocation(idx, { coordinates: [loc.coordinates ? loc.coordinates[0] : 0, isNaN(lng) ? 0 : lng] });
+              <input className={"md:col-span-1 " + inputBase} placeholder={loc.coordinates ? String(loc.coordinates[1]) : "e.g. 3.4219 or 'offshore'"} value={loc.coordinates ? String(loc.coordinates[1]) : ""} onChange={(e) => {
+                const newLng = e.target.value;
+                updateMapLocation(idx, { coordinates: [loc.coordinates ? String(loc.coordinates[0]) : "", newLng] });
               }} />
               <div className={"md:col-span-1 flex items-center gap-2"}>
                 <button type="button" onClick={() => removeMapLocation(idx)} className="text-xs px-2 py-1 border rounded-lg">Remove</button>
