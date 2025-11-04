@@ -3683,12 +3683,36 @@ export default function DealSitePage() {
               <label className="block text-sm text-gray-700 font-medium">Partner Logos</label>
               <button type="button" onClick={addAboutPartnerLogo} className="text-xs px-2 py-1 border rounded-lg">Add Logo</button>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {(form.about?.partners?.logos || []).map((logo, idx) => (
-                <div key={idx} className="flex items-center gap-2">
-                  {logo && <img src={logo} alt="Partner" className="h-8 w-12 rounded object-cover border" />}
-                  <input type="text" value={logo || ""} onChange={(e) => updateAboutPartnerLogo(idx, e.target.value)} className={inputBase} placeholder="Logo URL" />
-                  <button type="button" onClick={() => removeAboutPartnerLogo(idx)} className="px-2 py-1 text-sm border rounded-lg"><Trash2 size={14} /></button>
+                <div key={idx} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="font-medium text-sm text-[#09391C]">Partner Logo {idx + 1}</h4>
+                    <button type="button" onClick={() => removeAboutPartnerLogo(idx)} className="text-red-500 text-sm"><Trash2 size={14} /></button>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-700 mb-2">Logo</label>
+                    <div>
+                      <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3 mb-2">
+                        <div className="flex-1">
+                          <input type="text" className={inputBase} placeholder="Logo URL or drop an image here" value={logo || ""} onChange={(e) => updateAboutPartnerLogo(idx, e.target.value)} />
+                          <p className="text-xs text-gray-500 mt-1">Accepts JPG, PNG. Max size depends on server limits.</p>
+                        </div>
+                        <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
+                          Upload
+                          <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadPartnerLogo(e.target.files[0], idx)} />
+                        </label>
+                      </div>
+                      {logo ? (
+                        <div className="mt-2 relative">
+                          <img src={logo} alt="Partner Logo" className="w-full h-24 object-cover rounded shadow-sm" />
+                          <button type="button" onClick={() => updateAboutPartnerLogo(idx, "")} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                            <Trash size={16} />
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
