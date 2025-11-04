@@ -3003,18 +3003,27 @@ export default function DealSitePage() {
           </div>
           <div>
             <label className="block text-sm text-gray-700 mb-1">Background Video (mp4 url or upload)</label>
-            <div className="flex gap-2 items-center">
-              <input type="text" className={inputBase} placeholder="Video URL or upload" value={form.contactUs?.hero?.backgroundVideo || ""} onChange={(e) => updateHeroField('backgroundVideo', e.target.value)} />
-              <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
-                Upload
-                <input type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files && handleUploadContactMedia(e.target.files[0], 'video')} />
-              </label>
-            </div>
-            {form.contactUs?.hero?.backgroundVideo ? (
-              <div className="mt-2">
-                <video src={form.contactUs?.hero?.backgroundVideo} controls className="w-full h-32 object-cover rounded" />
+            <div>
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={makeDropHandler('video')}
+                className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3"
+              >
+                <div className="flex-1">
+                  <input type="text" className={inputBase} placeholder="MP4 URL or drop a video (max 15MB)" value={form.contactUs?.hero?.backgroundVideo || ""} onChange={(e) => updateHeroField('backgroundVideo', e.target.value)} />
+                  <p className="text-xs text-gray-500 mt-1">MP4 only. Max 15MB.</p>
+                </div>
+                <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
+                  Upload
+                  <input type="file" accept="video/mp4,video/*" className="hidden" onChange={(e) => e.target.files && handleUploadContactMedia(e.target.files[0], 'video')} />
+                </label>
               </div>
-            ) : null}
+              {form.contactUs?.hero?.backgroundVideo ? (
+                <div className="mt-2">
+                  <video src={form.contactUs?.hero?.backgroundVideo} controls className="w-full h-36 object-cover rounded shadow-sm" />
+                </div>
+              ) : null}
+            </div>
           </div>
           <div>
             <label className="block text-sm text-gray-700 mb-1">Overlay Color</label>
