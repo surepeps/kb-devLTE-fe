@@ -4652,7 +4652,24 @@ export default function DealSitePage() {
               />
 
               <div className="mt-6 space-y-6">
-                {activeTab === "overview" && renderOverview}
+                {activeTab === "overview" && (
+                  <OverviewTab
+                    isPaused={isPaused}
+                    slugLocked={slugLocked}
+                    previewUrl={previewUrl}
+                    isOnHold={isOnHold}
+                    overviewLogsLoading={overviewLogsLoading}
+                    overviewLogs={overviewLogs}
+                    onPause={pauseDealSite}
+                    onResume={resumeDealSite}
+                    onEditSettings={() => setActiveTab("branding")}
+                    onViewAll={() => {
+                      setServiceLogsPage(1);
+                      setActiveTab("service-logger");
+                    }}
+                    onCopyLink={copyLink}
+                  />
+                )}
                 {activeTab === "branding" && renderBrandingSeo}
                 {activeTab === "design" && (
                   <div className="space-y-6">
