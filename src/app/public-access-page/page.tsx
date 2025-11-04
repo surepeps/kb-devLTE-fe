@@ -307,9 +307,9 @@ interface FooterDetails {
 }
 
 interface BankDetails {
-  businessName: string;
-  accountNumber: string;
-  sortCode: string; // bank code
+  businessName?: string;
+  accountNumber?: string;
+  sortCode?: string; // bank code
   primaryContactEmail?: string;
   primaryContactName?: string;
   primaryContactPhone?: string;
