@@ -1274,6 +1274,191 @@ export default function DealSitePage() {
     setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), cta: { ...(prev.contactUs?.cta || {}), [key]: value } } }));
   };
 
+  // Helper functions for About section
+  const updateAboutHeroField = (key: keyof AboutHero, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), hero: { ...(prev.about?.hero || {}), [key]: value } } }));
+  };
+
+  const updateAboutHeroCta = (key: keyof AboutHeroCta, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), hero: { ...(prev.about?.hero || {}), cta: { ...(prev.about?.hero?.cta || {}), [key]: value } } } }));
+  };
+
+  const updateAboutIdentity = (key: keyof AboutIdentity, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), identity: { ...(prev.about?.identity || {}), [key]: value } } }));
+  };
+
+  const updateAboutIdentityHighlights = (index: number, value: string) => {
+    setForm(prev => {
+      const highlights = [...(prev.about?.identity?.keyHighlights || [])];
+      highlights[index] = value;
+      return { ...prev, about: { ...(prev.about || {}), identity: { ...(prev.about?.identity || {}), keyHighlights: highlights } } };
+    });
+  };
+
+  const addAboutIdentityHighlight = () => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), identity: { ...(prev.about?.identity || {}), keyHighlights: [...(prev.about?.identity?.keyHighlights || []), ""] } } }));
+  };
+
+  const removeAboutIdentityHighlight = (index: number) => {
+    setForm(prev => {
+      const highlights = [...(prev.about?.identity?.keyHighlights || [])];
+      highlights.splice(index, 1);
+      return { ...prev, about: { ...(prev.about || {}), identity: { ...(prev.about?.identity || {}), keyHighlights: highlights } } };
+    });
+  };
+
+  const updateAboutMissionVision = (key: keyof AboutMissionVision, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), missionVision: { ...(prev.about?.missionVision || {}), [key]: value } } }));
+  };
+
+  const updateAboutMissionVisionItem = (index: number, key: keyof AboutMissionVisionItem, value: string) => {
+    setForm(prev => {
+      const items = [...(prev.about?.missionVision?.items || [])];
+      items[index] = { ...(items[index] || {}), [key]: value };
+      return { ...prev, about: { ...(prev.about || {}), missionVision: { ...(prev.about?.missionVision || {}), items } } };
+    });
+  };
+
+  const addAboutMissionVisionItem = () => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), missionVision: { ...(prev.about?.missionVision || {}), items: [...(prev.about?.missionVision?.items || []), { title: "", description: "" }] } } }));
+  };
+
+  const removeAboutMissionVisionItem = (index: number) => {
+    setForm(prev => {
+      const items = [...(prev.about?.missionVision?.items || [])];
+      items.splice(index, 1);
+      return { ...prev, about: { ...(prev.about || {}), missionVision: { ...(prev.about?.missionVision || {}), items } } };
+    });
+  };
+
+  const updateAboutValues = (key: keyof AboutValues, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), values: { ...(prev.about?.values || {}), [key]: value } } }));
+  };
+
+  const updateAboutValueItem = (index: number, key: keyof AboutValuesItem, value: string) => {
+    setForm(prev => {
+      const items = [...(prev.about?.values?.items || [])];
+      items[index] = { ...(items[index] || {}), [key]: value };
+      return { ...prev, about: { ...(prev.about || {}), values: { ...(prev.about?.values || {}), items } } };
+    });
+  };
+
+  const addAboutValueItem = () => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), values: { ...(prev.about?.values || {}), items: [...(prev.about?.values?.items || []), { icon: "", title: "", description: "" }] } } }));
+  };
+
+  const removeAboutValueItem = (index: number) => {
+    setForm(prev => {
+      const items = [...(prev.about?.values?.items || [])];
+      items.splice(index, 1);
+      return { ...prev, about: { ...(prev.about || {}), values: { ...(prev.about?.values || {}), items } } };
+    });
+  };
+
+  const updateAboutJourney = (key: keyof AboutJourney, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), journey: { ...(prev.about?.journey || {}), [key]: value } } }));
+  };
+
+  const updateAboutJourneyItem = (index: number, key: keyof AboutJourneyItem, value: string) => {
+    setForm(prev => {
+      const items = [...(prev.about?.journey?.timeline || [])];
+      items[index] = { ...(items[index] || {}), [key]: value };
+      return { ...prev, about: { ...(prev.about || {}), journey: { ...(prev.about?.journey || {}), timeline: items } } };
+    });
+  };
+
+  const addAboutJourneyItem = () => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), journey: { ...(prev.about?.journey || {}), timeline: [...(prev.about?.journey?.timeline || []), { year: "", title: "", description: "" }] } } }));
+  };
+
+  const removeAboutJourneyItem = (index: number) => {
+    setForm(prev => {
+      const items = [...(prev.about?.journey?.timeline || [])];
+      items.splice(index, 1);
+      return { ...prev, about: { ...(prev.about || {}), journey: { ...(prev.about?.journey || {}), timeline: items } } };
+    });
+  };
+
+  const updateAboutLeadership = (key: keyof AboutLeadership, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), leadership: { ...(prev.about?.leadership || {}), [key]: value } } }));
+  };
+
+  const updateAboutLeadershipMember = (index: number, key: keyof AboutLeadershipMember, value: string) => {
+    setForm(prev => {
+      const members = [...(prev.about?.leadership?.members || [])];
+      members[index] = { ...(members[index] || {}), [key]: value };
+      return { ...prev, about: { ...(prev.about || {}), leadership: { ...(prev.about?.leadership || {}), members } } };
+    });
+  };
+
+  const addAboutLeadershipMember = () => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), leadership: { ...(prev.about?.leadership || {}), members: [...(prev.about?.leadership?.members || []), { name: "", role: "", image: "", quote: "" }] } } }));
+  };
+
+  const removeAboutLeadershipMember = (index: number) => {
+    setForm(prev => {
+      const members = [...(prev.about?.leadership?.members || [])];
+      members.splice(index, 1);
+      return { ...prev, about: { ...(prev.about || {}), leadership: { ...(prev.about?.leadership || {}), members } } };
+    });
+  };
+
+  const updateAboutStats = (key: keyof AboutStats, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), stats: { ...(prev.about?.stats || {}), [key]: value } } }));
+  };
+
+  const updateAboutStatItem = (index: number, key: keyof AboutStatItem, value: string) => {
+    setForm(prev => {
+      const items = [...(prev.about?.stats?.items || [])];
+      items[index] = { ...(items[index] || {}), [key]: value };
+      return { ...prev, about: { ...(prev.about || {}), stats: { ...(prev.about?.stats || {}), items } } };
+    });
+  };
+
+  const addAboutStatItem = () => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), stats: { ...(prev.about?.stats || {}), items: [...(prev.about?.stats?.items || []), { label: "", value: "" }] } } }));
+  };
+
+  const removeAboutStatItem = (index: number) => {
+    setForm(prev => {
+      const items = [...(prev.about?.stats?.items || [])];
+      items.splice(index, 1);
+      return { ...prev, about: { ...(prev.about || {}), stats: { ...(prev.about?.stats || {}), items } } };
+    });
+  };
+
+  const updateAboutPartners = (key: keyof AboutPartners, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), partners: { ...(prev.about?.partners || {}), [key]: value } } }));
+  };
+
+  const updateAboutPartnerLogo = (index: number, value: string) => {
+    setForm(prev => {
+      const logos = [...(prev.about?.partners?.logos || [])];
+      logos[index] = value;
+      return { ...prev, about: { ...(prev.about || {}), partners: { ...(prev.about?.partners || {}), logos } } };
+    });
+  };
+
+  const addAboutPartnerLogo = () => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), partners: { ...(prev.about?.partners || {}), logos: [...(prev.about?.partners?.logos || []), ""] } } }));
+  };
+
+  const removeAboutPartnerLogo = (index: number) => {
+    setForm(prev => {
+      const logos = [...(prev.about?.partners?.logos || [])];
+      logos.splice(index, 1);
+      return { ...prev, about: { ...(prev.about || {}), partners: { ...(prev.about?.partners || {}), logos } } };
+    });
+  };
+
+  const updateAboutTestimonials = (key: keyof AboutTestimonials, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), testimonials: { ...(prev.about?.testimonials || {}), [key]: value } } }));
+  };
+
+  const updateAboutCta = (key: keyof AboutCtaSection, value: any) => {
+    setForm(prev => ({ ...prev, about: { ...(prev.about || {}), cta: { ...(prev.about?.cta || {}), [key]: value } } }));
+  };
+
   const SetupHeader = (
     <div className="mb-6">
       <div className="flex items-center justify-between">
