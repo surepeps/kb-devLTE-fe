@@ -276,7 +276,7 @@ interface ReadyToFindItem {
 interface ReadyToFindSection {
   title?: string;
   subTitle?: string;
-  ctas: ReadyToFindCTA[];
+  ctas?: ReadyToFindCTA[];
   items?: ReadyToFindItem[];
 }
 
