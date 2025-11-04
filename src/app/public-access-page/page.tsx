@@ -450,6 +450,12 @@ export default function DealSitePage() {
     },
   });
 
+  const [contactJson, setContactJson] = useState<string>(JSON.stringify(form.contactUs || {}, null, 2));
+
+  useEffect(() => {
+    setContactJson(JSON.stringify(form.contactUs || {}, null, 2));
+  }, [form.contactUs]);
+
   const previewUrl = useMemo(() => {
     if (!form.publicSlug) return "";
     return `https://${form.publicSlug}.khabiteq.com`;
