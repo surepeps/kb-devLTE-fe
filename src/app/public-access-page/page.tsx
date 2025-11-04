@@ -2964,6 +2964,23 @@ export default function DealSitePage() {
   const renderAboutUs = (
     <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
       <h2 className="text-lg font-semibold text-[#09391C]">About Us</h2>
+      <div>
+        <label className="block text-sm text-gray-700 mb-1">Import About Settings (paste JSON)</label>
+        <textarea className={inputBase + " min-h-[120px]"} value={aboutJson} onChange={(e) => setAboutJson(e.target.value)} />
+        <div className="flex items-center gap-2 mt-2">
+          <button type="button" onClick={() => {
+            try {
+              const parsed = JSON.parse(aboutJson);
+              const about = parsed?.aboutSettings || parsed;
+              setForm(prev => ({ ...prev, about }));
+              toast.success('About settings imported');
+            } catch (err) {
+              toast.error('Invalid JSON. Please fix and try again.');
+            }
+          }} className="px-3 py-2 border rounded bg-emerald-50 text-emerald-700">Import JSON</button>
+          <button type="button" onClick={() => setAboutJson(JSON.stringify(form.about || {}, null, 2))} className="px-3 py-2 border rounded">Reset</button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm text-gray-700 mb-1">Title</label>
