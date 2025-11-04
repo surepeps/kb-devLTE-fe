@@ -93,15 +93,120 @@ interface InspectionDesignSettings {
 
 interface CtaButton { text: string; url: string; color?: string }
 
+interface AboutHeroCta {
+  text?: string;
+  link?: string;
+  style?: string;
+}
+
+interface AboutHero {
+  title?: string;
+  subTitle?: string;
+  description?: string;
+  backgroundImage?: string;
+  backgroundVideo?: string | null;
+  mobileFallbackImage?: string;
+  overlayColor?: string;
+  cta?: AboutHeroCta;
+}
+
+interface AboutIdentity {
+  headline?: string;
+  content?: string;
+  keyHighlights?: string[];
+}
+
+interface AboutMissionVisionItem {
+  title?: string;
+  description?: string;
+}
+
+interface AboutMissionVision {
+  title?: string;
+  items?: AboutMissionVisionItem[];
+  backgroundImage?: string;
+}
+
+interface AboutValuesItem {
+  icon?: string;
+  title?: string;
+  description?: string;
+}
+
+interface AboutValues {
+  title?: string;
+  description?: string;
+  items?: AboutValuesItem[];
+}
+
+interface AboutJourneyItem {
+  year?: string;
+  title?: string;
+  description?: string;
+}
+
+interface AboutJourney {
+  title?: string;
+  timeline?: AboutJourneyItem[];
+}
+
+interface AboutLeadershipMember {
+  name?: string;
+  role?: string;
+  image?: string;
+  quote?: string;
+}
+
+interface AboutLeadership {
+  title?: string;
+  subTitle?: string;
+  members?: AboutLeadershipMember[];
+}
+
+interface AboutStatItem {
+  label?: string;
+  value?: string;
+}
+
+interface AboutStats {
+  title?: string;
+  subTitle?: string;
+  backgroundColor?: string;
+  items?: AboutStatItem[];
+}
+
+interface AboutPartners {
+  title?: string;
+  subTitle?: string;
+  logos?: string[];
+}
+
+interface AboutTestimonials {
+  showFromHome?: boolean;
+  limit?: number;
+  title?: string;
+  layout?: string;
+}
+
+interface AboutCtaSection {
+  title?: string;
+  subTitle?: string;
+  buttonText?: string;
+  link?: string;
+  backgroundGradient?: string;
+}
+
 interface AboutSection {
-  title: string;
-  subTitle: string;
-  heroImageUrl?: string;
-  ctaButtons: CtaButton[];
-  mission?: string;
-  vision?: string;
-  howItWorks?: string;
-  ourValues?: { title: string; subTitle: string }[];
+  hero?: AboutHero;
+  identity?: AboutIdentity;
+  missionVision?: AboutMissionVision;
+  values?: AboutValues;
+  journey?: AboutJourney;
+  leadership?: AboutLeadership;
+  stats?: AboutStats;
+  partners?: AboutPartners;
+  testimonials?: AboutTestimonials;
+  cta?: AboutCtaSection;
 }
 
 interface ContactUsSection {
