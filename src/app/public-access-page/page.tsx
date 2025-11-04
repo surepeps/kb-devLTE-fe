@@ -29,8 +29,8 @@ import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
 import Stepper from "@/components/post-property-components/Stepper";
 import IconSelector from "@/components/public-access-page/IconSelector";
-import OverviewTab from "@/components/public-access-page/tabs/OverviewTab";
 import dynamic from "next/dynamic";
+const OverviewTab = dynamic(() => import("@/components/public-access-page/tabs/OverviewTab"), { ssr: false });
 import TabsHeader from "@/components/public-access-page/TabsHeader";
 
 const HomeSettingsTab = dynamic(() => import("@/components/public-access-page/tabs/HomeSettingsTab"), { ssr: false });
