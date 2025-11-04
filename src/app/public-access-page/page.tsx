@@ -274,10 +274,10 @@ interface ReadyToFindItem {
 }
 
 interface ReadyToFindSection {
-  title: string;
-  subTitle: string;
+  title?: string;
+  subTitle?: string;
   ctas: ReadyToFindCTA[];
-  items: ReadyToFindItem[];
+  items?: ReadyToFindItem[];
 }
 
 interface HomeSettings {
