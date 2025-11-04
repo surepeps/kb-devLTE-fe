@@ -105,6 +105,32 @@ interface AboutSection {
 }
 
 interface ContactUsSection {
+  hero?: {
+    title?: string;
+    subTitle?: string;
+    description?: string;
+    backgroundImage?: string | null;
+    backgroundVideo?: string | null;
+    overlayColor?: string;
+    cta?: { text?: string; link?: string; style?: string };
+  };
+  contactInfo?: {
+    title?: string;
+    subTitle?: string;
+    items?: { icon?: string; label?: string; value?: string }[];
+  };
+  mapSection?: {
+    title?: string;
+    subTitle?: string;
+    locations?: { city?: string; address?: string; coordinates?: [number, number] }[];
+  };
+  cta?: {
+    title?: string;
+    subTitle?: string;
+    buttonText?: string;
+    link?: string;
+    backgroundGradient?: string;
+  };
   officeHours?: string;
   faqs?: { question: string; answer: string }[];
 }
