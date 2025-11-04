@@ -89,7 +89,7 @@ interface Inspection {
   inspectionStatus: string;
   negotiationPrice: number;
   letterOfIntention: any;
-  owner: string;
+  owner: RequestedBy | string;
   approveLOI: boolean;
   pendingResponseFrom: string;
   stage: string;
