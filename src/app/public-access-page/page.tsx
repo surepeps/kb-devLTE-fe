@@ -249,8 +249,8 @@ interface Testimonial {
 }
 
 interface TestimonialsSection {
-  title: string;
-  subTitle: string;
+  title?: string;
+  subTitle?: string;
   testimonials: Testimonial[];
 }
 
