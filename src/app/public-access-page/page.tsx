@@ -768,6 +768,32 @@ export default function DealSitePage() {
     }
   };
 
+  // Upload media for contact section (image or video)
+  const handleUploadContactMedia = async (file: File, kind: 'image' | 'video') => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('for', `contact-${kind}`);
+      const token = Cookies.get('token');
+      showPreloader(`Uploading ${kind}...`);
+      const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+      hidePreloader();
+      if (res?.success && res.data && (res.data as any).url) {
+        if (kind === 'image') updateHeroField('backgroundImage', (res.data as any).url);
+        else updateHeroField('backgroundVideo', (res.data as any).url);
+        toast.success(`${kind.charAt(0).toUpperCase() + kind.slice(1)} uploaded`);
+      } else {
+        toast.error(res?.message || 'Upload failed');
+      }
+    } catch (err) {
+      hidePreloader();
+      toast.error('Upload failed');
+    }
+  };
+
+  // Color palette options
+  const COLOR_PALETTE = ['#09391C', '#4BA678', '#8DDB90', '#0B572B', '#065F46', '#F3F4F6', '#000000', '#FFFFFF'];
+
   const onSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!form.publicSlug) {
