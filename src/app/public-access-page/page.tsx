@@ -1015,10 +1015,10 @@ export default function DealSitePage() {
     setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), [key]: value } } }));
   };
 
-  const updateMapLocation = (index: number, data: Partial<{ city?: string; address?: string; coordinates?: [number, number] }>) => {
+  const updateMapLocation = (index: number, data: Partial<{ city?: string; address?: string; coordinates?: [number | string, number | string] }>) => {
     setForm(prev => {
       const locations = [...(prev.contactUs?.mapSection?.locations || [])];
-      locations[index] = { ...(locations[index] || { city: "", address: "", coordinates: [0,0] }), ...(data as any) };
+      locations[index] = { ...(locations[index] || { city: "", address: "", coordinates: ["",""] }), ...(data as any) };
       return { ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), locations } } };
     });
   };
