@@ -71,6 +71,7 @@ interface IconSelectorProps {
   value?: string;
   onChange: (iconName: string) => void;
   className?: string;
+  customIcons?: Record<string, React.ComponentType<any>>;
 }
 
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
@@ -139,19 +140,21 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   X,
 };
 
-const ICON_NAMES = Object.keys(ICON_MAP);
-
 export const IconSelector: React.FC<IconSelectorProps> = ({
   value,
   onChange,
   className = "",
+  customIcons,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const SelectedIcon = value ? ICON_MAP[value] : null;
+  const mergedMap = React.useMemo(() => ({ ...(customIcons || {}), ...ICON_MAP }), [customIcons]);
+  const iconNames = React.useMemo(() => Object.keys(mergedMap).sort(), [mergedMap]);
 
-  const filteredIcons = ICON_NAMES.filter((name) =>
+  const SelectedIcon = value ? mergedMap[value] : null;
+
+  const filteredIcons = iconNames.filter((name) =>
     name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -202,7 +205,7 @@ export const IconSelector: React.FC<IconSelectorProps> = ({
           <div className="grid grid-cols-6 gap-2 p-3 max-h-96 overflow-y-auto">
             {filteredIcons.length > 0 ? (
               filteredIcons.map((iconName) => {
-                const Icon = ICON_MAP[iconName];
+                const Icon = mergedMap[iconName];
                 return (
                   <button
                     key={iconName}
