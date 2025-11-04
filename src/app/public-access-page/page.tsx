@@ -283,8 +283,8 @@ interface ReadyToFindSection {
 interface HomeSettings {
   testimonials?: TestimonialsSection;
   whyChooseUs?: {
-    title: string;
-    subTitle: string;
+    title?: string;
+    subTitle?: string;
     items: WhyChooseUsItem[];
   };
   readyToFind?: ReadyToFindSection;
