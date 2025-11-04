@@ -105,6 +105,32 @@ interface AboutSection {
 }
 
 interface ContactUsSection {
+  hero?: {
+    title?: string;
+    subTitle?: string;
+    description?: string;
+    backgroundImage?: string | null;
+    backgroundVideo?: string | null;
+    overlayColor?: string;
+    cta?: { text?: string; link?: string; style?: string };
+  };
+  contactInfo?: {
+    title?: string;
+    subTitle?: string;
+    items?: { icon?: string; label?: string; value?: string }[];
+  };
+  mapSection?: {
+    title?: string;
+    subTitle?: string;
+    locations?: { city?: string; address?: string; coordinates?: [number | string, number | string] }[];
+  };
+  cta?: {
+    title?: string;
+    subTitle?: string;
+    buttonText?: string;
+    link?: string;
+    backgroundGradient?: string;
+  };
   officeHours?: string;
   faqs?: { question: string; answer: string }[];
 }
@@ -371,7 +397,45 @@ export default function DealSitePage() {
     footer: { shortDescription: "", copyrightText: "" },
     paymentDetails: { businessName: "", accountNumber: "", sortCode: "", primaryContactEmail: "", primaryContactName: "", primaryContactPhone: "" },
     about: { title: "", subTitle: "", heroImageUrl: "", ctaButtons: [], mission: "", vision: "", howItWorks: "", ourValues: [] },
-    contactUs: { officeHours: "", faqs: [] },
+    contactUs: {
+      hero: {
+        title: "Let’s Connect With You",
+        subTitle: "Your next real estate opportunity starts with a conversation.",
+        description: "Whether you’re buying, investing, partnering, or just exploring — we’re here to guide you every step of the way. Reach out to our team or visit one of our offices near you.",
+        backgroundImage: "/images/contact-hero.jpg",
+        backgroundVideo: null,
+        overlayColor: "rgba(0, 0, 0, 0.45)",
+        cta: { text: "Talk to an Expert", link: "/book-consultation", style: "light" },
+      },
+      contactInfo: {
+        title: "Reach Us Directly",
+        subTitle: "We’re available across multiple channels to make communication easy and fast.",
+        items: [
+          { icon: "phone", label: "Call Us", value: "+234 901 234 5678" },
+          { icon: "mail", label: "Email", value: "info@primeedgerealty.com" },
+          { icon: "map-pin", label: "Head Office", value: "Plot 15, PrimeEdge Tower, Victoria Island, Lagos, Nigeria" },
+          { icon: "clock", label: "Office Hours", value: "Mon - Sat: 8:00am - 6:00pm" },
+        ],
+      },
+      mapSection: {
+        title: "Our Office Locations",
+        subTitle: "Find us across key cities in Africa.",
+        locations: [
+          { city: "Lagos", address: "Plot 15, PrimeEdge Tower, Victoria Island", coordinates: [6.4281, 3.4219] },
+          { city: "Abuja", address: "14 Unity Avenue, Wuse 2", coordinates: [9.0578, 7.4951] },
+          { city: "Accra", address: "PrimeEdge Hub, Osu Crescent", coordinates: [5.6037, -0.1870] },
+        ],
+      },
+      cta: {
+        title: "Let’s Build Your Real Estate Success Story",
+        subTitle: "Get in touch today and experience the PrimeEdge difference.",
+        buttonText: "Book a Consultation",
+        link: "/book-consultation",
+        backgroundGradient: "linear-gradient(90deg, #09391C 0%, #4BA678 100%)",
+      },
+      officeHours: "Mon - Sat: 8:00am - 6:00pm",
+      faqs: [],
+    },
     homeSettings: {
       testimonials: { title: "", subTitle: "", testimonials: [] },
       whyChooseUs: { title: "", subTitle: "", items: [] },
@@ -385,6 +449,12 @@ export default function DealSitePage() {
       cta: { text: "Subscribe Now", color: "#09391C" },
     },
   });
+
+  const [contactJson, setContactJson] = useState<string>(JSON.stringify(form.contactUs || {}, null, 2));
+
+  useEffect(() => {
+    setContactJson(JSON.stringify(form.contactUs || {}, null, 2));
+  }, [form.contactUs]);
 
   const previewUrl = useMemo(() => {
     if (!form.publicSlug) return "";
@@ -698,6 +768,160 @@ export default function DealSitePage() {
     }
   };
 
+  // Upload media for contact section (image or video)
+  const handleUploadContactMedia = async (file: File, kind: 'image' | 'video') => {
+    try {
+      if (kind === 'video' && file.size > 15 * 1024 * 1024) {
+        toast.error('Video exceeds maximum size of 15MB');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('for', `contact-${kind}`);
+      const token = Cookies.get('token');
+      showPreloader(`Uploading ${kind}...`);
+      const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+      hidePreloader();
+      if (res?.success && res.data && (res.data as any).url) {
+        if (kind === 'image') updateHeroField('backgroundImage', (res.data as any).url);
+        else updateHeroField('backgroundVideo', (res.data as any).url);
+        toast.success(`${kind.charAt(0).toUpperCase() + kind.slice(1)} uploaded`);
+      } else {
+        toast.error(res?.message || 'Upload failed');
+      }
+    } catch (err) {
+      hidePreloader();
+      toast.error('Upload failed');
+    }
+  };
+
+  // Drag & drop helpers
+  const makeDropHandler = (kind: 'image' | 'video') => (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (kind === 'video' && file.size > 15 * 1024 * 1024) {
+      toast.error('Video exceeds maximum size of 15MB');
+      return;
+    }
+    handleUploadContactMedia(file, kind);
+  };
+
+  // Delete uploaded contact media
+  const handleDeleteContactMedia = async (url: string | undefined | null, kind: 'image' | 'video') => {
+    if (!url) return;
+    const token = Cookies.get('token');
+    try {
+      showPreloader('Removing uploaded file...');
+      const res = await DELETE_REQUEST(`${URLS.BASE}${URLS.deleteUploadedSingleImg}`, { url }, token);
+      hidePreloader();
+      if (res?.success) {
+        if (kind === 'image') updateHeroField('backgroundImage', '');
+        else updateHeroField('backgroundVideo', '');
+        toast.success('Uploaded file removed');
+      } else {
+        toast.error(res?.message || 'Failed to remove file');
+      }
+    } catch (err) {
+      hidePreloader();
+      toast.error('Failed to remove file');
+    }
+  };
+
+  // Generic delete for uploaded files with callback to clear state
+  const handleDeleteUploadedFile = async (url: string | undefined | null, onSuccess: () => void) => {
+    if (!url) return;
+    const token = Cookies.get('token');
+    try {
+      showPreloader('Removing uploaded file...');
+      const res = await DELETE_REQUEST(`${URLS.BASE}${URLS.deleteUploadedSingleImg}`, { url }, token);
+      hidePreloader();
+      if (res?.success) {
+        onSuccess();
+        toast.success('Uploaded file removed');
+      } else {
+        toast.error(res?.message || 'Failed to remove file');
+      }
+    } catch (err) {
+      hidePreloader();
+      toast.error('Failed to remove file');
+    }
+  };
+
+  // Additional upload helpers for About Us section
+  const handleUploadMissionBg = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('for', 'about-mission-bg');
+    const token = Cookies.get('token');
+    showPreloader('Uploading mission background...');
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm(prev => ({ ...prev, about: { ...(prev.about || {}), missionVision: { ...(prev.about?.missionVision || {}), backgroundImage: (res.data as any).url } } }));
+      toast.success('Image uploaded');
+    } else {
+      toast.error(res?.message || 'Upload failed');
+    }
+  };
+
+  const handleUploadMemberImage = async (file: File, index: number) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('for', 'about-member');
+    const token = Cookies.get('token');
+    showPreloader('Uploading member image...');
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm(prev => {
+        const members = [...(prev.about?.leadership?.members || [])];
+        members[index] = { ...(members[index] || {}), image: (res.data as any).url };
+        return { ...prev, about: { ...(prev.about || {}), leadership: { ...(prev.about?.leadership || {}), members } } };
+      });
+      toast.success('Image uploaded');
+    } else {
+      toast.error(res?.message || 'Upload failed');
+    }
+  };
+
+  const handleUploadPartnerLogo = async (file: File, index: number) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('for', 'about-partner');
+    const token = Cookies.get('token');
+    showPreloader('Uploading partner logo...');
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm(prev => {
+        const logos = [...(prev.about?.partners?.logos || [])];
+        logos[index] = (res.data as any).url;
+        return { ...prev, about: { ...(prev.about || {}), partners: { ...(prev.about?.partners || {}), logos } } };
+      });
+      toast.success('Logo uploaded');
+    } else {
+      toast.error(res?.message || 'Upload failed');
+    }
+  };
+
+  // CTA gradient helpers (store as linear-gradient string)
+  const setContactCtaGradient = (start: string, end: string) => {
+    const g = `linear-gradient(90deg, ${start} 0%, ${end} 100%)`;
+    updateCtaField('backgroundGradient', g);
+  };
+
+  const setAboutCtaGradient = (start: string, end: string) => {
+    const g = `linear-gradient(90deg, ${start} 0%, ${end} 100%)`;
+    updateCtaField('backgroundGradient', g);
+  };
+
+  // Color palette options
+  const COLOR_PALETTE = ['#09391C', '#4BA678', '#8DDB90', '#0B572B', '#065F46', '#F3F4F6', '#000000', '#FFFFFF'];
+
   const onSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!form.publicSlug) {
@@ -860,6 +1084,79 @@ export default function DealSitePage() {
   const inputBase = "w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-400";
   const checkboxBase = "h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500";
   const selectBase = inputBase;
+
+  // Helper functions to update nested contactUs structure
+  const updateHeroField = (key: keyof NonNullable<ContactUsSection['hero']>, value: any) => {
+    setForm(prev => ({
+      ...prev,
+      contactUs: {
+        ...(prev.contactUs || {}),
+        hero: {
+          ...(prev.contactUs?.hero || {}),
+          [key]: value,
+        },
+      },
+    }));
+  };
+
+  const updateHeroCta = (key: keyof NonNullable<ContactUsSection['hero']>['cta'], value: any) => {
+    setForm(prev => ({
+      ...prev,
+      contactUs: {
+        ...(prev.contactUs || {}),
+        hero: {
+          ...(prev.contactUs?.hero || {}),
+          cta: {
+            ...(prev.contactUs?.hero?.cta || {}),
+            [key]: value,
+          },
+        },
+      },
+    }));
+  };
+
+  const updateContactInfoField = (key: keyof NonNullable<ContactUsSection['contactInfo']>, value: any) => {
+    setForm(prev => ({
+      ...prev,
+      contactUs: {
+        ...(prev.contactUs || {}),
+        contactInfo: {
+          ...(prev.contactUs?.contactInfo || {}),
+          [key]: value,
+        },
+      },
+    }));
+  };
+
+  const updateContactInfoItem = (index: number, key: keyof { icon?: string; label?: string; value?: string }, value: any) => {
+    setForm(prev => {
+      const items = [...(prev.contactUs?.contactInfo?.items || [])];
+      items[index] = { ...(items[index] || {}), [key]: value };
+      return { ...prev, contactUs: { ...(prev.contactUs || {}), contactInfo: { ...(prev.contactUs?.contactInfo || {}), items } } };
+    });
+  };
+
+  const addContactInfoItem = () => setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), contactInfo: { ...(prev.contactUs?.contactInfo || {}), items: [ ...(prev.contactUs?.contactInfo?.items || []), { icon: "", label: "", value: "" } ] } } }));
+  const removeContactInfoItem = (index: number) => setForm(prev => { const items = [...(prev.contactUs?.contactInfo?.items || [])]; items.splice(index, 1); return { ...prev, contactUs: { ...(prev.contactUs || {}), contactInfo: { ...(prev.contactUs?.contactInfo || {}), items } } }; });
+
+  const updateMapField = (key: keyof NonNullable<ContactUsSection['mapSection']>, value: any) => {
+    setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), [key]: value } } }));
+  };
+
+  const updateMapLocation = (index: number, data: Partial<{ city?: string; address?: string; coordinates?: [number | string, number | string] }>) => {
+    setForm(prev => {
+      const locations = [...(prev.contactUs?.mapSection?.locations || [])];
+      locations[index] = { ...(locations[index] || { city: "", address: "", coordinates: ["",""] }), ...(data as any) };
+      return { ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), locations } } };
+    });
+  };
+
+  const addMapLocation = () => setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), locations: [ ...(prev.contactUs?.mapSection?.locations || []), { city: "", address: "", coordinates: [0,0] } ] } } }));
+  const removeMapLocation = (index: number) => setForm(prev => { const list = [...(prev.contactUs?.mapSection?.locations || [])]; list.splice(index,1); return { ...prev, contactUs: { ...(prev.contactUs || {}), mapSection: { ...(prev.contactUs?.mapSection || {}), locations: list } } }; });
+
+  const updateCtaField = (key: keyof NonNullable<ContactUsSection['cta']>, value: any) => {
+    setForm(prev => ({ ...prev, contactUs: { ...(prev.contactUs || {}), cta: { ...(prev.contactUs?.cta || {}), [key]: value } } }));
+  };
 
   const SetupHeader = (
     <div className="mb-6">
@@ -2770,37 +3067,216 @@ export default function DealSitePage() {
   );
 
   const renderContactUs = (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
       <h2 className="text-lg font-semibold text-[#09391C]">Contact Us</h2>
+
+      {/* Hero */}
       <div>
-        <label className="block text-sm text-gray-700 mb-1">Office Hours</label>
-        <input type="text" value={form.contactUs?.officeHours || ""} onChange={(e) => setForm((prev) => ({ ...prev, contactUs: { ...(prev.contactUs || { faqs: [] }), officeHours: e.target.value } }))} className={inputBase} placeholder="Mon-Fri, 9am - 5pm" />
-      </div>
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-[#09391C]">FAQs</h3>
-          <button type="button" onClick={() => setForm((prev) => ({ ...prev, contactUs: { ...(prev.contactUs || { officeHours: "" }), faqs: [ ...(prev.contactUs?.faqs || []), { question: "", answer: "" } ] } }))} className="text-xs px-2 py-1 border rounded-lg">Add</button>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Hero</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.hero?.title || ""} onChange={(e) => updateHeroField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.hero?.subTitle || ""} onChange={(e) => updateHeroField('subTitle', e.target.value)} />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-1">Description</label>
+            <textarea className={inputBase + " min-h-[80px]"} value={form.contactUs?.hero?.description || ""} onChange={(e) => updateHeroField('description', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Background Image</label>
+            <div>
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={makeDropHandler('image')}
+                className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3"
+              >
+                <div className="flex-1">
+                  <input type="text" className={inputBase} placeholder="Image URL or drop an image here" value={form.contactUs?.hero?.backgroundImage || ""} onChange={(e) => updateHeroField('backgroundImage', e.target.value)} />
+                  <p className="text-xs text-gray-500 mt-1">Accepts JPG, PNG. Max size depends on server limits.</p>
+                </div>
+                <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
+                  Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadContactMedia(e.target.files[0], 'image')} />
+                </label>
+              </div>
+              {form.contactUs?.hero?.backgroundImage ? (
+                <div className="mt-2 relative">
+                  <img src={form.contactUs?.hero?.backgroundImage} alt="hero" className="w-full h-36 object-cover rounded shadow-sm" />
+                  <button type="button" onClick={() => handleDeleteContactMedia(form.contactUs?.hero?.backgroundImage, 'image')} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                    <Trash size={16} />
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Background Video (mp4 url or upload)</label>
+            <div>
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={makeDropHandler('video')}
+                className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3"
+              >
+                <div className="flex-1">
+                  <input type="text" className={inputBase} placeholder="MP4 URL or drop a video (max 15MB)" value={form.contactUs?.hero?.backgroundVideo || ""} onChange={(e) => updateHeroField('backgroundVideo', e.target.value)} />
+                  <p className="text-xs text-gray-500 mt-1">MP4 only. Max 15MB.</p>
+                </div>
+                <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
+                  Upload
+                  <input type="file" accept="video/mp4,video/*" className="hidden" onChange={(e) => e.target.files && handleUploadContactMedia(e.target.files[0], 'video')} />
+                </label>
+              </div>
+              {form.contactUs?.hero?.backgroundVideo ? (
+                <div className="mt-2 relative">
+                  <video src={form.contactUs?.hero?.backgroundVideo} controls className="w-full h-36 object-cover rounded shadow-sm" />
+                  <button type="button" onClick={() => handleDeleteContactMedia(form.contactUs?.hero?.backgroundVideo, 'video')} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                    <Trash size={16} />
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Overlay Color</label>
+            <div className="flex items-center gap-2">
+              <input type="color" className="p-1 rounded border" value={form.contactUs?.hero?.overlayColor || '#000000'} onChange={(e) => updateHeroField('overlayColor', e.target.value)} />
+              <input className={inputBase} value={form.contactUs?.hero?.overlayColor || ""} onChange={(e) => updateHeroField('overlayColor', e.target.value)} />
+            </div>
+            <div className="flex gap-2 mt-2">
+              {COLOR_PALETTE.map((c) => (
+                <button key={c} type="button" onClick={() => updateHeroField('overlayColor', c)} className="w-8 h-8 rounded" style={{ background: c, border: form.contactUs?.hero?.overlayColor === c ? '2px solid #00000020' : '1px solid #e5e7eb' }} />
+              ))}
+            </div>
+          </div>
+          <div className="md:col-span-1">
+            <label className="block text-sm text-gray-700 mb-1">CTA Text</label>
+            <input className={inputBase} value={form.contactUs?.hero?.cta?.text || ""} onChange={(e) => updateHeroCta('text', e.target.value)} />
+          </div>
+          <div className="md:col-span-1">
+            <label className="block text-sm text-gray-700 mb-1">CTA Link</label>
+            <input className={inputBase} value={form.contactUs?.hero?.cta?.link || ""} onChange={(e) => updateHeroCta('link', e.target.value)} />
+          </div>
+          <div className="md:col-span-1">
+            <label className="block text-sm text-gray-700 mb-1">CTA Style</label>
+            <input className={inputBase} value={form.contactUs?.hero?.cta?.style || ""} onChange={(e) => updateHeroCta('style', e.target.value)} />
+          </div>
         </div>
+      </div>
+
+      {/* Contact Info */}
+      <div>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Contact Info</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.contactInfo?.title || ""} onChange={(e) => updateContactInfoField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.contactInfo?.subTitle || ""} onChange={(e) => updateContactInfoField('subTitle', e.target.value)} />
+          </div>
+        </div>
+
         <div className="space-y-3">
-          {(form.contactUs?.faqs || []).map((f, idx) => (
+          {(form.contactUs?.contactInfo?.items || []).map((it, idx) => (
             <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
-              <input className={`md:col-span-5 ${inputBase}`} placeholder="Question" value={f.question} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.contactUs?.faqs || []) ];
-                list[idx] = { ...list[idx], question: e.target.value };
-                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
-              })} />
-              <textarea className={`md:col-span-6 ${inputBase} min-h-[60px]`} placeholder="Answer" value={f.answer} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.contactUs?.faqs || []) ];
-                list[idx] = { ...list[idx], answer: e.target.value };
-                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
-              })} />
-              <button type="button" onClick={() => setForm((prev) => {
-                const list = [ ...(prev.contactUs?.faqs || []) ];
-                list.splice(idx, 1);
-                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
-              })} className="md:col-span-1 text-xs px-2 py-1 border rounded-lg">Remove</button>
+              <div className={"md:col-span-2 " + "flex items-center"}>
+                <IconSelector value={it.icon || ""} onChange={(val) => updateContactInfoItem(idx, 'icon', val)} />
+              </div>
+              <input className={"md:col-span-4 " + inputBase} placeholder="Label" value={it.label || ""} onChange={(e) => updateContactInfoItem(idx, 'label', e.target.value)} />
+              <input className={"md:col-span-5 " + inputBase} placeholder="Value" value={it.value || ""} onChange={(e) => updateContactInfoItem(idx, 'value', e.target.value)} />
+              <div className={"md:col-span-1 flex items-center gap-2"}>
+                <button type="button" onClick={() => removeContactInfoItem(idx)} className="text-xs px-2 py-1 border rounded-lg">Remove</button>
+              </div>
             </div>
           ))}
+
+          <div>
+            <button type="button" onClick={addContactInfoItem} className="text-xs px-2 py-1 border rounded-lg">Add Contact Item</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Map Section */}
+      <div>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Map Section</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.mapSection?.title || ""} onChange={(e) => updateMapField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.mapSection?.subTitle || ""} onChange={(e) => updateMapField('subTitle', e.target.value)} />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          {(form.contactUs?.mapSection?.locations || []).map((loc, idx) => (
+            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
+              <input className={"md:col-span-3 " + inputBase} placeholder="City" value={loc.city || ""} onChange={(e) => updateMapLocation(idx, { city: e.target.value })} />
+              <input className={"md:col-span-5 " + inputBase} placeholder="Address" value={loc.address || ""} onChange={(e) => updateMapLocation(idx, { address: e.target.value })} />
+              <input className={"md:col-span-2 " + inputBase} placeholder={loc.coordinates ? String(loc.coordinates[0]) : "e.g. 6.4281 or 'Near Lekki'"} value={loc.coordinates ? String(loc.coordinates[0]) : ""} onChange={(e) => {
+                const newLat = e.target.value;
+                updateMapLocation(idx, { coordinates: [newLat, loc.coordinates ? String(loc.coordinates[1]) : ""] });
+              }} />
+              <input className={"md:col-span-1 " + inputBase} placeholder={loc.coordinates ? String(loc.coordinates[1]) : "e.g. 3.4219 or 'offshore'"} value={loc.coordinates ? String(loc.coordinates[1]) : ""} onChange={(e) => {
+                const newLng = e.target.value;
+                updateMapLocation(idx, { coordinates: [loc.coordinates ? String(loc.coordinates[0]) : "", newLng] });
+              }} />
+              <div className={"md:col-span-1 flex items-center gap-2"}>
+                <button type="button" onClick={() => removeMapLocation(idx)} className="text-xs px-2 py-1 border rounded-lg">Remove</button>
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <button type="button" onClick={addMapLocation} className="text-xs px-2 py-1 border rounded-lg">Add Location</button>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div>
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">CTA Section</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input className={inputBase} value={form.contactUs?.cta?.title || ""} onChange={(e) => updateCtaField('title', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input className={inputBase} value={form.contactUs?.cta?.subTitle || ""} onChange={(e) => updateCtaField('subTitle', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Button Text</label>
+            <input className={inputBase} value={form.contactUs?.cta?.buttonText || ""} onChange={(e) => updateCtaField('buttonText', e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Button Link</label>
+            <input className={inputBase} value={form.contactUs?.cta?.link || ""} onChange={(e) => updateCtaField('link', e.target.value)} />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-1">Background Gradient (pick two colors)</label>
+            <div className="flex items-center gap-2">
+              <input type="color" className="h-9 w-12 p-0 border rounded" value={(form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[0] || '#09391C') : '#09391C'} onChange={(e) => {
+                const end = (form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[1] || '#4BA678') : '#4BA678';
+                setContactCtaGradient(e.target.value, end);
+              }} />
+              <input type="color" className="h-9 w-12 p-0 border rounded" value={(form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[1] || '#4BA678') : '#4BA678'} onChange={(e) => {
+                const start = (form.contactUs?.cta?.backgroundGradient && form.contactUs.cta.backgroundGradient.includes('#')) ? (form.contactUs.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[0] || '#09391C') : '#09391C';
+                setContactCtaGradient(start, e.target.value);
+              }} />
+              <div className="flex-1">
+                <input className={inputBase} value={form.contactUs?.cta?.backgroundGradient || ''} onChange={(e) => updateCtaField('backgroundGradient', e.target.value)} />
+              </div>
+            </div>
+            <div className="h-8 mt-2 rounded" style={{ background: form.contactUs?.cta?.backgroundGradient || 'linear-gradient(90deg, #09391C 0%, #4BA678 100%)' }} />
+          </div>
         </div>
       </div>
     </div>
