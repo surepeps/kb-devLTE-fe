@@ -1668,7 +1668,7 @@ export default function DealSitePage() {
     hidePreloader();
     if (res?.success && res.data && (res.data as any).url) {
       setForm((prev) => {
-        const testimonials = { ...(prev.homeSettings || {}).testimonials } || { title: "", subTitle: "", testimonials: [] };
+        const testimonials = prev.homeSettings?.testimonials || { testimonials: [] };
         if (testimonials.testimonials && testimonials.testimonials[index]) {
           testimonials.testimonials[index].image = (res.data as any).url;
         }
