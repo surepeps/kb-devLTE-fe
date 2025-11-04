@@ -514,36 +514,19 @@ export default function DealSitePage() {
       cta: { title: "", subTitle: "", buttonText: "", link: "", backgroundGradient: "linear-gradient(90deg, #0B3B2E 0%, #4BA678 100%)" },
     },
     contactUs: {
-      hero: {
-        title: "Let’s Connect With You",
-        subTitle: "Your next real estate opportunity starts with a conversation.",
-        description: "Whether you’re buying, investing, partnering, or just exploring ��� we’re here to guide you every step of the way. Reach out to our team or visit one of our offices near you.",
-        backgroundImage: "/images/contact-hero.jpg",
-        backgroundVideo: null,
-        overlayColor: "rgba(0, 0, 0, 0.45)",
-        cta: { text: "Talk to an Expert", link: "/book-consultation", style: "light" },
-      },
+      hero: { title: "", subTitle: "", description: "", backgroundImage: "", backgroundVideo: null, overlayColor: "", cta: { text: "", link: "", style: "" }, },
       contactInfo: {
-        title: "Reach Us Directly",
-        subTitle: "We’re available across multiple channels to make communication easy and fast.",
-        items: [
-          { icon: "phone", label: "Call Us", value: "+234 901 234 5678" },
-          { icon: "mail", label: "Email", value: "info@primeedgerealty.com" },
-          { icon: "map-pin", label: "Head Office", value: "Plot 15, PrimeEdge Tower, Victoria Island, Lagos, Nigeria" },
-          { icon: "clock", label: "Office Hours", value: "Mon - Sat: 8:00am - 6:00pm" },
-        ],
+        title: "", subTitle: "", items: [],
       },
       mapSection: {
-        title: "Our Office Locations",
-        subTitle: "Find us across key cities in Africa.",
+        title: "",
+        subTitle: "",
         locations: [
           { city: "Lagos", address: "Plot 15, PrimeEdge Tower, Victoria Island", coordinates: [6.4281, 3.4219] },
-          { city: "Abuja", address: "14 Unity Avenue, Wuse 2", coordinates: [9.0578, 7.4951] },
-          { city: "Accra", address: "PrimeEdge Hub, Osu Crescent", coordinates: [5.6037, -0.1870] },
         ],
       },
       cta: {
-        title: "Let’s Build Your Real Estate Success Story",
+        title: "",
         subTitle: "Get in touch today and experience the PrimeEdge difference.",
         buttonText: "Book a Consultation",
         link: "/book-consultation",
@@ -566,11 +549,11 @@ export default function DealSitePage() {
     },
   });
 
-  const [contactJson, setContactJson] = useState<string>(JSON.stringify(form.contactUs || {}, null, 2));
+  // const [contactJson, setContactJson] = useState<string>(JSON.stringify(form.contactUs || {}, null, 2));
 
-  useEffect(() => {
-    setContactJson(JSON.stringify(form.contactUs || {}, null, 2));
-  }, [form.contactUs]);
+  // useEffect(() => {
+  //   setContactJson(JSON.stringify(form.contactUs || {}, null, 2));
+  // }, [form.contactUs]);
 
   const previewUrl = useMemo(() => {
     if (!form.publicSlug) return "";
