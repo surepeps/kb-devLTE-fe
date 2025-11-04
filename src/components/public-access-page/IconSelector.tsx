@@ -147,8 +147,13 @@ export const IconSelector: React.FC<IconSelectorProps> = ({
   className = "",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const SelectedIcon = value ? ICON_MAP[value] : null;
+
+  const filteredIcons = ICON_NAMES.filter((name) =>
+    name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className={`relative ${className}`}>
@@ -183,32 +188,49 @@ export const IconSelector: React.FC<IconSelectorProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-96 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-3">
-          <div className="grid grid-cols-6 gap-2 max-h-96 overflow-y-auto">
-            {ICON_NAMES.map((iconName) => {
-              const Icon = ICON_MAP[iconName];
-              return (
-                <button
-                  key={iconName}
-                  type="button"
-                  onClick={() => {
-                    onChange(iconName);
-                    setIsOpen(false);
-                  }}
-                  className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 text-center transition-all ${
-                    value === iconName
-                      ? "bg-emerald-100 border border-emerald-500"
-                      : "hover:bg-gray-100 border border-transparent"
-                  }`}
-                  title={iconName}
-                >
-                  <Icon size={20} className="text-gray-700" />
-                  <span className="text-xs text-gray-600 truncate max-w-full">
-                    {iconName}
-                  </span>
-                </button>
-              );
-            })}
+        <div className="absolute z-50 w-96 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <div className="p-3 border-b border-gray-200">
+            <input
+              type="text"
+              placeholder="Search icons..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-200"
+              autoFocus
+            />
+          </div>
+          <div className="grid grid-cols-6 gap-2 p-3 max-h-96 overflow-y-auto">
+            {filteredIcons.length > 0 ? (
+              filteredIcons.map((iconName) => {
+                const Icon = ICON_MAP[iconName];
+                return (
+                  <button
+                    key={iconName}
+                    type="button"
+                    onClick={() => {
+                      onChange(iconName);
+                      setIsOpen(false);
+                      setSearchTerm("");
+                    }}
+                    className={`p-2 rounded-lg flex flex-col items-center justify-center gap-1 text-center transition-all ${
+                      value === iconName
+                        ? "bg-emerald-100 border border-emerald-500"
+                        : "hover:bg-gray-100 border border-transparent"
+                    }`}
+                    title={iconName}
+                  >
+                    <Icon size={20} className="text-gray-700" />
+                    <span className="text-xs text-gray-600 truncate max-w-full">
+                      {iconName}
+                    </span>
+                  </button>
+                );
+              })
+            ) : (
+              <div className="col-span-6 py-4 text-center text-sm text-gray-500">
+                No icons found
+              </div>
+            )}
           </div>
         </div>
       )}
