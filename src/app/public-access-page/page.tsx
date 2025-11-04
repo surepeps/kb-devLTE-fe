@@ -1081,15 +1081,15 @@ export default function DealSitePage() {
     }
   };
 
-  const copyLink = async () => {
+  const copyLink = useCallback(async () => {
     if (!previewUrl) return;
     try {
       await navigator.clipboard.writeText(previewUrl);
       toast.success("Link copied");
     } catch {}
-  };
+  }, [previewUrl]);
 
-  const pauseDealSite = async () => {
+  const pauseDealSite = useCallback(async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
     showPreloader("Pausing public access page...");
@@ -1101,9 +1101,9 @@ export default function DealSitePage() {
     } else {
       toast.error(res?.message || "Failed to pause");
     }
-  };
+  }, [form.publicSlug, showPreloader, hidePreloader]);
 
-  const resumeDealSite = async () => {
+  const resumeDealSite = useCallback(async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
     showPreloader("Resuming public access page...");
@@ -1115,7 +1115,7 @@ export default function DealSitePage() {
     } else {
       toast.error(res?.message || "Failed to resume");
     }
-  };
+  }, [form.publicSlug, showPreloader, hidePreloader]);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const deleteDealSite = async () => {
