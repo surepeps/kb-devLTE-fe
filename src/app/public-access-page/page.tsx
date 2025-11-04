@@ -451,10 +451,15 @@ export default function DealSitePage() {
   });
 
   const [contactJson, setContactJson] = useState<string>(JSON.stringify(form.contactUs || {}, null, 2));
+  const [aboutJson, setAboutJson] = useState<string>(JSON.stringify(form.about || {}, null, 2));
 
   useEffect(() => {
     setContactJson(JSON.stringify(form.contactUs || {}, null, 2));
   }, [form.contactUs]);
+
+  useEffect(() => {
+    setAboutJson(JSON.stringify(form.about || {}, null, 2));
+  }, [form.about]);
 
   const previewUrl = useMemo(() => {
     if (!form.publicSlug) return "";
