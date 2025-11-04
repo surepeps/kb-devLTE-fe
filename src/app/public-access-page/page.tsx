@@ -1032,7 +1032,7 @@ export default function DealSitePage() {
 
   const setAboutCtaGradient = (start: string, end: string) => {
     const g = `linear-gradient(90deg, ${start} 0%, ${end} 100%)`;
-    updateCtaField('backgroundGradient', g);
+    updateAboutCta('backgroundGradient', g);
   };
 
   // Color palette options
