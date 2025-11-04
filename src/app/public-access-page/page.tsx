@@ -810,6 +810,27 @@ export default function DealSitePage() {
     handleUploadContactMedia(file, kind);
   };
 
+  // Delete uploaded contact media
+  const handleDeleteContactMedia = async (url: string | undefined | null, kind: 'image' | 'video') => {
+    if (!url) return;
+    const token = Cookies.get('token');
+    try {
+      showPreloader('Removing uploaded file...');
+      const res = await DELETE_REQUEST(`${URLS.BASE}${URLS.deleteUploadedSingleImg}`, { url }, token);
+      hidePreloader();
+      if (res?.success) {
+        if (kind === 'image') updateHeroField('backgroundImage', '');
+        else updateHeroField('backgroundVideo', '');
+        toast.success('Uploaded file removed');
+      } else {
+        toast.error(res?.message || 'Failed to remove file');
+      }
+    } catch (err) {
+      hidePreloader();
+      toast.error('Failed to remove file');
+    }
+  };
+
   // Color palette options
   const COLOR_PALETTE = ['#09391C', '#4BA678', '#8DDB90', '#0B572B', '#065F46', '#F3F4F6', '#000000', '#FFFFFF'];
 
