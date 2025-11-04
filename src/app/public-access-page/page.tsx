@@ -2842,36 +2842,27 @@ export default function DealSitePage() {
   const renderContactUs = (
     <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
       <h2 className="text-lg font-semibold text-[#09391C]">Contact Us</h2>
+
       <div>
-        <label className="block text-sm text-gray-700 mb-1">Office Hours</label>
-        <input type="text" value={form.contactUs?.officeHours || ""} onChange={(e) => setForm((prev) => ({ ...prev, contactUs: { ...(prev.contactUs || { faqs: [] }), officeHours: e.target.value } }))} className={inputBase} placeholder="Mon-Fri, 9am - 5pm" />
+        <label className="block text-sm text-gray-700 mb-1">Import contact settings (paste JSON)</label>
+        <textarea className={inputBase + " min-h-[200px]"} value={contactJson} onChange={(e) => setContactJson(e.target.value)} />
+        <div className="flex items-center gap-2 mt-2">
+          <button type="button" onClick={() => {
+            try {
+              const parsed = JSON.parse(contactJson);
+              setForm(prev => ({ ...prev, contactUs: parsed }));
+              toast.success("Contact settings imported");
+            } catch (err) {
+              toast.error("Invalid JSON. Please fix and try again.");
+            }
+          }} className="px-3 py-2 border rounded bg-emerald-50 text-emerald-700">Import JSON</button>
+          <button type="button" onClick={() => setContactJson(JSON.stringify(form.contactUs || {}, null, 2))} className="px-3 py-2 border rounded">Reset</button>
+        </div>
       </div>
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-[#09391C]">FAQs</h3>
-          <button type="button" onClick={() => setForm((prev) => ({ ...prev, contactUs: { ...(prev.contactUs || { officeHours: "" }), faqs: [ ...(prev.contactUs?.faqs || []), { question: "", answer: "" } ] } }))} className="text-xs px-2 py-1 border rounded-lg">Add</button>
-        </div>
-        <div className="space-y-3">
-          {(form.contactUs?.faqs || []).map((f, idx) => (
-            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
-              <input className={`md:col-span-5 ${inputBase}`} placeholder="Question" value={f.question} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.contactUs?.faqs || []) ];
-                list[idx] = { ...list[idx], question: e.target.value };
-                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
-              })} />
-              <textarea className={`md:col-span-6 ${inputBase} min-h-[60px]`} placeholder="Answer" value={f.answer} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.contactUs?.faqs || []) ];
-                list[idx] = { ...list[idx], answer: e.target.value };
-                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
-              })} />
-              <button type="button" onClick={() => setForm((prev) => {
-                const list = [ ...(prev.contactUs?.faqs || []) ];
-                list.splice(idx, 1);
-                return { ...prev, contactUs: { ...(prev.contactUs || {}), faqs: list } };
-              })} className="md:col-span-1 text-xs px-2 py-1 border rounded-lg">Remove</button>
-            </div>
-          ))}
-        </div>
+
+      <div className="mt-4">
+        <h3 className="text-sm font-semibold text-[#09391C] mb-2">Preview</h3>
+        <pre className="text-xs bg-gray-50 p-3 rounded">{JSON.stringify(form.contactUs || {}, null, 2)}</pre>
       </div>
     </div>
   );
