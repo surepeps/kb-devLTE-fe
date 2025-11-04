@@ -771,6 +771,11 @@ export default function DealSitePage() {
   // Upload media for contact section (image or video)
   const handleUploadContactMedia = async (file: File, kind: 'image' | 'video') => {
     try {
+      if (kind === 'video' && file.size > 15 * 1024 * 1024) {
+        toast.error('Video exceeds maximum size of 15MB');
+        return;
+      }
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('for', `contact-${kind}`);
@@ -789,6 +794,20 @@ export default function DealSitePage() {
       hidePreloader();
       toast.error('Upload failed');
     }
+  };
+
+  // Drag & drop helpers
+  const makeDropHandler = (kind: 'image' | 'video') => (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (kind === 'video' && file.size > 15 * 1024 * 1024) {
+      toast.error('Video exceeds maximum size of 15MB');
+      return;
+    }
+    handleUploadContactMedia(file, kind);
   };
 
   // Color palette options
