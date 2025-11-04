@@ -29,6 +29,7 @@ import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
 import Stepper from "@/components/post-property-components/Stepper";
 import IconSelector from "@/components/public-access-page/IconSelector";
+import OverviewTab from "@/components/public-access-page/tabs/OverviewTab";
 import {
   Chart as ChartJS,
   CategoryScale,
