@@ -35,7 +35,7 @@ interface Property {
     localGovernment: string;
     area: string;
   };
-  landSize: {
+  landSize?: {
     measurementType: string;
     size: number;
   };
@@ -89,7 +89,7 @@ interface Inspection {
   inspectionStatus: string;
   negotiationPrice: number;
   letterOfIntention: any;
-  owner: string;
+  owner: RequestedBy | string;
   approveLOI: boolean;
   pendingResponseFrom: string;
   stage: string;
@@ -458,7 +458,7 @@ export default function InspectionDetailPage() {
                       </div>
                       <div className="text-center">
                         <p className="text-lg font-bold text-blue-600">
-                          {inspection.propertyId.landSize.size} {inspection.propertyId.landSize.measurementType}
+                          {inspection.propertyId.landSize?.size || "N/A"} {inspection.propertyId.landSize?.measurementType || ""}
                         </p>
                         <p className="text-sm text-gray-600">Land Size</p>
                       </div>
