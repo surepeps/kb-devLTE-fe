@@ -63,7 +63,7 @@ const PREFERENCE_CONFIGS = {
     preferenceMode: "shortlet" as const,
   },
 } as const;
-
+ 
 // Loading Overlay Component - Memoized to prevent unnecessary re-renders
 const LoadingOverlay = memo(({ isSubmitting }: { isSubmitting: boolean }) => (
   <AnimatePresence>
@@ -441,41 +441,44 @@ const UpdatePreferenceFormContent: React.FC = () => {
 
     const config = PREFERENCE_CONFIGS[selectedPreferenceType];
 
-    // Base payload with only relevant fields
     const basePayload = {
-      preferenceType: config.preferenceType,
-      preferenceMode: config.preferenceMode,
-      location: {
-        state: formData.location?.state || "",
-        localGovernmentAreas:
-          formData.location?.lgas?.filter((lga) => lga.trim() !== "") || [],
-        lgasWithAreas: (
-          (formData as any).enhancedLocation?.lgasWithAreas ||
-          // Fallback: create lgasWithAreas structure from legacy data
-          (formData.location?.lgas || []).map((lga: string) => ({
-            lgaName: lga,
-            areas: [], // Areas would be distributed among LGAs in real implementation
-          }))
-        ).filter((item: any) => item.lgaName.trim() !== ""),
-        customLocation: formData.location?.customLocation?.trim() || "",
-      },
-      budget: {
-        minPrice: formData.budget?.minPrice || 0,
-        maxPrice: formData.budget?.maxPrice || 0,
-        currency: "NGN" as const,
-      },
-      features: {
-        baseFeatures:
-          formData.features?.basicFeatures?.filter(
-            (feature) => feature.trim() !== "",
-          ) || [],
-        premiumFeatures:
-          formData.features?.premiumFeatures?.filter(
-            (feature) => feature.trim() !== "",
-          ) || [],
-        autoAdjustToFeatures: formData.features?.autoAdjustToBudget || false,
-      },
-    };
+  preferenceType: config.preferenceType,
+  preferenceMode: config.preferenceMode,
+  location: {
+    state: formData.location?.state || "",
+    localGovernmentAreas:
+      formData.location?.lgas?.filter((lga) => lga.trim() !== "") || [],
+    lgasWithAreas: (
+      (formData as any).enhancedLocation?.lgasWithAreas ||
+      // ✅ Fallback: create lgasWithAreas structure from legacy data
+      (formData.location?.lgas || []).map((lga: string) => ({
+        lgaName: lga,
+        areas: [],
+      }))
+    )
+      // ✅ Remove only _id field from each LGA
+      .map(({ _id, ...rest }: any) => rest)
+      .filter((item: any) => item.lgaName?.trim() !== ""),
+    customLocation: formData.location?.customLocation?.trim() || "",
+  },
+  budget: {
+    minPrice: formData.budget?.minPrice || 0,
+    maxPrice: formData.budget?.maxPrice || 0,
+    currency: "NGN" as const,
+  },
+  features: {
+    baseFeatures:
+      formData.features?.basicFeatures?.filter(
+        (feature) => feature.trim() !== "",
+      ) || [],
+    premiumFeatures:
+      formData.features?.premiumFeatures?.filter(
+        (feature) => feature.trim() !== "",
+      ) || [],
+    autoAdjustToFeatures: formData.features?.autoAdjustToBudget || false,
+  },
+};
+
 
     // Helper function to remove empty/null/undefined values
     const cleanObject = (obj: any): any => {
