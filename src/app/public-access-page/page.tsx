@@ -3043,8 +3043,11 @@ export default function DealSitePage() {
                 </label>
               </div>
               {form.contactUs?.hero?.backgroundVideo ? (
-                <div className="mt-2">
+                <div className="mt-2 relative">
                   <video src={form.contactUs?.hero?.backgroundVideo} controls className="w-full h-36 object-cover rounded shadow-sm" />
+                  <button type="button" onClick={() => handleDeleteContactMedia(form.contactUs?.hero?.backgroundVideo, 'video')} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                    <Trash size={16} />
+                  </button>
                 </div>
               ) : null}
             </div>
