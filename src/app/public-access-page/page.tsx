@@ -3313,45 +3313,72 @@ export default function DealSitePage() {
           </div>
           <div>
             <label className="block text-sm text-gray-700 mb-1">Background Image</label>
-            {form.about?.hero?.backgroundImage ? (
-              <div className="flex items-center gap-3">
-                <img src={form.about.hero.backgroundImage} alt="Hero" className="h-12 w-20 rounded border object-cover" />
-                <button type="button" onClick={() => updateAboutHeroField('backgroundImage', "")} className="px-3 py-2 text-sm border rounded-lg"><Trash2 size={14} /></button>
+            <div>
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3 mb-2">
+                <div className="flex-1">
+                  <input type="text" className={inputBase} placeholder="Image URL or drop an image here" value={form.about?.hero?.backgroundImage || ""} onChange={(e) => updateAboutHeroField('backgroundImage', e.target.value)} />
+                  <p className="text-xs text-gray-500 mt-1">Accepts JPG, PNG. Max size depends on server limits.</p>
+                </div>
+                <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
+                  Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHero(e.target.files[0])} />
+                </label>
               </div>
-            ) : (
-              <label className="flex items-center justify-center px-3 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHero(e.target.files[0])} />
-                <ImageIcon size={16} /> <span className="text-gray-600 ml-2">Upload Hero Image</span>
-              </label>
-            )}
+              {form.about?.hero?.backgroundImage ? (
+                <div className="mt-2 relative">
+                  <img src={form.about.hero.backgroundImage} alt="hero" className="w-full h-24 object-cover rounded shadow-sm" />
+                  <button type="button" onClick={() => updateAboutHeroField('backgroundImage', "")} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                    <Trash size={16} />
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
           <div>
             <label className="block text-sm text-gray-700 mb-1">Mobile Fallback Image</label>
-            {form.about?.hero?.mobileFallbackImage ? (
-              <div className="flex items-center gap-3">
-                <img src={form.about.hero.mobileFallbackImage} alt="Mobile" className="h-12 w-20 rounded border object-cover" />
-                <button type="button" onClick={() => updateAboutHeroField('mobileFallbackImage', "")} className="px-3 py-2 text-sm border rounded-lg"><Trash2 size={14} /></button>
+            <div>
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3 mb-2">
+                <div className="flex-1">
+                  <input type="text" className={inputBase} placeholder="Image URL or drop an image here" value={form.about?.hero?.mobileFallbackImage || ""} onChange={(e) => updateAboutHeroField('mobileFallbackImage', e.target.value)} />
+                  <p className="text-xs text-gray-500 mt-1">Accepts JPG, PNG. Max size depends on server limits.</p>
+                </div>
+                <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
+                  Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutMobileFallback(e.target.files[0])} />
+                </label>
               </div>
-            ) : (
-              <label className="flex items-center justify-center px-3 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
-                <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutMobileFallback(e.target.files[0])} />
-                <ImageIcon size={16} /> <span className="text-gray-600 ml-2">Upload Mobile Image</span>
-              </label>
-            )}
+              {form.about?.hero?.mobileFallbackImage ? (
+                <div className="mt-2 relative">
+                  <img src={form.about.hero.mobileFallbackImage} alt="mobile" className="w-full h-24 object-cover rounded shadow-sm" />
+                  <button type="button" onClick={() => updateAboutHeroField('mobileFallbackImage', "")} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                    <Trash size={16} />
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Background Video</label>
-            {form.about?.hero?.backgroundVideo ? (
-              <div className="flex items-center gap-3">
-                <video src={form.about.hero.backgroundVideo} className="h-12 w-20 rounded border object-cover" />
-                <button type="button" onClick={() => updateAboutHeroField('backgroundVideo', null)} className="px-3 py-2 text-sm border rounded-lg"><Trash2 size={14} /></button>
+            <label className="block text-sm text-gray-700 mb-1">Background Video (mp4 url or upload)</label>
+            <div>
+              <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 flex items-center gap-3 mb-2">
+                <div className="flex-1">
+                  <input type="text" className={inputBase} placeholder="MP4 URL or drop a video (max 15MB)" value={form.about?.hero?.backgroundVideo || ""} onChange={(e) => updateAboutHeroField('backgroundVideo', e.target.value)} />
+                  <p className="text-xs text-gray-500 mt-1">MP4 only. Max 15MB.</p>
+                </div>
+                <label className="px-3 py-2 bg-gray-50 border rounded cursor-pointer text-sm inline-flex items-center gap-2">
+                  Upload
+                  <input type="file" accept="video/mp4,video/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHeroVideo(e.target.files[0])} />
+                </label>
               </div>
-            ) : (
-              <label className="flex items-center justify-center px-3 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
-                <input type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHeroVideo(e.target.files[0])} />
-                <ImageIcon size={16} /> <span className="text-gray-600 ml-2">Upload Video</span>
-              </label>
-            )}
+              {form.about?.hero?.backgroundVideo ? (
+                <div className="mt-2 relative">
+                  <video src={form.about.hero.backgroundVideo} controls className="w-full h-24 object-cover rounded shadow-sm" />
+                  <button type="button" onClick={() => updateAboutHeroField('backgroundVideo', null)} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                    <Trash size={16} />
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
           <div>
             <label className="block text-sm text-gray-700 mb-1">Overlay Color</label>
@@ -3477,8 +3504,8 @@ export default function DealSitePage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-700 mb-1">Icon</label>
-                      <input type="text" value={item.icon || ""} onChange={(e) => updateAboutValueItem(idx, 'icon', e.target.value)} className={inputBase} placeholder="e.g. handshake" />
+                      <label className="block text-xs text-gray-700 mb-1">Icon (searchable)</label>
+                      <IconSelector value={item.icon || ""} onChange={(val) => updateAboutValueItem(idx, 'icon', val)} />
                     </div>
                     <div>
                       <label className="block text-xs text-gray-700 mb-1">Title</label>
