@@ -831,6 +831,94 @@ export default function DealSitePage() {
     }
   };
 
+  // Generic delete for uploaded files with callback to clear state
+  const handleDeleteUploadedFile = async (url: string | undefined | null, onSuccess: () => void) => {
+    if (!url) return;
+    const token = Cookies.get('token');
+    try {
+      showPreloader('Removing uploaded file...');
+      const res = await DELETE_REQUEST(`${URLS.BASE}${URLS.deleteUploadedSingleImg}`, { url }, token);
+      hidePreloader();
+      if (res?.success) {
+        onSuccess();
+        toast.success('Uploaded file removed');
+      } else {
+        toast.error(res?.message || 'Failed to remove file');
+      }
+    } catch (err) {
+      hidePreloader();
+      toast.error('Failed to remove file');
+    }
+  };
+
+  // Additional upload helpers for About Us section
+  const handleUploadMissionBg = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('for', 'about-mission-bg');
+    const token = Cookies.get('token');
+    showPreloader('Uploading mission background...');
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm(prev => ({ ...prev, about: { ...(prev.about || {}), missionVision: { ...(prev.about?.missionVision || {}), backgroundImage: (res.data as any).url } } }));
+      toast.success('Image uploaded');
+    } else {
+      toast.error(res?.message || 'Upload failed');
+    }
+  };
+
+  const handleUploadMemberImage = async (file: File, index: number) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('for', 'about-member');
+    const token = Cookies.get('token');
+    showPreloader('Uploading member image...');
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm(prev => {
+        const members = [...(prev.about?.leadership?.members || [])];
+        members[index] = { ...(members[index] || {}), image: (res.data as any).url };
+        return { ...prev, about: { ...(prev.about || {}), leadership: { ...(prev.about?.leadership || {}), members } } };
+      });
+      toast.success('Image uploaded');
+    } else {
+      toast.error(res?.message || 'Upload failed');
+    }
+  };
+
+  const handleUploadPartnerLogo = async (file: File, index: number) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('for', 'about-partner');
+    const token = Cookies.get('token');
+    showPreloader('Uploading partner logo...');
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      setForm(prev => {
+        const logos = [...(prev.about?.partners?.logos || [])];
+        logos[index] = (res.data as any).url;
+        return { ...prev, about: { ...(prev.about || {}), partners: { ...(prev.about?.partners || {}), logos } } };
+      });
+      toast.success('Logo uploaded');
+    } else {
+      toast.error(res?.message || 'Upload failed');
+    }
+  };
+
+  // CTA gradient helpers (store as linear-gradient string)
+  const setContactCtaGradient = (start: string, end: string) => {
+    const g = `linear-gradient(90deg, ${start} 0%, ${end} 100%)`;
+    updateCtaField('backgroundGradient', g);
+  };
+
+  const setAboutCtaGradient = (start: string, end: string) => {
+    const g = `linear-gradient(90deg, ${start} 0%, ${end} 100%)`;
+    updateCtaField('backgroundGradient', g);
+  };
+
   // Color palette options
   const COLOR_PALETTE = ['#09391C', '#4BA678', '#8DDB90', '#0B572B', '#065F46', '#F3F4F6', '#000000', '#FFFFFF'];
 
