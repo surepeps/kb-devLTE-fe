@@ -3292,110 +3292,449 @@ export default function DealSitePage() {
   );
 
   const renderAboutUs = (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-4">
-      <h2 className="text-lg font-semibold text-[#09391C]">About Us</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Title</label>
-          <input type="text" value={form.about?.title || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { subTitle: "", ctaButtons: [], ourValues: [] }), title: e.target.value } }))} className={inputBase} />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
-          <input type="text" value={form.about?.subTitle || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", ctaButtons: [], ourValues: [] }), subTitle: e.target.value } }))} className={inputBase} />
-        </div>
-      </div>
+    <div className="bg-white rounded-lg border border-gray-200 p-6 space-y-8">
+      <h2 className="text-lg font-semibold text-[#09391C]">About Us Settings</h2>
 
-      <div>
-        <label className="block text-sm text-gray-700 mb-2">Hero Image</label>
-        {form.about?.heroImageUrl ? (
-          <div className="flex items-center gap-3">
-            <img src={form.about.heroImageUrl} alt="About Hero" className="h-20 w-36 rounded border object-cover bg-white" />
-            <button type="button" onClick={() => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), heroImageUrl: "" } }))} className="px-3 py-2 text-sm border rounded-lg inline-flex items-center gap-2">
-              <Trash2 size={16} /> Remove
-            </button>
+      {/* Hero Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Hero Section</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Title</label>
+            <input type="text" value={form.about?.hero?.title || ""} onChange={(e) => updateAboutHeroField('title', e.target.value)} className={inputBase} placeholder="Defining Real Estate Excellence" />
           </div>
-        ) : (
-          <label className="flex items-center justify-center gap-2 px-4 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHero(e.target.files[0])} />
-            <ImageIcon size={16} /> <span className="text-gray-600">Drag & drop or click to upload</span>
-          </label>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Mission</label>
-          <textarea value={form.about?.mission || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), mission: e.target.value } }))} className={`${inputBase} min-h-[80px]`} />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-700 mb-1">Vision</label>
-          <textarea value={form.about?.vision || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), vision: e.target.value } }))} className={`${inputBase} min-h-[80px]`} />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm text-gray-700 mb-1">How It Works</label>
-        <textarea value={form.about?.howItWorks || ""} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), howItWorks: e.target.value } }))} className={`${inputBase} min-h-[80px]`} />
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-[#09391C]">CTA Buttons</h3>
-          <button type="button" onClick={() => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: [ ...(prev.about?.ctaButtons || []), { text: "", url: "", color: "#0B572B" } ] } }))} className="text-xs px-2 py-1 border rounded-lg">Add</button>
-        </div>
-        <div className="space-y-3">
-          {(form.about?.ctaButtons || []).map((b, idx) => (
-            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
-              <input className={`md:col-span-4 ${inputBase}`} placeholder="Text" value={b.text} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.about?.ctaButtons || []) ];
-                list[idx] = { ...list[idx], text: e.target.value };
-                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
-              })} />
-              <input className={`md:col-span-6 ${inputBase}`} placeholder="URL" value={b.url} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.about?.ctaButtons || []) ];
-                list[idx] = { ...list[idx], url: e.target.value };
-                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
-              })} />
-              <input type="color" className="md:col-span-1 h-9 w-full border rounded" value={b.color || "#0B572B"} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.about?.ctaButtons || []) ];
-                list[idx] = { ...list[idx], color: e.target.value };
-                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
-              })} />
-              <button type="button" onClick={() => setForm((prev) => {
-                const list = [ ...(prev.about?.ctaButtons || []) ];
-                list.splice(idx, 1);
-                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ctaButtons: list } };
-              })} className="md:col-span-1 text-xs px-2 py-1 border rounded-lg">Remove</button>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+            <input type="text" value={form.about?.hero?.subTitle || ""} onChange={(e) => updateAboutHeroField('subTitle', e.target.value)} className={inputBase} placeholder="Where Vision Meets Value" />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-1">Description</label>
+            <textarea value={form.about?.hero?.description || ""} onChange={(e) => updateAboutHeroField('description', e.target.value)} className={`${inputBase} min-h-[100px]`} placeholder="Describe your organization..." />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Background Image</label>
+            {form.about?.hero?.backgroundImage ? (
+              <div className="flex items-center gap-3">
+                <img src={form.about.hero.backgroundImage} alt="Hero" className="h-12 w-20 rounded border object-cover" />
+                <button type="button" onClick={() => updateAboutHeroField('backgroundImage', "")} className="px-3 py-2 text-sm border rounded-lg"><Trash2 size={14} /></button>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center px-3 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHero(e.target.files[0])} />
+                <ImageIcon size={16} /> <span className="text-gray-600 ml-2">Upload Hero Image</span>
+              </label>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Mobile Fallback Image</label>
+            {form.about?.hero?.mobileFallbackImage ? (
+              <div className="flex items-center gap-3">
+                <img src={form.about.hero.mobileFallbackImage} alt="Mobile" className="h-12 w-20 rounded border object-cover" />
+                <button type="button" onClick={() => updateAboutHeroField('mobileFallbackImage', "")} className="px-3 py-2 text-sm border rounded-lg"><Trash2 size={14} /></button>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center px-3 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutMobileFallback(e.target.files[0])} />
+                <ImageIcon size={16} /> <span className="text-gray-600 ml-2">Upload Mobile Image</span>
+              </label>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Background Video</label>
+            {form.about?.hero?.backgroundVideo ? (
+              <div className="flex items-center gap-3">
+                <video src={form.about.hero.backgroundVideo} className="h-12 w-20 rounded border object-cover" />
+                <button type="button" onClick={() => updateAboutHeroField('backgroundVideo', null)} className="px-3 py-2 text-sm border rounded-lg"><Trash2 size={14} /></button>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center px-3 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+                <input type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files && handleUploadAboutHeroVideo(e.target.files[0])} />
+                <ImageIcon size={16} /> <span className="text-gray-600 ml-2">Upload Video</span>
+              </label>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Overlay Color</label>
+            <div className="flex items-center gap-2">
+              <input type="color" value={form.about?.hero?.overlayColor || "rgba(0, 0, 0, 0.55)"} onChange={(e) => updateAboutHeroField('overlayColor', e.target.value)} className="h-10 w-20 border rounded cursor-pointer" />
+              <input type="text" value={form.about?.hero?.overlayColor || ""} onChange={(e) => updateAboutHeroField('overlayColor', e.target.value)} className={inputBase} placeholder="rgba(0, 0, 0, 0.55)" />
             </div>
-          ))}
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-2">Hero CTA</label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input type="text" value={form.about?.hero?.cta?.text || ""} onChange={(e) => updateAboutHeroCta('text', e.target.value)} className={inputBase} placeholder="CTA Text" />
+              <input type="text" value={form.about?.hero?.cta?.link || ""} onChange={(e) => updateAboutHeroCta('link', e.target.value)} className={inputBase} placeholder="CTA Link" />
+              <input type="text" value={form.about?.hero?.cta?.style || ""} onChange={(e) => updateAboutHeroCta('style', e.target.value)} className={inputBase} placeholder="Style (light/dark)" />
+            </div>
+          </div>
         </div>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-[#09391C]">Our Values</h3>
-          <button type="button" onClick={() => setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: [ ...(prev.about?.ourValues || []), { title: "", subTitle: "" } ] } }))} className="text-xs px-2 py-1 border rounded-lg">Add</button>
-        </div>
+      {/* Identity Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Identity / Who We Are</h3>
         <div className="space-y-3">
-          {(form.about?.ourValues || []).map((v, idx) => (
-            <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-center">
-              <input className={`md:col-span-5 ${inputBase}`} placeholder="Title" value={v.title} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.about?.ourValues || []) ];
-                list[idx] = { ...list[idx], title: e.target.value };
-                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: list } };
-              })} />
-              <input className={`md:col-span-6 ${inputBase}`} placeholder="Subtitle" value={v.subTitle} onChange={(e) => setForm((prev) => {
-                const list = [ ...(prev.about?.ourValues || []) ];
-                list[idx] = { ...list[idx], subTitle: e.target.value };
-                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: list } };
-              })} />
-              <button type="button" onClick={() => setForm((prev) => {
-                const list = [ ...(prev.about?.ourValues || []) ];
-                list.splice(idx, 1);
-                return { ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), ourValues: list } };
-              })} className="md:col-span-1 text-xs px-2 py-1 border rounded-lg">Remove</button>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Headline</label>
+            <input type="text" value={form.about?.identity?.headline || ""} onChange={(e) => updateAboutIdentity('headline', e.target.value)} className={inputBase} placeholder="Who We Are" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Content</label>
+            <textarea value={form.about?.identity?.content || ""} onChange={(e) => updateAboutIdentity('content', e.target.value)} className={`${inputBase} min-h-[100px]`} placeholder="Describe who you are..." />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm text-gray-700">Key Highlights</label>
+              <button type="button" onClick={addAboutIdentityHighlight} className="text-xs px-2 py-1 border rounded-lg">Add</button>
             </div>
-          ))}
+            <div className="space-y-2">
+              {(form.about?.identity?.keyHighlights || []).map((highlight, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <input type="text" value={highlight} onChange={(e) => updateAboutIdentityHighlights(idx, e.target.value)} className={inputBase} placeholder="e.g. Award-winning consultancy" />
+                  <button type="button" onClick={() => removeAboutIdentityHighlight(idx)} className="px-2 py-1 text-sm border rounded-lg"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mission & Vision Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Mission & Vision</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Section Title</label>
+            <input type="text" value={form.about?.missionVision?.title || ""} onChange={(e) => updateAboutMissionVision('title', e.target.value)} className={inputBase} placeholder="Our Vision & Mission" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Background Image</label>
+            {form.about?.missionVision?.backgroundImage ? (
+              <div className="flex items-center gap-3">
+                <img src={form.about.missionVision.backgroundImage} alt="Mission" className="h-12 w-20 rounded border object-cover" />
+                <button type="button" onClick={() => updateAboutMissionVision('backgroundImage', "")} className="px-3 py-2 text-sm border rounded-lg"><Trash2 size={14} /></button>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center px-3 py-6 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-gray-50">
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadMissionBg(e.target.files[0])} />
+                <ImageIcon size={16} /> <span className="text-gray-600 ml-2">Upload Mission BG</span>
+              </label>
+            )}
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm text-gray-700 font-medium">Mission & Vision Items</label>
+              <button type="button" onClick={addAboutMissionVisionItem} className="text-xs px-2 py-1 border rounded-lg">Add Item</button>
+            </div>
+            <div className="space-y-3">
+              {(form.about?.missionVision?.items || []).map((item, idx) => (
+                <div key={idx} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-sm text-[#09391C]">Item {idx + 1}</h4>
+                    <button type="button" onClick={() => removeAboutMissionVisionItem(idx)} className="text-red-500 text-sm"><Trash2 size={14} /></button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Title</label>
+                      <input type="text" value={item.title || ""} onChange={(e) => updateAboutMissionVisionItem(idx, 'title', e.target.value)} className={inputBase} placeholder="Our Vision" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs text-gray-700 mb-1">Description</label>
+                      <textarea value={item.description || ""} onChange={(e) => updateAboutMissionVisionItem(idx, 'description', e.target.value)} className={`${inputBase} min-h-[80px]`} placeholder="Description..." />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Values Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Values / Guided by Excellence</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Section Title</label>
+            <input type="text" value={form.about?.values?.title || ""} onChange={(e) => updateAboutValues('title', e.target.value)} className={inputBase} placeholder="Guided by Excellence" />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Section Description</label>
+            <textarea value={form.about?.values?.description || ""} onChange={(e) => updateAboutValues('description', e.target.value)} className={`${inputBase} min-h-[80px]`} placeholder="Describe your values..." />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm text-gray-700 font-medium">Values Items</label>
+              <button type="button" onClick={addAboutValueItem} className="text-xs px-2 py-1 border rounded-lg">Add Item</button>
+            </div>
+            <div className="space-y-3">
+              {(form.about?.values?.items || []).map((item, idx) => (
+                <div key={idx} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-sm text-[#09391C]">Value {idx + 1}</h4>
+                    <button type="button" onClick={() => removeAboutValueItem(idx)} className="text-red-500 text-sm"><Trash2 size={14} /></button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Icon</label>
+                      <input type="text" value={item.icon || ""} onChange={(e) => updateAboutValueItem(idx, 'icon', e.target.value)} className={inputBase} placeholder="e.g. handshake" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Title</label>
+                      <input type="text" value={item.title || ""} onChange={(e) => updateAboutValueItem(idx, 'title', e.target.value)} className={inputBase} placeholder="Trust" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs text-gray-700 mb-1">Description</label>
+                      <textarea value={item.description || ""} onChange={(e) => updateAboutValueItem(idx, 'description', e.target.value)} className={`${inputBase} min-h-[60px]`} placeholder="Describe this value..." />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Journey Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Journey / Timeline</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">Section Title</label>
+            <input type="text" value={form.about?.journey?.title || ""} onChange={(e) => updateAboutJourney('title', e.target.value)} className={inputBase} placeholder="Our Journey So Far" />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm text-gray-700 font-medium">Timeline Items</label>
+              <button type="button" onClick={addAboutJourneyItem} className="text-xs px-2 py-1 border rounded-lg">Add Item</button>
+            </div>
+            <div className="space-y-3">
+              {(form.about?.journey?.timeline || []).map((item, idx) => (
+                <div key={idx} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-sm text-[#09391C]">Milestone {idx + 1}</h4>
+                    <button type="button" onClick={() => removeAboutJourneyItem(idx)} className="text-red-500 text-sm"><Trash2 size={14} /></button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Year</label>
+                      <input type="text" value={item.year || ""} onChange={(e) => updateAboutJourneyItem(idx, 'year', e.target.value)} className={inputBase} placeholder="2024" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs text-gray-700 mb-1">Title</label>
+                      <input type="text" value={item.title || ""} onChange={(e) => updateAboutJourneyItem(idx, 'title', e.target.value)} className={inputBase} placeholder="Major milestone" />
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="block text-xs text-gray-700 mb-1">Description</label>
+                      <textarea value={item.description || ""} onChange={(e) => updateAboutJourneyItem(idx, 'description', e.target.value)} className={`${inputBase} min-h-[60px]`} placeholder="What happened..." />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Leadership Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Leadership Team</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Section Title</label>
+              <input type="text" value={form.about?.leadership?.title || ""} onChange={(e) => updateAboutLeadership('title', e.target.value)} className={inputBase} placeholder="Our Leadership Team" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Section Subtitle</label>
+              <input type="text" value={form.about?.leadership?.subTitle || ""} onChange={(e) => updateAboutLeadership('subTitle', e.target.value)} className={inputBase} placeholder="The visionaries driving innovation..." />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm text-gray-700 font-medium">Team Members</label>
+              <button type="button" onClick={addAboutLeadershipMember} className="text-xs px-2 py-1 border rounded-lg">Add Member</button>
+            </div>
+            <div className="space-y-3">
+              {(form.about?.leadership?.members || []).map((member, idx) => (
+                <div key={idx} className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="font-medium text-sm text-[#09391C]">Member {idx + 1}</h4>
+                    <button type="button" onClick={() => removeAboutLeadershipMember(idx)} className="text-red-500 text-sm"><Trash2 size={14} /></button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Name</label>
+                      <input type="text" value={member.name || ""} onChange={(e) => updateAboutLeadershipMember(idx, 'name', e.target.value)} className={inputBase} placeholder="Full Name" />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-700 mb-1">Role</label>
+                      <input type="text" value={member.role || ""} onChange={(e) => updateAboutLeadershipMember(idx, 'role', e.target.value)} className={inputBase} placeholder="CEO / Director" />
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-xs text-gray-700 mb-1">Photo</label>
+                    {member.image ? (
+                      <div className="flex items-center gap-2">
+                        <img src={member.image} alt={member.name} className="h-10 w-10 rounded border object-cover" />
+                        <button type="button" onClick={() => updateAboutLeadershipMember(idx, 'image', "")} className="px-2 py-1 text-sm border rounded-lg"><Trash2 size={14} /></button>
+                      </div>
+                    ) : (
+                      <label className="flex items-center justify-center px-3 py-3 border-2 border-dashed rounded-lg text-sm cursor-pointer hover:bg-white">
+                        <input type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files && handleUploadMemberImage(e.target.files[0], idx)} />
+                        <span>Upload Photo</span>
+                      </label>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-700 mb-1">Quote</label>
+                    <textarea value={member.quote || ""} onChange={(e) => updateAboutLeadershipMember(idx, 'quote', e.target.value)} className={`${inputBase} min-h-[60px]`} placeholder="Inspirational quote..." />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Statistics / Global Footprint</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Section Title</label>
+              <input type="text" value={form.about?.stats?.title || ""} onChange={(e) => updateAboutStats('title', e.target.value)} className={inputBase} placeholder="Our Global Footprint" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Section Subtitle</label>
+              <input type="text" value={form.about?.stats?.subTitle || ""} onChange={(e) => updateAboutStats('subTitle', e.target.value)} className={inputBase} placeholder="Driving impact and trust..." />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Background Color</label>
+              <div className="flex items-center gap-2">
+                <input type="color" value={form.about?.stats?.backgroundColor || "#0B3B2E"} onChange={(e) => updateAboutStats('backgroundColor', e.target.value)} className="h-10 w-20 border rounded cursor-pointer" />
+                <input type="text" value={form.about?.stats?.backgroundColor || ""} onChange={(e) => updateAboutStats('backgroundColor', e.target.value)} className={inputBase} placeholder="#0B3B2E" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm text-gray-700 font-medium">Statistics Items</label>
+              <button type="button" onClick={addAboutStatItem} className="text-xs px-2 py-1 border rounded-lg">Add Item</button>
+            </div>
+            <div className="space-y-2">
+              {(form.about?.stats?.items || []).map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <input type="text" value={item.label || ""} onChange={(e) => updateAboutStatItem(idx, 'label', e.target.value)} className={inputBase} placeholder="Years of Experience" />
+                  <input type="text" value={item.value || ""} onChange={(e) => updateAboutStatItem(idx, 'value', e.target.value)} className={inputBase} placeholder="13+" />
+                  <button type="button" onClick={() => removeAboutStatItem(idx)} className="px-2 py-1 text-sm border rounded-lg"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Partners Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Partners / Collaborations</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Section Title</label>
+              <input type="text" value={form.about?.partners?.title || ""} onChange={(e) => updateAboutPartners('title', e.target.value)} className={inputBase} placeholder="Strategic Partners" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Section Subtitle</label>
+              <input type="text" value={form.about?.partners?.subTitle || ""} onChange={(e) => updateAboutPartners('subTitle', e.target.value)} className={inputBase} placeholder="Collaborating with leaders..." />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm text-gray-700 font-medium">Partner Logos</label>
+              <button type="button" onClick={addAboutPartnerLogo} className="text-xs px-2 py-1 border rounded-lg">Add Logo</button>
+            </div>
+            <div className="space-y-2">
+              {(form.about?.partners?.logos || []).map((logo, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  {logo && <img src={logo} alt="Partner" className="h-8 w-12 rounded object-cover border" />}
+                  <input type="text" value={logo || ""} onChange={(e) => updateAboutPartnerLogo(idx, e.target.value)} className={inputBase} placeholder="Logo URL" />
+                  <button type="button" onClick={() => removeAboutPartnerLogo(idx)} className="px-2 py-1 text-sm border rounded-lg"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Testimonials Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Testimonials Settings</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Title</label>
+              <input type="text" value={form.about?.testimonials?.title || ""} onChange={(e) => updateAboutTestimonials('title', e.target.value)} className={inputBase} placeholder="What Our Clients Say" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Layout</label>
+              <input type="text" value={form.about?.testimonials?.layout || ""} onChange={(e) => updateAboutTestimonials('layout', e.target.value)} className={inputBase} placeholder="carousel" />
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.about?.testimonials?.showFromHome || false} onChange={(e) => updateAboutTestimonials('showFromHome', e.target.checked)} className={checkboxBase} />
+                Show from Home
+              </label>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Limit</label>
+              <input type="number" value={form.about?.testimonials?.limit || 3} onChange={(e) => updateAboutTestimonials('limit', Number(e.target.value))} className={inputBase} placeholder="3" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-base font-semibold text-[#09391C] mb-4">Final CTA Section</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Title</label>
+              <input type="text" value={form.about?.cta?.title || ""} onChange={(e) => updateAboutCta('title', e.target.value)} className={inputBase} placeholder="Let's Build Your Future Together" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Subtitle</label>
+              <input type="text" value={form.about?.cta?.subTitle || ""} onChange={(e) => updateAboutCta('subTitle', e.target.value)} className={inputBase} placeholder="Speak with our experts today..." />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Button Text</label>
+              <input type="text" value={form.about?.cta?.buttonText || ""} onChange={(e) => updateAboutCta('buttonText', e.target.value)} className={inputBase} placeholder="Schedule a Consultation" />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">Button Link</label>
+              <input type="text" value={form.about?.cta?.link || ""} onChange={(e) => updateAboutCta('link', e.target.value)} className={inputBase} placeholder="/contact" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm text-gray-700 mb-2">Background Gradient</label>
+              <div className="flex items-center gap-2">
+                <input type="color" value={(form.about?.cta?.backgroundGradient && form.about.cta.backgroundGradient.includes('#')) ? (form.about.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[0] || '#0B3B2E') : '#0B3B2E'} onChange={(e) => {
+                  const end = (form.about?.cta?.backgroundGradient && form.about.cta.backgroundGradient.includes('#')) ? (form.about.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[1] || '#4BA678') : '#4BA678';
+                  setAboutCtaGradient(e.target.value, end);
+                }} className="h-10 w-20 border rounded cursor-pointer" />
+                <input type="color" value={(form.about?.cta?.backgroundGradient && form.about.cta.backgroundGradient.includes('#')) ? (form.about.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[1] || '#4BA678') : '#4BA678'} onChange={(e) => {
+                  const start = (form.about?.cta?.backgroundGradient && form.about.cta.backgroundGradient.includes('#')) ? (form.about.cta.backgroundGradient.match(/#([0-9a-fA-F]{6})/g)?.[0] || '#0B3B2E') : '#0B3B2E';
+                  setAboutCtaGradient(start, e.target.value);
+                }} className="h-10 w-20 border rounded cursor-pointer" />
+                <div className="flex-1">
+                  <input type="text" value={form.about?.cta?.backgroundGradient || ''} onChange={(e) => updateAboutCta('backgroundGradient', e.target.value)} className={inputBase} />
+                </div>
+              </div>
+              <div className="h-8 mt-2 rounded" style={{ background: form.about?.cta?.backgroundGradient || 'linear-gradient(90deg, #0B3B2E 0%, #4BA678 100%)' }} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
