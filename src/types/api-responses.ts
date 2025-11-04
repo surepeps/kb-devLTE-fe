@@ -9,3 +9,22 @@ export interface ApiSuccessResponse {
     message: string;
     inspectionData: InspectionDataResponse;
 }
+
+export interface DealSiteLog {
+  _id: string;
+  dealSite?: string;
+  actor?: {
+    _id?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  actorModel?: string;
+  category?: string;
+  action?: string;
+  description?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  createdAt: string;
+  updatedAt?: string;
+}

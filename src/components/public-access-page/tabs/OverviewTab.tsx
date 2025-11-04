@@ -51,8 +51,8 @@ const OverviewTab = memo(({
   };
 
   const formatActorName = (log: DealSiteLog) => {
-    if (log.actorId?.fullName) return log.actorId.fullName;
-    if (log.actorId?.email) return log.actorId.email;
+    if (log.actor?.firstName) return log.actor.firstName;
+    if (log.actor?.email) return log.actor.email;
     return 'Unknown';
   };
 
