@@ -3016,8 +3016,11 @@ export default function DealSitePage() {
                 </label>
               </div>
               {form.contactUs?.hero?.backgroundImage ? (
-                <div className="mt-2">
+                <div className="mt-2 relative">
                   <img src={form.contactUs?.hero?.backgroundImage} alt="hero" className="w-full h-36 object-cover rounded shadow-sm" />
+                  <button type="button" onClick={() => handleDeleteContactMedia(form.contactUs?.hero?.backgroundImage, 'image')} className="absolute top-2 right-2 bg-white p-1 rounded shadow hover:bg-gray-50 border">
+                    <Trash size={16} />
+                  </button>
                 </div>
               ) : null}
             </div>
