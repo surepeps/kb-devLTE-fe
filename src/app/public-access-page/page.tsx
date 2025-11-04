@@ -122,7 +122,7 @@ interface ContactUsSection {
   mapSection?: {
     title?: string;
     subTitle?: string;
-    locations?: { city?: string; address?: string; coordinates?: [number, number] }[];
+    locations?: { city?: string; address?: string; coordinates?: [number | string, number | string] }[];
   };
   cta?: {
     title?: string;
