@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { GET_REQUEST, POST_REQUEST, POST_REQUEST_FILE_UPLOAD, PUT_REQUEST, DELETE_REQUEST } from "@/utils/requests";
@@ -29,6 +29,7 @@ import { useUserContext } from "@/context/user-context";
 import { CombinedAuthGuard } from "@/logic/combinedAuthGuard";
 import Stepper from "@/components/post-property-components/Stepper";
 import IconSelector from "@/components/public-access-page/IconSelector";
+import OverviewTab from "@/components/public-access-page/tabs/OverviewTab";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -249,8 +250,8 @@ interface Testimonial {
 }
 
 interface TestimonialsSection {
-  title: string;
-  subTitle: string;
+  title?: string;
+  subTitle?: string;
   testimonials: Testimonial[];
 }
 
@@ -274,30 +275,30 @@ interface ReadyToFindItem {
 }
 
 interface ReadyToFindSection {
-  title: string;
-  subTitle: string;
-  ctas: ReadyToFindCTA[];
-  items: ReadyToFindItem[];
+  title?: string;
+  subTitle?: string;
+  ctas?: ReadyToFindCTA[];
+  items?: ReadyToFindItem[];
 }
 
 interface HomeSettings {
   testimonials?: TestimonialsSection;
   whyChooseUs?: {
-    title: string;
-    subTitle: string;
+    title?: string;
+    subTitle?: string;
     items: WhyChooseUsItem[];
   };
   readyToFind?: ReadyToFindSection;
 }
 
 interface SubscribeSettings {
-  title: string;
-  subTitle: string;
-  miniTitle: string;
-  backgroundColor: string;
-  cta: {
-    text: string;
-    color: string;
+  title?: string;
+  subTitle?: string;
+  miniTitle?: string;
+  backgroundColor?: string;
+  cta?: {
+    text?: string;
+    color?: string;
   };
 }
 
@@ -307,9 +308,9 @@ interface FooterDetails {
 }
 
 interface BankDetails {
-  businessName: string;
-  accountNumber: string;
-  sortCode: string; // bank code
+  businessName?: string;
+  accountNumber?: string;
+  sortCode?: string; // bank code
   primaryContactEmail?: string;
   primaryContactName?: string;
   primaryContactPhone?: string;
@@ -1080,15 +1081,15 @@ export default function DealSitePage() {
     }
   };
 
-  const copyLink = async () => {
+  const copyLink = useCallback(async () => {
     if (!previewUrl) return;
     try {
       await navigator.clipboard.writeText(previewUrl);
       toast.success("Link copied");
     } catch {}
-  };
+  }, [previewUrl]);
 
-  const pauseDealSite = async () => {
+  const pauseDealSite = useCallback(async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
     showPreloader("Pausing public access page...");
@@ -1100,9 +1101,9 @@ export default function DealSitePage() {
     } else {
       toast.error(res?.message || "Failed to pause");
     }
-  };
+  }, [form.publicSlug, showPreloader, hidePreloader]);
 
-  const resumeDealSite = async () => {
+  const resumeDealSite = useCallback(async () => {
     if (!form.publicSlug) return;
     const token = Cookies.get("token");
     showPreloader("Resuming public access page...");
@@ -1114,7 +1115,7 @@ export default function DealSitePage() {
     } else {
       toast.error(res?.message || "Failed to resume");
     }
-  };
+  }, [form.publicSlug, showPreloader, hidePreloader]);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const deleteDealSite = async () => {
@@ -1198,7 +1199,7 @@ export default function DealSitePage() {
     }));
   };
 
-  const updateHeroCta = (key: keyof NonNullable<ContactUsSection['hero']>['cta'], value: any) => {
+  const updateHeroCta = (key: 'text' | 'link' | 'style', value: any) => {
     setForm(prev => ({
       ...prev,
       contactUs: {
@@ -1668,7 +1669,7 @@ export default function DealSitePage() {
     hidePreloader();
     if (res?.success && res.data && (res.data as any).url) {
       setForm((prev) => {
-        const testimonials = { ...(prev.homeSettings || {}).testimonials } || { title: "", subTitle: "", testimonials: [] };
+        const testimonials = prev.homeSettings?.testimonials || { testimonials: [] };
         if (testimonials.testimonials && testimonials.testimonials[index]) {
           testimonials.testimonials[index].image = (res.data as any).url;
         }
@@ -4651,7 +4652,24 @@ export default function DealSitePage() {
               />
 
               <div className="mt-6 space-y-6">
-                {activeTab === "overview" && renderOverview}
+                {activeTab === "overview" && (
+                  <OverviewTab
+                    isPaused={isPaused}
+                    slugLocked={slugLocked}
+                    previewUrl={previewUrl}
+                    isOnHold={isOnHold}
+                    overviewLogsLoading={overviewLogsLoading}
+                    overviewLogs={overviewLogs}
+                    onPause={pauseDealSite}
+                    onResume={resumeDealSite}
+                    onEditSettings={() => setActiveTab("branding")}
+                    onViewAll={() => {
+                      setServiceLogsPage(1);
+                      setActiveTab("service-logger");
+                    }}
+                    onCopyLink={copyLink}
+                  />
+                )}
                 {activeTab === "branding" && renderBrandingSeo}
                 {activeTab === "design" && (
                   <div className="space-y-6">

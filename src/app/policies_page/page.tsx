@@ -246,7 +246,7 @@ type PolicyData = {
   id: string;
   name: string;
   shortName: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   content: PolicyContent[];
 };
 
