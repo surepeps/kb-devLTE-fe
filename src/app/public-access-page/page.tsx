@@ -1198,7 +1198,7 @@ export default function DealSitePage() {
     }));
   };
 
-  const updateHeroCta = (key: keyof NonNullable<ContactUsSection['hero']>['cta'], value: any) => {
+  const updateHeroCta = (key: 'text' | 'link' | 'style', value: any) => {
     setForm(prev => ({
       ...prev,
       contactUs: {
