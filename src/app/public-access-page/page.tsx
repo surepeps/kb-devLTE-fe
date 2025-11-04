@@ -1633,7 +1633,41 @@ export default function DealSitePage() {
     const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
     hidePreloader();
     if (res?.success && res.data && (res.data as any).url) {
-      setForm((prev) => ({ ...prev, about: { ...(prev.about || { title: "", subTitle: "", ctaButtons: [], ourValues: [] }), heroImageUrl: (res.data as any).url } }));
+      updateAboutHeroField("backgroundImage", (res.data as any).url);
+      toast.success("Image uploaded");
+    } else {
+      toast.error(res?.message || "Upload failed");
+    }
+  };
+
+  const handleUploadAboutHeroVideo = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("for", "public-about-hero-video");
+    const token = Cookies.get("token");
+
+    showPreloader("Uploading about hero video...");
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      updateAboutHeroField("backgroundVideo", (res.data as any).url);
+      toast.success("Video uploaded");
+    } else {
+      toast.error(res?.message || "Upload failed");
+    }
+  };
+
+  const handleUploadAboutMobileFallback = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("for", "public-about-mobile-fallback");
+    const token = Cookies.get("token");
+
+    showPreloader("Uploading mobile fallback image...");
+    const res = await POST_REQUEST_FILE_UPLOAD<{ url: string }>(`${URLS.BASE}${URLS.uploadSingleImg}`, formData, token);
+    hidePreloader();
+    if (res?.success && res.data && (res.data as any).url) {
+      updateAboutHeroField("mobileFallbackImage", (res.data as any).url);
       toast.success("Image uploaded");
     } else {
       toast.error(res?.message || "Upload failed");
