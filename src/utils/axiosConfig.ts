@@ -1,13 +1,21 @@
 import axios from 'axios';
+import { URLS } from './URLS';
 
 const api = axios.create({
-  baseURL: 'https://khabiteq-realty.onrender.com/api'
+  baseURL: URLS.BASE,
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('adminToken'); // or wherever you store the token
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
+    if (token) {
+      config.headers = {
+        ...(config.headers || {}),
+        Authorization: `Bearer ${token}`,
+      } as any;
+    }
+  } catch (_) {
+    // ignore storage access errors in non-browser contexts
   }
   return config;
 });
