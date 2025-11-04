@@ -35,7 +35,7 @@ interface Property {
     localGovernment: string;
     area: string;
   };
-  landSize: {
+  landSize?: {
     measurementType: string;
     size: number;
   };
