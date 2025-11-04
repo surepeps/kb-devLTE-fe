@@ -3032,7 +3032,9 @@ export default function DealSitePage() {
         <div className="space-y-3">
           {(form.contactUs?.contactInfo?.items || []).map((it, idx) => (
             <div key={idx} className="grid grid-cols-1 md:grid-cols-12 gap-2 items-start">
-              <input className={"md:col-span-2 " + inputBase} placeholder="Icon" value={it.icon || ""} onChange={(e) => updateContactInfoItem(idx, 'icon', e.target.value)} />
+              <div className={"md:col-span-2 " + "flex items-center"}>
+                <IconSelector value={it.icon || ""} onChange={(val) => updateContactInfoItem(idx, 'icon', val)} />
+              </div>
               <input className={"md:col-span-4 " + inputBase} placeholder="Label" value={it.label || ""} onChange={(e) => updateContactInfoItem(idx, 'label', e.target.value)} />
               <input className={"md:col-span-5 " + inputBase} placeholder="Value" value={it.value || ""} onChange={(e) => updateContactInfoItem(idx, 'value', e.target.value)} />
               <div className={"md:col-span-1 flex items-center gap-2"}>
