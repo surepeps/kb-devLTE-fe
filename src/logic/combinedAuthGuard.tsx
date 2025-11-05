@@ -123,7 +123,7 @@ export const CombinedAuthGuard: React.FC<CombinedAuthGuardProps> = ({
           message={
             "This page requires an active agent subscription. Choose a plan to continue."
           }
-          actionHref="/agent-subscriptions"
+          actionHref="/agent-subscriptions?tab=plans"
           actionLabel="View Plans"
           icon={<CreditCard size={32} className="text-[#EF4444]" />}
         />

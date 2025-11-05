@@ -4,7 +4,7 @@ export interface AgentSubscription {
   _id: string;
   agentId: string;
   subscriptionType: 'monthly' | 'quarterly' | 'yearly'; // Updated to match new plans
-  duration: 1 | 3 | 12; // in months - simplified to match new plans
+  duration: number; // in months - simplified to match new plans
   startDate: string;
   endDate: string;
   status: 'active' | 'expired' | 'cancelled' | 'pending';
@@ -40,10 +40,18 @@ export interface AgentSubscription {
 export interface SubscriptionPlan {
   type: 'monthly' | 'quarterly' | 'yearly'; // Updated to match new plans
   name: string;
+  code: string;
   description: string;
   features: string[];
   prices: {
     [key: number]: number; // duration in months -> price
+  };
+  discountedPlans?: {
+    name?: string;
+    code?: string;
+    price?: number;
+    durationInDays?: number;
+    discountPercentage?: number;
   };
   popular?: boolean;
   // New fields for agent verification

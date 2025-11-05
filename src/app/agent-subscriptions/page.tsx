@@ -50,6 +50,8 @@ export default function AgentSubscriptionsPage() {
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [selectedPlanForSub, setSelectedPlanForSub] = useState<any | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
+  const [selectedPlanPrice, setSelectedPlanPrice] = useState<number | null>(null);
+  const [selectedPlanCodeForSub, setSelectedPlanCodeForSub] = useState<string | null>(null); 
   const [autoRenewal, setAutoRenewal] = useState<boolean>(false);
   const [isProcessingSubscribe, setIsProcessingSubscribe] = useState(false);
 
@@ -121,6 +123,7 @@ export default function AgentSubscriptionsPage() {
             description: features.slice(0, 2).map((x: any) => x.label).join(', '),
             features,
             prices,
+            discountedPlans: p.discountedPlans,
             basePrice: Number(p.price) || 0,
             isTrial: !!p.isTrial,
             raw: p,
@@ -254,9 +257,24 @@ export default function AgentSubscriptionsPage() {
     }
   };
 
-  const handleSubscribeToPlan = async (plan: any, duration: number) => {
+  const handleSubscribeToPlan = async (plan: any, duration: number, price: number) => {
     setSelectedPlanForSub(plan);
     setSelectedDuration(duration);
+    setSelectedPlanPrice(price);
+
+    let specificPlanCode = plan?.code || plan?.id;
+
+      // Find if this duration/price combination is a discounted plan
+    const matchingDiscountedPlan = (plan.discountedPlans || []).find((dp: any) => {
+      const dpDurationMonths = Math.max(1, Math.round((dp.durationInDays || 30) / 30));
+      return dpDurationMonths === duration && Number(dp.price) === Number(price);
+    });
+
+    if (matchingDiscountedPlan && matchingDiscountedPlan.code) {
+      specificPlanCode = matchingDiscountedPlan.code;
+    }
+
+    setSelectedPlanCodeForSub(specificPlanCode);
     setAutoRenewal(false);
     setShowSubscribeModal(true);
   };
@@ -265,7 +283,8 @@ export default function AgentSubscriptionsPage() {
     if (!selectedPlanForSub) return;
     setIsProcessingSubscribe(true);
     try {
-      const planCode = selectedPlanForSub?.raw?.code || selectedPlanForSub?.id || selectedPlanForSub?.name;
+      const planCode = selectedPlanCodeForSub;
+  
       const payload = { planCode, autoRenewal } as any;
       const res = await POST_REQUEST<any>(`${URLS.BASE}/account/subscriptions/makeSub`, payload, token);
       if ((res as any)?.success && (res as any)?.data?.paymentUrl) {
@@ -566,7 +585,7 @@ export default function AgentSubscriptionsPage() {
                                   <span className="font-medium">₦{Number(price).toLocaleString()}</span>
                                   {!isFreePlan && (
                                     <button
-                                      onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration))}
+                                      onClick={() => handleSubscribeToPlan(plan as any, parseInt(duration), price)}
                                       disabled={disabled}
                                       className={`px-3 py-1 rounded text-xs font-medium transition-colors ${disabled ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 text-white hover:bg-green-700'}`}
                                     >
@@ -747,8 +766,12 @@ export default function AgentSubscriptionsPage() {
                 {selectedDuration && (
                   <div className="text-sm text-gray-600">Duration: {selectedDuration} month{selectedDuration > 1 ? 's' : ''}</div>
                 )}
-              </div>
 
+                {selectedPlanPrice && (
+                  <div className="text-sm text-gray-600">Price: ₦{Number(selectedPlanPrice).toLocaleString()}</div>
+                )}
+              </div>
+ 
               <div className="flex items-center gap-2 mb-6">
                 <input id="autoRenew" type="checkbox" checked={autoRenewal} onChange={(e) => setAutoRenewal(e.target.checked)} className="rounded border-gray-300 text-green-600 focus:ring-green-600" />
                 <label htmlFor="autoRenew" className="text-sm text-gray-800">Enable auto-renewal when this plan expires</label>

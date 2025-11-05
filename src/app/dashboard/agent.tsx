@@ -282,7 +282,7 @@ export default function AgentDashboard() {
               {(isKycApproved &&!hasActiveSub) && (
                 <div className="flex items-center justify-between bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg">
                   <div>Subscribe for a plan to enjoy full features and get your public access page.</div>
-                  <Link href="/agent-subscriptions" className="px-3 py-1.5 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-sm">View Plans</Link>
+                  <Link href="/agent-subscriptions?tab=plans" className="px-3 py-1.5 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-sm">View Plans</Link>
                 </div>
               )}
 
