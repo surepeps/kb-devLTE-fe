@@ -79,19 +79,6 @@ const nextConfig: NextConfig = {
       };
     }
 
-    // Development caching optimization
-    if (process.env.NODE_ENV === "development") {
-      config.cache = {
-        type: "filesystem",
-        compression: "gzip" as const,
-        name: process.env.NODE_ENV,
-        managedPaths: [path.join(process.cwd(), "node_modules")],
-        buildDependencies: {
-          config: [path.join(process.cwd(), "next.config.ts")],
-        },
-      };
-    }
-
     return config;
   },
 };
