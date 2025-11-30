@@ -1,5 +1,4 @@
 import './globals.css';
-import { PageContextProvider } from '@/context/page-context';
 import HeaderFooterWrapper from '@/components/new-homepage/header_footer_wrapper';
 import { epilogue, roboto, archivo, ubuntu } from '@/styles/font';
 import { Toaster } from 'react-hot-toast';
@@ -16,6 +15,7 @@ import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsF
 import SubscriptionFeaturesClient from '@/components/subscription/SubscriptionFeaturesClient';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 import { lazy, Suspense } from 'react';
+import { PageContextProvider } from '@/context/page-context';
 
 // Lazy load WhatsApp widget - non-critical for initial render
 const WhatsAppChatWidget = lazy(() => import('@/components/whatsapp-chat-widget'));
