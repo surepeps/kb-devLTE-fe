@@ -60,14 +60,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Development optimization: fast-track known public routes
-  if (isDev) {
-    const fastPublicRoutes = ["/", "/about_us", "/contact-us", "/policies_page", "/market-place", "/agent-marketplace"];
-    if (fastPublicRoutes.includes(pathname)) {
-      return NextResponse.next();
-    }
-  }
-
   // Redirect old agent auth routes to new consolidated auth
   if (pathname.startsWith("/agent/auth/login")) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
