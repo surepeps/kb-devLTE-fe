@@ -85,9 +85,9 @@ const nextConfig: NextConfig = {
         type: "filesystem",
         compression: "gzip" as const,
         name: process.env.NODE_ENV,
-        managedPaths: ["node_modules"],
+        managedPaths: [path.join(process.cwd(), "node_modules")],
         buildDependencies: {
-          config: [__filename],
+          config: [path.join(process.cwd(), "next.config.ts")],
         },
       };
     }
