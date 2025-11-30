@@ -32,13 +32,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ReduxWrapper>
-      <ClientProviders>
-        <SubscriptionInitializer />
-        <html lang="en" suppressHydrationWarning>
-          <body
-            className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
-          >
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
+      >
+        <ReduxWrapper>
+          <ClientProviders>
+            <SubscriptionInitializer />
             <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent" />
             <HeaderFooterWrapper>
               <Body>{children}</Body>
@@ -51,9 +51,9 @@ export default function RootLayout({
             </Suspense>
             <Toaster />
             <ChunkErrorHandler />
-          </body>
-        </html>
-      </ClientProviders>
-    </ReduxWrapper>
+          </ClientProviders>
+        </ReduxWrapper>
+      </body>
+    </html>
   );
 }
