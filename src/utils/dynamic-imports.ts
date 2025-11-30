@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic';
 import type { ComponentType } from 'react';
+import React from 'react';
 
 type LoadingComponent = () => JSX.Element;
 
@@ -13,17 +14,19 @@ interface DynamicImportOptions {
  * Default loading fallback component
  * Displays a subtle skeleton while component loads
  */
-const DefaultLoading = () => (
-  <div className="min-h-[400px] bg-gradient-to-b from-gray-100 to-gray-50 animate-pulse rounded-lg" />
-);
+const DefaultLoading = () => React.createElement('div', {
+  className: 'min-h-[400px] bg-gradient-to-b from-gray-100 to-gray-50 animate-pulse rounded-lg'
+});
 
 /**
  * Lightweight loading spinner for small modals
  */
-const ModalLoading = () => (
-  <div className="flex items-center justify-center min-h-[200px]">
-    <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
-  </div>
+const ModalLoading = () => React.createElement(
+  'div',
+  { className: 'flex items-center justify-center min-h-[200px]' },
+  React.createElement('div', {
+    className: 'w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin'
+  })
 );
 
 /**
@@ -39,7 +42,6 @@ export function createDynamicComponent<P extends object>(
   return dynamic(loader, {
     ssr: options.ssr ?? false,
     loading: options.loading ?? DefaultLoading,
-    // Webpack chunk name hint for better debugging
   });
 }
 
