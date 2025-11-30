@@ -1,5 +1,4 @@
 import './globals.css';
-import { PageContextProvider } from '@/context/page-context';
 import HeaderFooterWrapper from '@/components/new-homepage/header_footer_wrapper';
 import { epilogue, roboto, archivo, ubuntu } from '@/styles/font';
 import { Toaster } from 'react-hot-toast';
@@ -16,6 +15,7 @@ import GlobalPropertyActionsFAB from '@/components/common/GlobalPropertyActionsF
 import SubscriptionFeaturesClient from '@/components/subscription/SubscriptionFeaturesClient';
 import ChunkErrorHandler from '@/components/ChunkErrorHandler';
 import { lazy, Suspense } from 'react';
+import { PageContextProvider } from '@/context/page-context';
 
 // Lazy load WhatsApp widget - non-critical for initial render
 const WhatsAppChatWidget = lazy(() => import('@/components/whatsapp-chat-widget'));
@@ -32,10 +32,7 @@ export const metadata = {
 
 import ReduxWrapper from '@/components/providers/ReduxWrapper';
 import SubscriptionInitializer from '@/components/providers/SubscriptionInitializer';
-
-// Promo provider
 import { PromoProvider } from '@/context/promo-context';
-// Promo mount client component
 import PromoMount from '@/components/promo/PromoMount';
 
 export default function RootLayout({
@@ -43,8 +40,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
-
   return (
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'google-client-id-not-configured'}>
       <ReduxWrapper>
@@ -62,15 +57,11 @@ export default function RootLayout({
                             <body
                               className={`${roboto.variable} ${archivo.variable} ${epilogue.variable} ${ubuntu.variable} antialiased`}
                             >
-                              {/* Promo placeholder - no height reserved, only sized when ads exist */}
                               <div id="promo-top-placeholder" className="w-full overflow-hidden bg-transparent" />
-
                               <HeaderFooterWrapper>
                                 <Body>{children}</Body>
                               </HeaderFooterWrapper>
-                              {/* Client mounts BannerSlot into the placeholder without changing DOM structure during hydration */}
                               <PromoMount slot="top-header" targetId="promo-top-placeholder" className="mb-2" height="h-20" />
-                              
                               <GlobalPropertyActionsFAB />
                               <SubscriptionFeaturesClient />
                               <Suspense fallback={null}>
@@ -85,9 +76,9 @@ export default function RootLayout({
                     </GlobalPropertyActionsProvider>
                   </NewMarketplaceProvider>
                 </SelectedBriefsProvider>
-            </PageContextProvider>
-          </ModalProvider>
-        </NotificationProvider>
+                </PageContextProvider>
+              </ModalProvider>
+            </NotificationProvider>
         </UserProvider>
       </ReduxWrapper>
     </GoogleOAuthProvider>

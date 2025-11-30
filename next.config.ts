@@ -71,6 +71,7 @@ const nextConfig: NextConfig = {
         canvas: require("path").resolve(__dirname, "empty-module.js"),
       };
     }
+
     return config;
   },
 };
