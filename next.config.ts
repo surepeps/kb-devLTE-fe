@@ -78,6 +78,20 @@ const nextConfig: NextConfig = {
         canvas: require("path").resolve(__dirname, "empty-module.js"),
       };
     }
+
+    // Development caching optimization
+    if (process.env.NODE_ENV === "development") {
+      config.cache = {
+        type: "filesystem",
+        compression: "gzip" as const,
+        name: process.env.NODE_ENV,
+        managedPaths: ["node_modules"],
+        buildDependencies: {
+          config: [__filename],
+        },
+      };
+    }
+
     return config;
   },
 };
