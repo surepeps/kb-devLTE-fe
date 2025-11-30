@@ -1,7 +1,6 @@
 /** @format */
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
-import path from "path";
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -15,13 +14,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   experimental: {
-    optimizePackageImports: [
-      "react-icons",
-      "framer-motion",
-      "lucide-react",
-      "@fortawesome/react-fontawesome",
-      "@fortawesome/free-solid-svg-icons",
-    ],
+    optimizePackageImports: ["react-icons", "framer-motion", "lucide-react"],
     optimizeCss: true,
   },
   compress: true,
