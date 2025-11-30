@@ -63,6 +63,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Development optimization: fast-track known public routes
+  if (isDev) {
+    const fastPublicRoutes = ["/", "/about_us", "/contact-us", "/policies_page", "/market-place", "/agent-marketplace"];
+    if (fastPublicRoutes.includes(pathname)) {
+      return NextResponse.next();
+    }
+  }
+
   // Redirect old agent auth routes to new consolidated auth
   if (pathname.startsWith("/agent/auth/login")) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
@@ -70,7 +78,7 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith("/agent/auth/register")) {
     return NextResponse.redirect(new URL("/auth/register", request.url));
   }
-  // Redirect legacy /register to /auth/register while preserving query params (e.g., ?ref=...)
+  // Redirect legacy /register to /auth/register while preserving query params
   if (pathname === "/register" || pathname.startsWith("/register/")) {
     const target = new URL("/auth/register", request.url);
     target.search = request.nextUrl.search;
@@ -92,7 +100,6 @@ export function middleware(request: NextRequest) {
   if (isPublicRoute) {
     return NextResponse.next();
   }
-
 
   // Protect user routes
   const isUserProtectedRoute = userProtectedRoutes.some(
