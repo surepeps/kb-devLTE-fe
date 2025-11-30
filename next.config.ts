@@ -14,8 +14,15 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   experimental: {
-    optimizePackageImports: ["react-icons", "framer-motion", "lucide-react"],
+    optimizePackageImports: [
+      "react-icons",
+      "framer-motion",
+      "lucide-react",
+      "@fortawesome/react-fontawesome",
+      "@fortawesome/free-solid-svg-icons",
+    ],
     optimizeCss: true,
+    parallelRouteGeneration: true,
   },
   compress: true,
   images: {
