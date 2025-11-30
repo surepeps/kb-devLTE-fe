@@ -22,7 +22,6 @@ const nextConfig: NextConfig = {
       "@fortawesome/free-solid-svg-icons",
     ],
     optimizeCss: true,
-    parallelRouteGeneration: true,
   },
   compress: true,
   images: {
